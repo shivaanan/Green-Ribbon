@@ -44,7 +44,7 @@ db = connect()
 #     } 
 #   }
 # }
-db.set(data)
+# db.set(data)
 # display = db.child("users").order_by_child("userid").equal_to("1234").get()
 # print(display)
 # snapshot = db.child("users").order_by_child('userid').equal_to("1234").get()
