@@ -28,22 +28,22 @@ def connect():
 db = connect() 
 # CORS(app)
 
-data = {
-    "users" : {
-    "1234" : {
-      "userid" : "1234",
-      "email" : "lintao@gmail.com",
-      "username" : "lintao",
-      "password" : "000000"
-    }, 
-    "0000" : {
-      "userid" : "0000",
-      "email" : "martin@gmail.com",
-      "username" : "martin",
-      "password" : "123456"
-    } 
-  }
-}
+# data = {
+#     "users" : {
+#     "1234" : {
+#       "userid" : "1234",
+#       "email" : "lintao@gmail.com",
+#       "username" : "lintao",
+#       "password" : "000000"
+#     }, 
+#     "0000" : {
+#       "userid" : "0000",
+#       "email" : "martin@gmail.com",
+#       "username" : "martin",
+#       "password" : "123456"
+#     } 
+#   }
+# }
 db.set(data)
 # display = db.child("users").order_by_child("userid").equal_to("1234").get()
 # print(display)
