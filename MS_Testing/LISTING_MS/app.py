@@ -36,8 +36,9 @@ def add_product():
 	itemName = data["itemName"]
 	quantity = data['quantity']
 	price = data['price']
-	dateOfPurchase = data['dateOfPurchase']
+	dateOfPost = data['dateOfPost']
 	availability = data['availability']
+	imgURL = data["imgURL"]
 	# -----------------------------------------------------------------------------
 
 	# itemName = request.form["itemName"]
@@ -48,7 +49,7 @@ def add_product():
 
 	# ADD ERROR HANDLING
 
-	collection.insert_one({'productID' : productID,'itemName': itemName, 'quantity': quantity, 'price': price, 'dateOfPurchase': dateOfPurchase, 'availability': availability})
+	collection.insert_one({'productID' : productID,'itemName': itemName, 'quantity': quantity, 'price': price, 'dateOfPost': dateOfPost, 'availability': availability, "imgURL" : imgURL})
 	return getAllProducts()
 
 def get_next_sequence_value(sequence_name):
