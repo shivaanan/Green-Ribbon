@@ -13,7 +13,7 @@ collection = db['listings1']
 
 
 @app.route('/products', methods = ['GET'])
-def index():
+def getAllProducts():
 	products = list(collection.find())
 	product_list = []
 	for product in products:
@@ -46,7 +46,7 @@ def add_product():
 	# ADD ERROR HANDLING
 
 	collection.insert_one({'productID' : productID,'itemName': itemName, 'quantity': quantity, 'price': price, 'dateOfPurchase': dateOfPurchase, 'availability': availability})
-	return index()
+	return getAllProducts()
 
 def get_next_sequence_value(sequence_name):
 	counter = db.counters
