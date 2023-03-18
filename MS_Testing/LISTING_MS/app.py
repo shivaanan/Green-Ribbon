@@ -20,7 +20,7 @@ def getAllProducts():
 	products = list(collection.find())
 	product_list = []
 	for product in products:
-		product_dict = {'productID' : product["productID"], 'itemName': product['itemName'], 'quantity': product['quantity'], 'price': product['price'], 'dateOfPurchase': product['dateOfPurchase'], 'availability': product['availability']}
+		product_dict = {'productID' : product["productID"], 'itemName': product['itemName'], 'quantity': product['quantity'], 'price': product['price'], 'dateOfPost': product['dateOfPost'], 'availability': product['availability'], 'imgURL' : product["imgURL"]}
 		product_list.append(product_dict)
 	return product_list
 
