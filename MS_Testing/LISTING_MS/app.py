@@ -9,11 +9,15 @@ client = MongoClient('mongodb+srv://esdg6t4:zJZcldRJaXWpX77z@listingsmicroservic
 db = client['listingsMS']
 collection = db['listings1']
 
-@app.route('/products', methods = ['POST'])
+@app.route('/products', methods = ['GET'])
 def index():
-      products = collection.find()
-      # @vigh help me make edits to the html file to process this rendering
-      return render_template('home.html', products=products)
+	products = list(collection.find())
+	product_list = []
+	for product in products:
+		product_dict = {'itemName': product['itemName'], 'quantity': product['quantity'], 'price': product['price'], 'dateOfPurchase': product['dateOfPurchase'], 'availability': product['availability']}
+		product_list.append(product_dict)
+	return jsonify(product_list)
+
 
 @app.route('/add_product', methods=['POST'])
 def add_product():
