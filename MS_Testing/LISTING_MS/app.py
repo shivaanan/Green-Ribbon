@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
-from bson import _get_object_size
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -56,7 +55,7 @@ def get_next_sequence_value(sequence_name):
 	return sequence_value['seq']
 
 ## editing the item quantity in the 
-@app.route('/edit/<product_id>', methods=['GET'])
+@app.route('/edit/<product_id>', methods=['PUT'])
 def edit_product(product_id, soldQuantity):
 	product = collection.find({_id: product_id})
 	data = request.get_json()
@@ -72,7 +71,7 @@ def edit_product(product_id, soldQuantity):
 	return getAllProducts()
 
 ## removing sold OR no quantity products
-@app.route('/delete/<product_id>')
+@app.route('/delete/<product_id>', methods = ['DELETE'])
 def delete_product(product_id):
 	collection.delete_one({_id: product_id})
 	return getAllProducts()
