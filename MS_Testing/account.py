@@ -28,23 +28,23 @@ def connect():
 db = connect() 
 # CORS(app)
 
-# data = {
-#     "users" : {
-#     "1234" : {
-#       "userid" : "1234",
-#       "email" : "lintao@gmail.com",
-#       "username" : "lintao",
-#       "password" : "000000"
-#     }, 
-#     "0000" : {
-#       "userid" : "0000",
-#       "email" : "martin@gmail.com",
-#       "username" : "martin",
-#       "password" : "123456"
-#     } 
-#   }
-# }
-# db.set(data)
+data = {
+    "users" : {
+    "1234" : {
+      "userid" : "1234",
+      "email" : "lintao@gmail.com",
+      "username" : "lintao",
+      "password" : "000000"
+    }, 
+    "0000" : {
+      "userid" : "0000",
+      "email" : "martin@gmail.com",
+      "username" : "martin",
+      "password" : "123456"
+    } 
+  }
+}
+db.set(data)
 # display = db.child("users").order_by_child("userid").equal_to("1234").get()
 # print(display)
 # snapshot = db.child("users").order_by_child('userid').equal_to("1234").get()
@@ -81,11 +81,12 @@ def login_user():
     try:
         userobj = db.child("users").order_by_child("userid").equal_to(userid).get()
         userobj = userobj.val()
-        if userobj and userobj['username'] == data['username'] and userobj['password'] == data['password']:
+      
+        if userobj and userobj[userid]['username'] == data['username'] and userobj[userid]['password'] == data['password']:
             return jsonify(
                 {
                     "code": 200,
-                    "data": userobj,
+                    "data": userid,
                     "message": "Login successful."
                 }
             ), 200
