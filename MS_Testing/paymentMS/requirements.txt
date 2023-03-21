@@ -10,3 +10,4 @@ requests==2.23.0
 stripe==2.48.0
 urllib3==1.25.9
 Werkzeug==1.0.1
+requests
