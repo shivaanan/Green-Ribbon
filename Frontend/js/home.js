@@ -98,7 +98,7 @@ const homePage = Vue.createApp({
        
         console.log("-------In user mounted------");
         
-        axios.get('http://localhost:5000/products')
+        axios.get('http://127.0.0.1:5000/products')
         .then(response => {
             console.log("hi");
           console.log(response.data[0]);
