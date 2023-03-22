@@ -26,10 +26,12 @@
                     <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                 </div>
                 <span>or use your email for registration</span>
-                    <input type="text" placeholder="Name" />
-                    <input type="email" placeholder="Email" />
-                    <input type="password" placeholder="Password" />
-                <button>Sign Up</button>
+                    <input type="text" placeholder="Name" id="newName"/>
+                    <input type="email" placeholder="Email" id="newEmail"/>
+                    <input type="password" placeholder="Password" id="newPassword"/>
+
+                    <div id="creationStatus"></div>
+                <button onclick="signUp()">Sign Up</button>
             </form>
         </div>
         <div class="form-container sign-in-container">
