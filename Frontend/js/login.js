@@ -15,7 +15,7 @@ signInButton.addEventListener('click', () => {
 
 // -------------- sign in function  ------------------------------------------------
  function signIn() {
-	// document.getElementById("error").innerHTML = ""
+	
 	console.log("test signin button");
 	
 	let email = document.getElementById("username").value
@@ -36,7 +36,9 @@ signInButton.addEventListener('click', () => {
 
 			if (response.data["success"]) {
 				// Redirect to home page
+				
 				window.location.href = "home.html";
+
 			  } else {
 				// Show error message
 				document.getElementById("error").innerHTML = "Invalid email or password";
@@ -53,3 +55,48 @@ signInButton.addEventListener('click', () => {
 // ---------------------------------------------------------------------------------
 
 
+// -------------- sign up function  ------------------------------------------------
+function signUp() {
+	
+	console.log("test signin button");
+	
+	let name = document.getElementById("newName").value
+	let email = document.getElementById("newEmail").value
+	let password = document.getElementById("newPassword").value
+
+	console.log(email);
+	console.log(password);
+
+	console.log("-------In user signUp------");
+        
+	axios.post('http://127.0.0.1:5000/createuser', {
+		"newName" : name,
+		"newEmail":  email,
+		"newPassword" : password
+		})
+		.then(response => {
+			// console.log(response.data);
+			console.log(response.data["success"]);
+
+			if (response.data["success"]) {
+				// Redirect to home page
+				document.getElementById("creationStatus").innerHTML = "Creation successful, Please login using your credentials";
+			  } else {
+				// Show error message
+				document.getElementById("creationStatus").innerHTML = "Email exists!";
+				
+			  }
+			
+		})
+		
+		.catch(error => {
+			
+		});
+
+		document.getElementById("newName").value = ""
+		document.getElementById("newEmail").value = ""
+		document.getElementById("newPassword").value = ""
+
+	console.log("-------end user signUp------");
+}
+// ---------------------------------------------------------------------------------
