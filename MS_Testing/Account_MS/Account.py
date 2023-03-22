@@ -25,17 +25,11 @@ auth = firebase.auth()
 
 app.secret_key = "ESDProject"
 
+db = firebase.database()
+
 # email = "lintao@gmail.com"
 # password = "123456"
 
-# # user = auth.create_user_with_email_and_password(email, password)
-# # print(user)
-
-
-# user = auth.sign_in_with_email_and_password(email, password)
-
-# info = auth.get_account_info(user['idToken'])
-# print(info)
 
 @app.route("/loginuser", methods=['POST'])
 def login_user():
@@ -55,6 +49,34 @@ def login_user():
         return jsonify({"success": False})
        
 
+@app.route("/createuser", methods=["POST"])
+def create_user():
+    data = request.get_json()
+    name = data["newName"]
+    email = data["newEmail"]
+    password = data["newPassword"]
+
+    try:
+        user = auth.create_user_with_email_and_password(email, password)
+
+        info = auth.get_account_info(user['idToken'])
+        userId = info["users"][0]["localId"]
+
+        addUserNameAndEmail(userId, name, email)
+
+        return jsonify({"success": True})
+
+    except:
+        return jsonify({"success": False})
+    
+# saves user's name and email (saving users particulars)
+def addUserNameAndEmail(userId, name, email):
+    data = {
+        "name" : name,
+        "email" : email
+    }
+
+    db.child("users").child(userId).set(data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
