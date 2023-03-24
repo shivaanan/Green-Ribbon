@@ -2,14 +2,13 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from flask_cors import CORS
 
+app = Flask(__name__)
+
 # enable CORS
 CORS(app)
 
-app = Flask(__name__)
-
 # Connect to MongoDB
-client = MongoClient(
-    'mongodb+srv://esdg6t4:zJZcldRJaXWpX77z@listingsmicroservice.rkrskux.mongodb.net/?retryWrites=true&w=majority')
+client = MongoClient('mongodb+srv://esdg6t4:zJZcldRJaXWpX77z@listingsmicroservice.rkrskux.mongodb.net/?retryWrites=true&w=majority')
 db = client['CartDB']
 collection = db['addToCart']
 
@@ -20,8 +19,16 @@ def getAllProducts():
         products = list(collection.find())
         product_list = []
         for product in products:
-            product_dict = {'code':200,'productID': product["productID"], 'itemName': product['itemName'], 'quantity': product['quantity'],
-                            'price': product['price'], 'dateOfPost': product['dateOfPost'], 'availability': product['availability'], 'imgURL': product["imgURL"]}
+            product_dict = {'code':200,
+                'productID': product["productID"], 
+                'itemName': product['itemName'], 
+                'quantity': product['quantity'],
+                'price': product['price'], 
+                'dateOfPost': product['dateOfPost'], 
+                'availability': product['availability'],
+                'location': product['location'],
+                'imgURL': product["imgURL"]
+            }
             product_list.append(product_dict)
         return jsonify(product_list)
     except Exception as e:
@@ -42,17 +49,22 @@ def add_to_cart():
     price = data['price']
     dateOfPost = data['dateOfPost']
     availability = data['availability']
+    location = data['location']
     imgURL = data["imgURL"]
     
-    collection.insert_one({
+    collection.insert_one
+    (
+        {
         'productID': productID, 
         'itemName': itemName, 
         'quantity': quantity,
         'price': price, 
         'dateOfPost': dateOfPost, 
-        'availability': availability, 
+        'availability': availability,
+        'location': location,
         'imgURL': imgURL
-    })
+        }
+    )
 
     return 
 

@@ -21,8 +21,17 @@ def getAllProducts():
         products = list(collection.find())
         product_list = []
         for product in products:
-            product_dict = {'code':200,'productID': product["productID"], 'itemName': product['itemName'], 'quantity': product['quantity'],
-                            'price': product['price'], 'dateOfPost': product['dateOfPost'], 'availability': product['availability'], 'imgURL': product["imgURL"]}
+            product_dict = {
+                'code':200,
+                'productID': product["productID"], 
+                'itemName': product['itemName'], 
+                'quantity': product['quantity'],
+                'price': product['price'], 
+                'dateOfPost': product['dateOfPost'], 
+                'availability': product['availability'],
+                # 'location': product['location'],
+                'imgURL': product["imgURL"]
+            }
             product_list.append(product_dict)
         return jsonify(product_list)
     except Exception as e:
@@ -33,8 +42,16 @@ def getAllProducts():
 def getProductByID(productID):
     product = collection.find_one({'productID': productID})
     if product:
-        product_dict = {'productID': product["productID"], 'itemName': product['itemName'], 'quantity': product['quantity'],
-                        'price': product['price'], 'dateOfPost': product['dateOfPost'], 'availability': product['availability'], 'imgURL': product["imgURL"]}
+        product_dict = {
+            'productID': product["productID"], 
+            'itemName': product['itemName'], 
+            'quantity': product['quantity'],
+            'price': product['price'], 
+            'dateOfPost': product['dateOfPost'], 
+            'availability': product['availability'],
+            # 'location': product['location'],
+            'imgURL': product["imgURL"]
+        }
         return jsonify(product_dict)
     else:
         return jsonify(
@@ -56,6 +73,7 @@ def add_product():
     price = data['price']
     dateOfPost = data['dateOfPost']
     availability = data['availability']
+    # location = data['location']
     imgURL = data["imgURL"]
     # -----------------------------------------------------------------------------
 
@@ -67,8 +85,19 @@ def add_product():
 
     # ADD ERROR HANDLING
 
-    collection.insert_one({'productID': productID, 'itemName': itemName, 'quantity': quantity,
-                          'price': price, 'dateOfPost': dateOfPost, 'availability': availability, "imgURL": imgURL})
+    collection.insert_one
+    (
+        {
+            'productID': productID,
+            'itemName': itemName,
+            'quantity': quantity,
+            'price': price,
+            'dateOfPost': dateOfPost,
+            'availability': availability,
+            # 'location': location,
+            "imgURL": imgURL
+        }
+    )
     return getAllProducts()
 
 
@@ -90,10 +119,22 @@ def edit_product(product_id, soldQuantity):
     dateOfPost = data['dateOfPost']
     availability = data['availability']
     imgURL = data["imgURL"]
+    # location = data['location']
     quantity = data['quantity'] - soldQuantity
 
-    collection.update_one({'productID': product_id, 'itemName': itemName, 'quantity': quantity,
-                          'price': price, 'dateOfPost': dateOfPost, 'availability': availability, "imgURL": imgURL})
+    collection.update_one
+    (
+        {
+            'productID': product_id, 
+            'itemName': itemName, 
+            'quantity': quantity,
+            'price': price, 
+            'dateOfPost': dateOfPost, 
+            'availability': availability,
+            # "location": location,
+            "imgURL": imgURL
+        }
+    )
     return getAllProducts()
 
 # removing sold OR no quantity products
