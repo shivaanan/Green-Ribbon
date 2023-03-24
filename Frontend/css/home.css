@@ -168,3 +168,52 @@
     background-color: #104547;
     color: white;   
 }
+
+
+
+
+/* --------------------------------- */
+
+
+/* .quantity{
+  padding-top: 20px;
+  margin-right: 60px;
+} */
+.quantity input{
+  border: none;
+  text-align: center;
+  width: 32px;
+  font-size: 1em;
+  color: #43484D;
+  font-weight: 300;
+}
+  button[class*=qty_buttons] {
+    width: 30px;
+    height: 30px;
+    background-color: #E1E8EE;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+  }
+.minus-btn img{
+  margin-bottom: 3px;
+}
+.plus-btn img{
+  margin-top: 2px;
+}
+
+button:focus,
+input:focus{
+  outline: 0;
+}
+
+.total-price{
+  width: 83px;
+  padding-top: 27px;
+  text-align: center;
+  font-size: 1em;
+  color: #43484D;
+  font-weight: 300;
+}
+
+
