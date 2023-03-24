@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
 
     <script src="https://js.stripe.com/v3/"></script>
-    <script type="module" src="js/home.js"></script>
+
+    
 </head>
 
 <body id="homePage" >
@@ -93,13 +94,13 @@
 
             <div
                 class="row row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-2 row-cols-1 justify-content-center justify-content-sm-start justify-content-md-start justify-content-lg-start justify-content-xl-start  align-items-start ">
+
                 <!--dynamically retrieved events from db-->
                 <!--template for a product-->
                 <div class="col-8" align="center" v-for="product in products">
-                    <!-- start of card-->
-                    <!-- {{ event }} -->
 
-                    <div class="card" style="background-color: #f5ece4;" :id="`eventCard${product.productID}`">
+                    <!-- start of card-->
+                    <div class="card" style="background-color: #f5ece4;" :id="`productCard${product.productID}`">
                         <div class="text-box">
                             <div class="image-box">
                                 <img :src="product.imgURL" />
@@ -120,15 +121,35 @@
                                 </p>
                             </div>
                         </div>
-                        <button class="btn btn-sm float-end mb-3 mx-4"
-                            style="background-color: #368373; color: white;" @click="addToCart(product.productID)">Add to Cart
-                            <i class="fa fa-shopping-cart mx-1"></i>
-                        </button>
-                        <button class="btn btn-sm float-end mb-3 mx-4"
-                            style="background-color: #368373; color: white;" @click="buyNow(product.productID)">Buy Now
-                            <i class="fa fa-shopping-bag mx-1"></i>
-                        </button>
 
+                        <div class="row">
+                            <div class="col d-flex justify-content-evenly align-items-center">
+                                <!-- Start of Quantity button -->
+                                <div class="quantity">
+                                    
+                                    <button class="minus-btn qty_buttons"  name="button"  @click="decrementQuantity(`qty${product.productID}`)">
+                                        <img src="https://designmodo.com/demo/shopping-cart/minus.svg" alt="" />
+                                    </button>
+                                    
+                                    <input type="text" :id="`qty${product.productID}`"  value="1">
+                                    
+                                    <button class="plus-btn qty_buttons"  name="button" @click="incrementQuantity(`qty${product.productID}`)">
+                                        <img src="https://designmodo.com/demo/shopping-cart/plus.svg" alt="" />
+                                    </button>
+
+                                </div>
+                                <!-- End of Quantity button -->
+        
+                                <!--Start of Add to cart button-->
+                                <button class="btn btn-sm float-end "
+                                style="background-color: #368373; color: white;" @click="addToCart(product.productID)">
+                                    Add to Cart
+                                    <i class="fa fa-shopping-cart mx-1"></i>
+                                </button>
+                                <!--End of Add to cart button-->
+                            </div> 
+                        </div>
+      
                     </div>
 
 
@@ -136,7 +157,7 @@
 
 
             </div>
-
+            
         </div>
     </div>
 
@@ -149,5 +170,6 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <!-- Vue.js 3 CDN -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script type="module" src="js/home.js"></script>
 
 </html>
