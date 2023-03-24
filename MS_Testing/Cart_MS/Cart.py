@@ -10,7 +10,7 @@ CORS(app)
 # Connect to MongoDB
 client = MongoClient('mongodb+srv://esdg6t4:zJZcldRJaXWpX77z@listingsmicroservice.rkrskux.mongodb.net/?retryWrites=true&w=majority')
 db = client['CartDB']
-collection = db['addToCart']
+collection = db['Cart']
 
 cart = {}
 
