@@ -12,61 +12,62 @@ client = MongoClient('mongodb+srv://esdg6t4:zJZcldRJaXWpX77z@listingsmicroservic
 db = client['CartDB']
 collection = db['addToCart']
 
-# Get All Products
-@app.route('/products', methods=['GET'])
-def getAllProducts():
-    try:
-        products = list(collection.find())
-        product_list = []
-        for product in products:
-            product_dict = {'code':200,
-                'productID': product["productID"], 
-                'itemName': product['itemName'], 
-                'quantity': product['quantity'],
-                'price': product['price'], 
-                'dateOfPost': product['dateOfPost'], 
-                'availability': product['availability'],
-                'location': product['location'],
-                'imgURL': product["imgURL"]
-            }
-            product_list.append(product_dict)
-        return jsonify(product_list)
-    except Exception as e:
-        return jsonify({'code':404,'error': str(e)}),404
+cart = {}
 
-def get_next_sequence_value(sequence_name):
-    counter = db.counters
-    sequence_value = counter.find_one_and_update(
-        {"_id": sequence_name}, {"$inc": {"seq": 1}})
-    return sequence_value['seq']
+# Get 1 Product
+@app.route('/products/<int:productID>', methods=['GET'])
+def getProductByID(productID):
+    product = collection.find_one({'productID': productID})
+    if product:
+        product_dict = {
+            'productID': product["productID"], 
+            'itemName': product['itemName'], 
+            'quantity': product['quantity'],
+            'price': product['price'], 
+            'dateOfPost': product['dateOfPost'], 
+            'availability': product['availability'],
+            # 'location': product['location'],
+            'imgURL': product["imgURL"]
+        }
+        return jsonify(product_dict)
+    else:
+        return jsonify(
+            {
+                'code': 404,
+                'error': 'Product not found'
+            }
+        ), 404
 
 @app.route('/add_to_cart',methods = ['POST'])
-def add_to_cart():
-    productID = get_next_sequence_value("productid")
+def add_to_cart(productID):
+    product = getProductByID(productID)
     data = request.get_json()
     itemName = data["itemName"]
     quantity = data['quantity']
     price = data['price']
     dateOfPost = data['dateOfPost']
     availability = data['availability']
-    location = data['location']
+    # location = data['location']
     imgURL = data["imgURL"]
-    
-    collection.insert_one
-    (
-        {
-        'productID': productID, 
-        'itemName': itemName, 
-        'quantity': quantity,
-        'price': price, 
-        'dateOfPost': dateOfPost, 
-        'availability': availability,
-        'location': location,
-        'imgURL': imgURL
-        }
-    )
+    if product is not null and itemName not in cart:
+        cart[itemName] = [quantity, price, dateOfPost, availability, '''location''', imgURL]
 
-    return 
+        collection.insert_one
+        (
+            {
+                'productID': productID,
+                'itemName': itemName,
+                'quantity': quantity,
+                'price': price,
+                'dateOfPost': dateOfPost,
+                'availability': availability,
+                # 'location': location,
+                "imgURL": imgURL
+            }
+        )
 
+    return cart
+
+#  port 5002
 if __name__ == '__main__':
     app.run(port = 5002, debug = True)

@@ -107,9 +107,6 @@ def get_next_sequence_value(sequence_name):
         {"_id": sequence_name}, {"$inc": {"seq": 1}})
     return sequence_value['seq']
 
-# editing the item quantity in the
-
-
 @app.route('/edit/<product_id>', methods=['PUT'])
 def edit_product(product_id, soldQuantity):
     product = collection.find({_id: product_id})
