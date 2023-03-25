@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from datetime import datetime
 
 import stripe
 import requests
-
 
 
 app = Flask(__name__)
@@ -17,20 +17,12 @@ stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
-    data = request.json
+    product = request.json
 
     try:
-        product_id = data['product_id']
 
-        # Fetch the product information from the Listing Micro Service
-        listing_ms_url = 'http://127.0.0.1:5001/products/{}'.format(product_id)  # Replace with the actual URL of your Listing Micro Service
-        response = requests.get(listing_ms_url)
-
-        if response.status_code != 200:
-            return jsonify({'error': 'Product not found'}), 404
-
-        product = response.json()
-        product_price = int(float(product['price']) * 100)  # Convert price to cents
+        # Convert price to cents
+        product_price = int(float(product['price']) * 100)
 
         # Create a new Stripe checkout session
         checkout_session = stripe.checkout.Session.create(
@@ -49,22 +41,31 @@ def create_checkout_session():
             success_url=request.url_root + 'thanks',
             cancel_url=request.url_root + 'home',
         )
-
+        
+        dateOfPurchase = datetime.now()
         return jsonify({
-            'checkout_session_id': checkout_session.id,
-            'checkout_public_key': app.config['STRIPE_PUBLIC_KEY'],
+            "code": 201,
+            "data": {
+                'dateOfPurchase': dateOfPurchase,
+                'itemPurchase': product,
+                'checkout_session_id': checkout_session.id,
+                'checkout_public_key': app.config['STRIPE_PUBLIC_KEY'],
+            }
         })
 
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+
 @app.route('/thanks')
 def thanks():
     return send_from_directory('../../Frontend', 'thanks.html')
 
+
 @app.route('/home')
 def home():
     return send_from_directory('../../Frontend', 'home.html')
+
 
 if __name__ == '__main__':
     app.run(port=5002, debug=True)

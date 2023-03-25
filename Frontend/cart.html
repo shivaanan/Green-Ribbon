@@ -15,6 +15,7 @@
     <script src="https://js.stripe.com/v3/"></script>
 
     <script src="js/cart.js"></script>
+    <script src="js/checkout.js"></script>
 </head>
 <body id="homePage">
     <!-- de2f52 -->
@@ -112,6 +113,11 @@
                     <button type="button" class="btn btn-success btn-lg" onclick="checkOut()"> Checkout </button>
                 </td>
             </tr>
+
+            <form id="payment-form">
+                <div id="card-element"></div>
+                <button id="submit">Pay</button>
+            </form>
         
         </table>
     </div>
