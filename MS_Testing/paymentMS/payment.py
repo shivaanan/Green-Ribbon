@@ -23,7 +23,7 @@ def create_checkout_session():
         product_id = data['product_id']
 
         # Fetch the product information from the Listing Micro Service
-        listing_ms_url = 'http://127.0.0.1:5000/products/{}'.format(product_id)  # Replace with the actual URL of your Listing Micro Service
+        listing_ms_url = 'http://127.0.0.1:5001/products/{}'.format(product_id)  # Replace with the actual URL of your Listing Micro Service
         response = requests.get(listing_ms_url)
 
         if response.status_code != 200:

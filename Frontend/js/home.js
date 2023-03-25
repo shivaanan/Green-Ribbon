@@ -27,30 +27,6 @@ const homePage = Vue.createApp({
     computed: {},
 
     methods: {
-        async buyNow(productID) {
-            console.log(productID);
-
-            try {
-                const response = await axios.post(
-                    "http://127.0.0.1:5001/create-checkout-session",
-                    {
-                        product_id: productID,
-                    }
-                );
-
-                const data = response.data;
-
-                if (data.checkout_session_id) {
-                    const stripe = Stripe(data.checkout_public_key);
-                    stripe.redirectToCheckout({ sessionId: data.checkout_session_id });
-                } else {
-                    // Handle errors (e.g., Price not found for the given product)
-                    console.error("Error:", data.error);
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        },
 
         incrementQuantity(productID) {
             let qtyInput = document.getElementById(productID ).value;
