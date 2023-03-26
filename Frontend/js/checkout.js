@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
 
     const response = await fetch(
-      "http://127.0.0.1:8000/create_payment_intent",
+      "http://127.0.0.1:5002/create_payment_intent",
       {
         method: "POST",
         headers: {

@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5001/products"
-payment_URL = environ.get('payment_URL') or "http://localhost:5002/create-checkout-session"
+payment_URL = environ.get('payment_URL') or "http://localhost:5002/create_payment_intent"
 cart_URL = environ.get('cart_URL') or "http://localhost:5003/add_to_cart"
 
 
@@ -25,8 +25,8 @@ def buy_item():
         data = request.json
         try:
             product_id = data['product_id']
-            frontend_base_url = data.get('frontend_base_url', 'http://localhost:3000')
 
+            # frontend_base_url = data.get('frontend_base_url', 'http://localhost:3000')
             # Fetch the product information from the Listing Micro Service
             # Replace with the actual URL of your Listing Micro Service
             listing_ms_url = f"{listing_URL}/{product_id}"
