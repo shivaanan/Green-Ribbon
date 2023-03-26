@@ -18,7 +18,10 @@
     <script src="https://js.stripe.com/v3/"></script>
 
     <script src="js/cart.js"></script>
+    
     <script src="js/checkout.js"></script>
+
+    
 </head>
 
 <body id="homePage">
@@ -98,13 +101,18 @@
             <table class="table  table-borderless">
                 <tr>
                     <td scope="col" class="col-9">
-                        <div id="card-element"></div>
+                        Card Holder Name: <br>
+                        <input id="cardHolderName" type="text" style="border-radius: 5px; width: 75%;">
                     </td>
                     <td class="col-2"> Subtotal </td>
                     <td class="text-left"> $71.97 </td>
                 </tr>
                 <tr>
-                    <td scope="col" class="col-9"></td>
+                    <td scope="col" class="col-9">
+                        <div id="card-element" style="border: 1px solid black; border-radius: 5px; padding: 10px; width: 75%;"></div>
+                        <!-- Error Message: Your card number is incomplete. -->
+                        <div id="error-message" class="alert alert-danger" style="display: none; width: 75%;"></div>
+                    </td>
                     <td class="col-2"> GST (8%) </td>
                     <td class="text-left"> $10 </td>
                 </tr>
@@ -117,7 +125,9 @@
                 <tr>
                     <td scope="col" class="col-8"></td>
                     <td class="text-right">
-                        <button class="btn btn-success btn-lg" id="submit"> Checkout </button>
+                        <button class="btn btn-success btn-lg" id="submit">
+                            Checkout
+                        </button>
                     </td>
                 </tr>
             </table>
