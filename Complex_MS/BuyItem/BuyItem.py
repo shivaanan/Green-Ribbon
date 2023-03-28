@@ -16,7 +16,7 @@ CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5001/products"
 payment_URL = environ.get('payment_URL') or "http://localhost:5002/create_payment_intent"
-cart_URL = environ.get('cart_URL') or "http://localhost:5003/add_to_cart"
+cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003/add_to_cart"
 
 
 @app.route("/buy_item", methods=['POST'])
@@ -44,7 +44,6 @@ def buy_item():
                     }), 404
 
             result = processOrder(shoppingCart)
-            print("FUCK YOU")
             print(result)
             return jsonify(result), result["code"]
 
@@ -81,13 +80,16 @@ def processOrder(products):
         }
     }
 
-@app.route('/add_to_cart', methods=['GET'])
+@app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
 
-    # check qty from listingMS
     data = request.get_json()
-    productID = data["productID"]
-    input_quantity = data["quantity"]
+    print(data)
+    userId = data["userId"]
+    productID = data["productId"]
+    qtyInput = int(data["qtyInput"])
+    print("printing product")
+    print(productID)
 
     # use axios to make a post request to listingMS
     # listingMS will return the product with the productID
@@ -95,20 +97,35 @@ def add_to_cart():
 
     # check if the quantity is available
     # if not, return error message
-
-    if product["quantity"] < input_quantity:
+    if (product["quantity"] < qtyInput):
         return jsonify(
             {
-                'code': 404,
-                'error': 'Not enough quantity'
+                'success': False,
+                'error': 'Enter valid quantity!'
             }
         ), 404
 
     # if yes, invoke cartMS to add to cart
     # cartMS will return the cart
+    data = {
+        "userId": userId,
+        "productID": productID,
+        "qtyInput": qtyInput,
+        "product": product
+    }
     cart = invoke_http(cart_URL, method='POST', json=data)
 
+    if (cart["success"]):
+        return jsonify(
+            {
+                'success': True
+            }
+        ), 200
     
+    return jsonify({
+        'success': False,
+        "error": "Item already in cart"
+    })
 
 
 
