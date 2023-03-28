@@ -75,6 +75,36 @@ def processOrder(products):
         }
     }
 
+@app.route('/add_to_cart', methods=['GET'])
+def add_to_cart():
+
+    # check qty from listingMS
+    data = request.get_json()
+    productID = data["productID"]
+    input_quantity = data["quantity"]
+
+    # use axios to make a post request to listingMS
+    # listingMS will return the product with the productID
+    product = invoke_http(listing_URL + "/" + str(productID), method='GET')
+
+    # check if the quantity is available
+    # if not, return error message
+
+    if product["quantity"] < input_quantity:
+        return jsonify(
+            {
+                'code': 404,
+                'error': 'Not enough quantity'
+            }
+        ), 404
+
+    # if yes, invoke cartMS to add to cart
+    # cartMS will return the cart
+    cart = invoke_http(cart_URL, method='POST', json=data)
+
+    
+
+
 
 if __name__ == '__main__':
     app.run(port=5100, debug=True)
