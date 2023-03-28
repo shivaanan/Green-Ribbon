@@ -24,9 +24,7 @@ def get_quantity_by_product_id(product_id):
         return None
 # Help functions -- End
 
-# Get All Products
-
-
+# Get All Products from listing
 @app.route('/products', methods=['GET'])
 def getAllProducts():
     try:
@@ -49,7 +47,7 @@ def getAllProducts():
     except Exception as e:
         return jsonify({'code': 404, 'error': str(e)}), 404
 
-
+# Get 1 Product
 @app.route('/products/<int:productID>', methods=['GET'])
 def getProductByID(productID):
     product = collection.find_one({'productID': productID})
@@ -93,12 +91,11 @@ def get_product_quantity(productID):
             }
         ), 404
 
-
+# Add product to db
 @app.route('/add_product', methods=['POST'])
 def add_product():
     productID = get_next_sequence_value("productid")
-    # -----------------------------------------------------------------------------
-    # testing using postman body
+
     data = request.get_json()
     itemName = data["itemName"]
     quantity = data['quantity']
@@ -107,13 +104,6 @@ def add_product():
     availability = data['availability']
     # location = data['location']
     imgURL = data["imgURL"]
-    # -----------------------------------------------------------------------------
-
-    # itemName = request.form["itemName"]
-    # quantity = request.form['quantity']
-    # price = request.form['price']
-    # dateOfPurchase = request.form['datOfPurchase']
-    # availability = request.form['availability']
 
     # ADD ERROR HANDLING
 
