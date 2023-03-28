@@ -22,26 +22,30 @@ cart_URL = environ.get('cart_URL') or "http://localhost:5003/add_to_cart"
 @app.route("/buy_item", methods=['POST'])
 def buy_item():
     if request.is_json:
-        data = request.json
+        shoppingCart = request.json
         try:
-            product_id = data['product_id']
-
+            # product_ids = data['productID']
+            
             # frontend_base_url = data.get('frontend_base_url', 'http://localhost:3000')
             # Fetch the product information from the Listing Micro Service
             # Replace with the actual URL of your Listing Micro Service
-            listing_ms_url = f"{listing_URL}/{product_id}"
-            response = requests.get(listing_ms_url)
+            print(shoppingCart)
+            for eachItem in shoppingCart:
+                product_ID = eachItem['productID']
+                productName = eachItem['itemName']
+                listing_ms_url = f"{listing_URL}/{product_ID}/quantity"
+                response = requests.get(listing_ms_url)
+                # product = response.json()
+                
+                if response.status_code != 200:
+                    return jsonify({
+                        'code': 404,
+                        'error': f"Checkout error: {productName} not found"
+                    }), 404
 
-            products = response.json()
-            print(products)
-            if response.status_code != 200:
-                return jsonify({
-                    'code': 404,
-                    'error': 'Product not found'
-                }), 404
-
-            result = processOrder(products)
-
+            result = processOrder(shoppingCart)
+            print("FUCK YOU")
+            print(result)
             return jsonify(result), result["code"]
 
         except Exception as e:
@@ -66,6 +70,8 @@ def buy_item():
 
 def processOrder(products):
     payment_result = invoke_http(payment_URL, method='POST', json=products)
+
+    # Add AMQP HERE
 
     # Return created Order
     return {
