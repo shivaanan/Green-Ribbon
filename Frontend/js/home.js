@@ -7,12 +7,14 @@ const homePage = Vue.createApp({
         return {
             products: [],
             userId: sessionStorage.getItem("userId"),
+            cartCount: "",
         };
     }, // data
 
     mounted() {
         console.log("-------In user mounted------");
-
+        userId = this.userId;
+        // retrieve products from the backend
         axios
             .get("http://127.0.0.1:5001/products")
             .then((response) => {
@@ -23,6 +25,12 @@ const homePage = Vue.createApp({
             .catch((error) => {
                 console.log(error);
             });
+
+        // retrieve cart count from the backend
+        axios
+            .get('http://127.0.0.1:5100/get_cart_count/' + userId)
+            .then((response) => {
+                this.cartCount = response.data["cart_count"];})
 
         console.log("-------end user  mounted------");
     },
@@ -91,6 +99,9 @@ const homePage = Vue.createApp({
                         <i class="fa fa-check-circle" style="font-size:48px;color:green"></i>
                         <h3>Successfully added to cart!</h3>
                     </div>`
+
+                    // Update the cart count
+                    this.cartCount += 1;
                 }
                 else {
                     let error = response.data["error"];
