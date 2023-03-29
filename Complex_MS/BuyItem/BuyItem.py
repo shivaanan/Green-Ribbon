@@ -16,7 +16,7 @@ CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5001/products"
 payment_URL = environ.get('payment_URL') or "http://localhost:5002/create_payment_intent"
-cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003/add_to_cart"
+cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
 
 
 @app.route("/buy_item", methods=['POST'])
@@ -94,16 +94,17 @@ def add_to_cart():
     # use axios to make a post request to listingMS
     # listingMS will return the product with the productID
     product = invoke_http(listing_URL + "/" + str(productID), method='GET')
-
+    print(product)
     # check if the quantity is available
     # if not, return error message
     if (product["quantity"] < qtyInput):
+        print("qty less that inventory")
         return jsonify(
             {
                 'success': False,
                 'error': 'Enter valid quantity!'
             }
-        ), 404
+        )
 
     # if yes, invoke cartMS to add to cart
     # cartMS will return the cart
@@ -113,7 +114,7 @@ def add_to_cart():
         "qtyInput": qtyInput,
         "product": product
     }
-    cart = invoke_http(cart_URL, method='POST', json=data)
+    cart = invoke_http(cart_URL + "/add_to_cart", method='POST', json=data)
 
     if (cart["success"]):
         return jsonify(
@@ -128,6 +129,38 @@ def add_to_cart():
     })
 
 
+@app.route('/get_cart', methods=['GET'])
+def get_cart():
+    
+    data = request.get_json();
+
+    # invoke cartMS to get the cart
+    cart = invoke_http(cart_URL + "/get_cart" , method='GET', json=data)
+
+    return jsonify(cart)
+
+@app.route("/get_cart_count/<userId>", methods=['GET'])
+def get_cart_count(userId):
+    # data = request.get_json();
+    # userId = data["userId"]
+
+    cart = get_cart_helper_func(userId)
+    count = len(cart["cart_list"])
+
+    print(count)
+    return jsonify({
+        "cart_count" : count})
+
+# helper function to get cart
+def get_cart_helper_func(userId):
+    data = {
+        "userId": userId
+    }
+
+    # invoke cartMS to get the cart
+    cart = invoke_http(cart_URL + "/get_cart" , method='GET', json=data)
+
+    return cart
 
 if __name__ == '__main__':
     app.run(port=5100, debug=True)

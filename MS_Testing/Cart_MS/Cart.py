@@ -40,25 +40,25 @@ def getProductByID(productID):
 #             }
 #         ), 404
 
-# Get All Cart Items
-@app.route('/allCartItems', methods=['GET'])
+# Get All Cart Items of particular user
+@app.route('/get_cart', methods=['GET'])
 def getAllProducts():
+    data = request.get_json();
+    userId = data["userId"]
+
     try:
-        cart_items = list(collection.find())
+        cart_items = collection.find({"userId": userId})
         cart_list = []
+        print(cart_list)
+
         for a_item in cart_items:
-            cart_dict = {
-                'productID': a_item["productID"], 
-                'itemName': a_item['itemName'], 
-                'quantity': a_item['quantity'],
-                'price': a_item['price'], 
-                'dateOfPost': a_item['dateOfPost'], 
-                'availability': a_item['availability'],
-                # 'location': a_item['location'],
-                'imgURL': a_item["imgURL"]
-            }
-            cart_list.append(cart_dict)
-        return jsonify(cart_list)
+            a_item['_id'] = str(a_item['_id'])  # convert ObjectId to string
+            cart_list.append(a_item)
+
+        print(cart_list)
+        return jsonify({
+            'code': 200,
+            'cart_list': cart_list})
     
     except Exception as e:
         return jsonify({'code':404,'error': str(e)}),404
@@ -66,7 +66,7 @@ def getAllProducts():
 
 
 @app.route('/add_to_cart',methods = ['POST'])
-def add_to_cart():
+def add_to_cart():  
     data = request.get_json()
     userId = data["userId"]
     input_quantity = data["qtyInput"]
