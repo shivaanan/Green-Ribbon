@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from flask_cors import CORS
 
@@ -130,24 +130,25 @@ def get_next_sequence_value(sequence_name):
     return sequence_value['seq']
 
 
-@app.route('/edit/<product_id>', methods=['PUT'])
-def edit_product(product_id, soldQuantity):
-    product = collection.find({_id: product_id})
+@app.route('/edit/', methods=['PUT'])
+def edit_product():
     data = request.get_json()
+    productID = data["productId"]
+    # product = collection.find({_id: product_id})
     itemName = data["itemName"]
     price = data['price']
     dateOfPost = data['dateOfPost']
     availability = data['availability']
     imgURL = data["imgURL"]
     # location = data['location']
-    quantity = data['quantity'] - soldQuantity
+    soldQuantity = data['soldQuantity']
 
     collection.update_one
     (
         {
-            'productID': product_id,
+            'productID': productID,
             'itemName': itemName,
-            'quantity': quantity,
+            "$inc": {"quantity": -soldQuantity},
             'price': price,
             'dateOfPost': dateOfPost,
             'availability': availability,
