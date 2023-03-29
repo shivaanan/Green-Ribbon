@@ -1,9 +1,12 @@
 
+// console.log("in home.js");
+// console.log(sessionStorage.getItem("userId"));
 
 const homePage = Vue.createApp({
     data() {
         return {
             products: [],
+            userId: sessionStorage.getItem("userId"),
         };
     }, // data
 
@@ -47,6 +50,56 @@ const homePage = Vue.createApp({
 
             document.getElementById(productID).value = qtyInput;
         },   
+
+        addToCart(productID) {
+            console.log(productID);
+            let qtyInput = document.getElementById("qty" + productID ).value;
+            
+            // Get the userId from sessionStorage
+            let userId = this.userId;
+            console.log("----------addToCart----------");
+            console.log(userId);
+            console.log(productID);
+            console.log(qtyInput);
+
+            // Set the modal body to show a loading spinner till a response is received
+            document.getElementById("modal-body").innerHTML = `
+            <div>
+                <i class="fa fa-spinner fa-spin" style="font-size:48px;color:gray"></i>
+                <h3>Adding item to cart...</h3>
+            </div>`;
+
+            // Make an axios post request to the buyItem microservice
+            axios.post('http://127.0.0.1:5100/add_to_cart', {
+                "userId": userId,
+                "productId": productID,
+                "qtyInput": qtyInput
+            })
+            .then(response => {
+                console.log(response.data);
+                // Handle the response as needed
+
+                if (response.data["success"]) {
+                    document.getElementById("modal-body").innerHTML = `
+                    <div>
+                        <i class="fa fa-check-circle" style="font-size:48px;color:green"></i>
+                        <h3>Successfully added to cart!</h3>
+                    </div>`
+                }
+                else {
+                    let error = response.data["error"];
+                    document.getElementById("modal-body").innerHTML = `
+                    <div>
+                        <i class="fa fa-remove" style="font-size:48px;color:red"></i>
+                        <h3>${error}</h3>
+                    </div>`
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                // Handle the error as needed
+            });
+        },
     },
 });
 

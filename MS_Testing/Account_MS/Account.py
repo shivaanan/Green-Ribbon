@@ -41,9 +41,10 @@ def login_user():
     print(password)
     try:
         user = auth.sign_in_with_email_and_password(email, password)
-        session["user"] = email
+        print(user["localId"])
         print("succesful")
-        return jsonify({"success": True})
+        return jsonify({"success": True,
+                        "userId": user["localId"]})
 
     except:
         return jsonify({"success": False})

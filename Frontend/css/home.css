@@ -1,70 +1,3 @@
-#intro {
-    background-color: #4b5358;
-    margin-top: 5%;
-    color: white;
-    border-radius: 15px;
-    padding: 30px;
-}
-
-
-@import url(https://fonts.googleapis.com/css?family=Nunito:400,300,700);
-
-
-
-
-
-.prod_container .product .btn {
-  position: absolute;
-  font-size: 11px;
-  font-weight: bold;
-  float: right;
-  padding: 10px;
-  border: 2px solid black;
-  border-radius: 20px;
-  bottom: 10px;
-  right: 10px;
-  color: black;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.2s ease;
-}
-.prod_container .product .btn.ok {
-  background-color: rgba(0, 254, 254, 0.4);
-  color: black;
-}
-.prod_container .product .btn.ok:after {
-  content: "\e080";
-  color: black;
-}
-.prod_container .product .btn:hover {
-  padding-right: 25px;
-}
-.prod_container .product .btn:hover:after {
-  margin-left: 5px;
-}
-.prod_container .product .btn:after {
-  font-family: "simple-line-icons";
-  content: "\e080";
-  transition: all 0.2s ease;
-  position: absolute;
-  color: black  ;
-  margin-left: 30px;
-  transition: all 0.2s ease;
-}
-.prod_container .product  {
-  position: absolute;
-  bottom: 20px;
-  font-size: 11px;
-  color: black  ;
-  cursor: pointer;
-}
-.prod_container .product  {
-  font-family: "simple-line-icons";
-  content: "";
-  margin-right: 3px;
-}
-
-
 .cards_landscape_wrap-2{
     text-align: center;
     background: #F7F7F7;
@@ -170,15 +103,6 @@
 }
 
 
-
-
-/* --------------------------------- */
-
-
-/* .quantity{
-  padding-top: 20px;
-  margin-right: 60px;
-} */
 .quantity input{
   border: none;
   text-align: center;

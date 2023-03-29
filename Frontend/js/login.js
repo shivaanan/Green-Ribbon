@@ -14,7 +14,7 @@ signInButton.addEventListener('click', () => {
 
 
 // -------------- sign in function  ------------------------------------------------
- function signIn() {
+function signIn() {
 	
 	console.log("test signin button");
 	
@@ -35,8 +35,14 @@ signInButton.addEventListener('click', () => {
 			console.log(response.data["success"]);
 
 			if (response.data["success"]) {
-				// Redirect to home page
 				
+				let userId = response.data["userId"];
+				
+				// stores userId in session storage
+				sessionStorage.setItem("userId", userId);
+				console.log(sessionStorage.getItem("userId"));
+				
+				// Redirect to home page
 				window.location.href = "home.html";
 
 			  } else {
@@ -49,7 +55,6 @@ signInButton.addEventListener('click', () => {
 		.catch(error => {
 			
 		});
-
 	console.log("-------end user signIn------");
 }
 // ---------------------------------------------------------------------------------

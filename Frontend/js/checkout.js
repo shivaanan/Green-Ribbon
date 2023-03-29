@@ -11,19 +11,38 @@ document.addEventListener("DOMContentLoaded", () => {
   paymentForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const response = await fetch(
-      "http://127.0.0.1:5002/create_payment_intent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productID: 0,
-          quantity: 2, // or get this value from a form input
-        }),
-      }
-    );
+    const response = await fetch("http://127.0.0.1:5100/buy_item", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(
+        [
+          {
+            availability: true,
+            dateOfPost: "02-03-2023",
+            imgURL:
+              "https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-…",
+            itemName: "Chair",
+            price: "2",
+            productID: 0,
+            quantity: 8,
+          },
+          {
+            availability: true,
+            dateOfPost: "02-03-2023",
+            imgURL:
+              "https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=388&q=80",
+            itemName: "Table",
+            price: "100",
+            productID: 1,
+            quantity: 1,
+          },
+        ]
+        // productID: [0,1],
+        // quantity: 2, // or get this value from a form input
+      ),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -32,9 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const data = await response.json();
+    // console.log(data)
+    // console.log(data.clientSecret)
+    
     // Card Holder Name
-    const cardHolderName = document.getElementById('cardHolderName').value
-    const result = await stripe.confirmCardPayment(data.clientSecret, {
+    const cardHolderName = document.getElementById("cardHolderName").value;
+    const result = await stripe.confirmCardPayment(data.data.payment_result.clientSecret, {
       payment_method: {
         card: card,
         billing_details: {

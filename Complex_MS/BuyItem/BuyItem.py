@@ -16,32 +16,35 @@ CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5001/products"
 payment_URL = environ.get('payment_URL') or "http://localhost:5002/create_payment_intent"
-cart_URL = environ.get('cart_URL') or "http://localhost:5003/add_to_cart"
+cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003/add_to_cart"
 
 
 @app.route("/buy_item", methods=['POST'])
 def buy_item():
     if request.is_json:
-        data = request.json
+        shoppingCart = request.json
         try:
-            product_id = data['product_id']
-
+            # product_ids = data['productID']
+            
             # frontend_base_url = data.get('frontend_base_url', 'http://localhost:3000')
             # Fetch the product information from the Listing Micro Service
             # Replace with the actual URL of your Listing Micro Service
-            listing_ms_url = f"{listing_URL}/{product_id}"
-            response = requests.get(listing_ms_url)
+            print(shoppingCart)
+            for eachItem in shoppingCart:
+                product_ID = eachItem['productID']
+                productName = eachItem['itemName']
+                listing_ms_url = f"{listing_URL}/{product_ID}/quantity"
+                response = requests.get(listing_ms_url)
+                # product = response.json()
+                
+                if response.status_code != 200:
+                    return jsonify({
+                        'code': 404,
+                        'error': f"Checkout error: {productName} not found"
+                    }), 404
 
-            products = response.json()
-            print(products)
-            if response.status_code != 200:
-                return jsonify({
-                    'code': 404,
-                    'error': 'Product not found'
-                }), 404
-
-            result = processOrder(products)
-
+            result = processOrder(shoppingCart)
+            print(result)
             return jsonify(result), result["code"]
 
         except Exception as e:
@@ -67,6 +70,8 @@ def buy_item():
 def processOrder(products):
     payment_result = invoke_http(payment_URL, method='POST', json=products)
 
+    # Add AMQP HERE
+
     # Return created Order
     return {
         "code": 201,
@@ -75,13 +80,16 @@ def processOrder(products):
         }
     }
 
-@app.route('/add_to_cart', methods=['GET'])
+@app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
 
-    # check qty from listingMS
     data = request.get_json()
-    productID = data["productID"]
-    input_quantity = data["quantity"]
+    print(data)
+    userId = data["userId"]
+    productID = data["productId"]
+    qtyInput = int(data["qtyInput"])
+    print("printing product")
+    print(productID)
 
     # use axios to make a post request to listingMS
     # listingMS will return the product with the productID
@@ -89,20 +97,35 @@ def add_to_cart():
 
     # check if the quantity is available
     # if not, return error message
-
-    if product["quantity"] < input_quantity:
+    if (product["quantity"] < qtyInput):
         return jsonify(
             {
-                'code': 404,
-                'error': 'Not enough quantity'
+                'success': False,
+                'error': 'Enter valid quantity!'
             }
         ), 404
 
     # if yes, invoke cartMS to add to cart
     # cartMS will return the cart
+    data = {
+        "userId": userId,
+        "productID": productID,
+        "qtyInput": qtyInput,
+        "product": product
+    }
     cart = invoke_http(cart_URL, method='POST', json=data)
 
+    if (cart["success"]):
+        return jsonify(
+            {
+                'success': True
+            }
+        ), 200
     
+    return jsonify({
+        'success': False,
+        "error": "Item already in cart"
+    })
 
 
 
