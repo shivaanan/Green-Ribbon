@@ -27,7 +27,13 @@ const homePage = Vue.createApp({
         console.log("-------end user  mounted------");
     },
 
-    computed: {},
+    computed: {
+        // make a computed property for the cart count
+        cartCount() {
+
+            
+        },
+    },
 
     methods: {
 
@@ -93,6 +99,7 @@ const homePage = Vue.createApp({
                         <i class="fa fa-remove" style="font-size:48px;color:red"></i>
                         <h3>${error}</h3>
                     </div>`
+
                 }
             })
             .catch(error => {
