@@ -1,7 +1,7 @@
-import pyrebase
+import firebase
 #from firebase_admin import db   
 from flask import Flask, request, jsonify, session, redirect
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from os import environ 
 
@@ -20,12 +20,12 @@ firebaseConfig = {
     "measurementId": "G-V2EQLKY1JV"
 }
 
-firebase = pyrebase.initialize_app(firebaseConfig)
-auth = firebase.auth()
+firebase_app = firebase.initialize_app(firebaseConfig)
+auth = firebase_app.auth()
 
 app.secret_key = "ESDProject"
 
-db = firebase.database()
+db = firebase_app.database()
 
 # email = "lintao@gmail.com"
 # password = "123456"
