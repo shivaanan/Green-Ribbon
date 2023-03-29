@@ -15,7 +15,13 @@
 
     <script src="https://js.stripe.com/v3/"></script>
 
-
+    <!-- ensures that user is logged in -->
+    <!-- enable this when everything is done -->
+    <!-- <script>
+        if (sessionStorage.getItem("userId") == null) {
+            window.location.href = "login.html";
+        }
+    </script> -->
 </head>
 
 <body id="homePage">
@@ -72,8 +78,8 @@
 
                             <!-- badge -->
                             <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger">
-                                2
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger" >
+                                {{cartCount}}
                             </span>
                         </svg>
                     </a>
@@ -84,7 +90,6 @@
 
     </div>
     <!-- SEARCH BAR -END -->
-
 
     <!-- Product Cards -->
     <div id="products" class="mt-0 cards_landscape_wrap-2">
