@@ -94,33 +94,32 @@ def get_product_quantity(productID):
 # Add product to db
 @app.route('/add_product', methods=['POST'])
 def add_product():
-    productID = get_next_sequence_value("productid")
+    try:
+        productID = get_next_sequence_value("productid")
 
-    data = request.get_json()
-    itemName = data["itemName"]
-    quantity = data['quantity']
-    price = data['price']
-    dateOfPost = data['dateOfPost']
-    availability = data['availability']
-    # location = data['location']
-    imgURL = data["imgURL"]
+        data = request.get_json()
+        itemName = data["itemName"]
+        quantity = data['quantity']
+        price = data['price']
+        dateOfPost = data['dateOfPost']
+        availability = data['availability']
+        # location = data['location']
+        imgURL = data["imgURL"]
 
-    # ADD ERROR HANDLING
+        # ADD ERROR HANDLING
 
-    collection.insert_one
-    (
-        {
-            'productID': productID,
-            'itemName': itemName,
-            'quantity': quantity,
-            'price': price,
-            'dateOfPost': dateOfPost,
-            'availability': availability,
-            # 'location': location,
-            "imgURL": imgURL
-        }
-    )
-    return getAllProducts()
+        collection.insert_one({
+                'productID': productID,
+                'itemName': itemName,
+                'quantity': quantity,
+                'price': price,
+                'dateOfPost': dateOfPost,
+                'availability': availability,
+                # 'location': location,
+                "imgURL": imgURL})
+        return getAllProducts()
+    except Exception as e:
+        return jsonify({'code': 404, 'error': str(e)}), 404
 
 
 def get_next_sequence_value(sequence_name):
@@ -129,34 +128,35 @@ def get_next_sequence_value(sequence_name):
         {"_id": sequence_name}, {"$inc": {"seq": 1}})
     return sequence_value['seq']
 
+# Helper function to retrieve originalQuantity
+def getProductByID_helperFunction(productID):
+    product = collection.find_one({'productID': productID})
+    # if product:
+    #     product_dict = {
+    #         'productID': product["productID"],
+    #         'itemName': product['itemName'],
+    #         'quantity': product['quantity'],
+    #         'price': product['price'],
+    #         'dateOfPost': product['dateOfPost'],
+    #         'availability': product['availability'],
+    #         # 'location': product['location'],
+    #         'imgURL': product["imgURL"]
+        # }
+    return product
+
 
 @app.route('/edit/', methods=['PUT'])
 def edit_product():
-    data = request.get_json()
-    productID = data["productId"]
-    # product = collection.find({_id: product_id})
-    itemName = data["itemName"]
-    price = data['price']
-    dateOfPost = data['dateOfPost']
-    availability = data['availability']
-    imgURL = data["imgURL"]
-    # location = data['location']
-    soldQuantity = data['soldQuantity']
+    try:
+        data = request.get_json()
+        productID = data["productID"]
+        soldQuantity = data['soldQuantity']
 
-    collection.update_one
-    (
-        {
-            'productID': productID,
-            'itemName': itemName,
-            "$inc": {"quantity": -soldQuantity},
-            'price': price,
-            'dateOfPost': dateOfPost,
-            'availability': availability,
-            # "location": location,
-            "imgURL": imgURL
-        }
-    )
-    return getAllProducts()
+        collection.update_one({"productID": productID}, {"$inc": {"quantity": -soldQuantity}})
+
+        return getAllProducts()
+    except Exception as e:
+        return jsonify({'code': 404, 'error': str(e)}), 404
 
 # removing sold OR no quantity products
 
