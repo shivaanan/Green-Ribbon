@@ -17,7 +17,7 @@
 
     <script src="https://js.stripe.com/v3/"></script>
 
-    <script src="js/cart.js"></script>
+    <script type="module" src="js/cart.js"></script>
     
     <script src="js/checkout.js"></script>
 
@@ -30,7 +30,7 @@
     </script> -->
 </head>
 
-<body id="homePage">
+<body id="cartPage">
     <!-- de2f52 -->
     <!-- nav bar -->
     <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #368373">
@@ -64,36 +64,36 @@
     </div>
     <div class="container">
 
-
+        
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col" class="col-2">Image</th>
-                    <th scope="col" class="col-5">Product</th>
-                    <th scope="col" class="col-1">Price</th>
+                    <th scope="col" class="col-4">Product</th>
+                    <th scope="col" class="col-2">Price per Unit</th>
                     <th scope="col" class="col-1">Quantity</th>
                     <th scope="col" class="col-2">Remove</th>
                     <th scope="col" class="col-1">Total</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr v-for="product in cartItems">
                     <!-- <th scope="row">1</th> -->
-                    <td><img src="https://s.cdpn.io/3/dingo-dog-bones.jpg" style="width: 100px;"></td>
+                
+                    <td><img :src="product.imgURL" style="width: 100px;"></td>
                     <td>
-                        <p>Dog Food</p>
-                        <p>The best dog bones of all time. Holy crap. Your dog will be begging for these things! I got
-                            curious once and ate one myself. I'm a fan.</p>
+                        <h6>{{ product.itemName }}</h6>
+                        <p>Add description - To be worked on</p>
                     </td>
-                    <td>$12.99</td>
+                    <td>${{ product.price }}</td>
                     <td>
-                        <input type="number" style="width: 40px;" value="2" min="1">
+                        {{ product.inputQuantity }}
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm"> Remove </button>
                     </td>
                     <td>
-                        25.98
+                        ${{ product.price * product.inputQuantity }}
                     </td>
                 </tr>
 

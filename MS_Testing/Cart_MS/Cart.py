@@ -43,9 +43,10 @@ def getProductByID(productID):
 # Get All Cart Items of particular user
 @app.route('/get_cart', methods=['GET'])
 def getAllProducts():
-    data = request.get_json();
-    userId = data["userId"]
 
+    data = request.get_json()
+    userId = data["userId"]
+    
     try:
         cart_items = collection.find({"userId": userId})
         cart_list = []
