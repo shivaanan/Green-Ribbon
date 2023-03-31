@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from flask_cors import CORS
+from os import environ
 
 app = Flask(__name__)
 
@@ -156,4 +157,4 @@ def delete_product(product_id):
 
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
