@@ -11,7 +11,16 @@ document.addEventListener("DOMContentLoaded", () => {
   paymentForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const response = await fetch("http://127.0.0.1:5100/buy_item", {
+    const getCartResponse = await fetch('http://127.0.0.1:5100/get_cart/' + userId,{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    console.log("FUCK")
+    console.log(getCartResponse)
+
+    const paymentResponse = await fetch("http://127.0.0.1:5100/buy_item", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,13 +53,13 @@ document.addEventListener("DOMContentLoaded", () => {
       ),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
+    if (!paymentResponse.ok) {
+      const errorData = await paymentResponse.json();
       console.error("Backend error:", errorData.error);
       return;
     }
 
-    const data = await response.json();
+    const data = await paymentResponse.json();
     // console.log(data)
     // console.log(data.clientSecret)
     
