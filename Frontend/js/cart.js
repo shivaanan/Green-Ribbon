@@ -29,3 +29,47 @@
 //     }
 // }
 // OLD PAYMENT SYSTEM - END
+
+
+// console.log("in home.js");
+// console.log(sessionStorage.getItem("userId"));
+
+const cartPage = Vue.createApp({
+    data() {
+        return {
+            cartItems: [],
+            userId: sessionStorage.getItem("userId"),
+        };
+    }, // data
+
+    mounted() {
+        console.log("-------In user mounted------");
+        let userId = this.userId;
+        // retrieve products from the backend
+        // need change -> extract from buyItem Complex microservice
+        axios
+            .get('http://127.0.0.1:5100/get_cart/' + userId)
+            .then((response) => {
+                console.log(response.data);
+                this.cartItems = response.data;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+
+        console.log("-------end user  mounted------");
+    },
+
+    computed: {
+
+        
+    },
+
+    methods: {
+
+
+    },
+});
+
+const vm = cartPage.mount("#cartPage");
