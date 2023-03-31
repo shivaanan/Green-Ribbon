@@ -24,7 +24,7 @@ public class Location {
 }
 
 @RestController
-public class LocationController {
+class LocationController {
 
     @RequestMapping("/location")
     public String getLocation() {
