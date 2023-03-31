@@ -33,13 +33,14 @@ def getAllProducts():
         for product in products:
             product_dict = {
                 'code': 200,
+                'sellerID': product['sellerID'],
                 'productID': product["productID"],
                 'itemName': product['itemName'],
                 'quantity': product['quantity'],
                 'price': product['price'],
                 'dateOfPost': product['dateOfPost'],
                 'availability': product['availability'],
-                # 'location': product['location'],
+                'address': product['address'],
                 'imgURL': product["imgURL"]
             }
             product_list.append(product_dict)
@@ -53,13 +54,14 @@ def getProductByID(productID):
     product = collection.find_one({'productID': productID})
     if product:
         product_dict = {
+            'sellerID': product['sellerID'],
             'productID': product["productID"],
             'itemName': product['itemName'],
             'quantity': product['quantity'],
             'price': product['price'],
             'dateOfPost': product['dateOfPost'],
             'availability': product['availability'],
-            # 'location': product['location'],
+            'address': product['address'],
             'imgURL': product["imgURL"]
         }
         return jsonify(product_dict)
@@ -98,24 +100,26 @@ def add_product():
         productID = get_next_sequence_value("productid")
 
         data = request.get_json()
+        sellerID = data["sellerID"]
         itemName = data["itemName"]
         quantity = data['quantity']
         price = data['price']
         dateOfPost = data['dateOfPost']
         availability = data['availability']
-        # location = data['location']
+        address = data['address']
         imgURL = data["imgURL"]
 
         # ADD ERROR HANDLING
 
         collection.insert_one({
                 'productID': productID,
+                'sellerID': sellerID,
                 'itemName': itemName,
                 'quantity': quantity,
                 'price': price,
                 'dateOfPost': dateOfPost,
                 'availability': availability,
-                # 'location': location,
+                'address': address,
                 "imgURL": imgURL})
         return getAllProducts()
     except Exception as e:
@@ -127,22 +131,6 @@ def get_next_sequence_value(sequence_name):
     sequence_value = counter.find_one_and_update(
         {"_id": sequence_name}, {"$inc": {"seq": 1}})
     return sequence_value['seq']
-
-# Helper function to retrieve originalQuantity
-def getProductByID_helperFunction(productID):
-    product = collection.find_one({'productID': productID})
-    # if product:
-    #     product_dict = {
-    #         'productID': product["productID"],
-    #         'itemName': product['itemName'],
-    #         'quantity': product['quantity'],
-    #         'price': product['price'],
-    #         'dateOfPost': product['dateOfPost'],
-    #         'availability': product['availability'],
-    #         # 'location': product['location'],
-    #         'imgURL': product["imgURL"]
-        # }
-    return product
 
 
 @app.route('/edit/', methods=['PUT'])
