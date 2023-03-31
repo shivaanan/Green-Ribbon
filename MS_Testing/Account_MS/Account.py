@@ -80,4 +80,4 @@ def addUserNameAndEmail(userId, name, email):
     db.child("users").child(userId).set(data)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5200, debug=True)
