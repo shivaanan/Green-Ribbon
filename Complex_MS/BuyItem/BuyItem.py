@@ -44,6 +44,8 @@ def buy_item():
                     }), 404
 
             result = processOrder(shoppingCart)
+
+            
             print(result)
             return jsonify(result), result["code"]
 
@@ -129,22 +131,26 @@ def add_to_cart():
     })
 
 
-@app.route('/get_cart', methods=['GET'])
-def get_cart():
+@app.route('/get_cart/<userId>', methods=['GET'])
+def get_cart(userId):
     
-    data = request.get_json();
-
+    # data = request.get_json()
+    data = {
+        "userId": userId
+    }
     # invoke cartMS to get the cart
     cart = invoke_http(cart_URL + "/get_cart" , method='GET', json=data)
 
-    return jsonify(cart)
+    cart_list = cart["cart_list"]
+
+    return jsonify(cart_list)
 
 @app.route("/get_cart_count/<userId>", methods=['GET'])
 def get_cart_count(userId):
     # data = request.get_json();
     # userId = data["userId"]
 
-    cart = get_cart_helper_func(userId)
+    cart = get_cart_helper_func(userId) 
     count = len(cart["cart_list"])
 
     print(count)
