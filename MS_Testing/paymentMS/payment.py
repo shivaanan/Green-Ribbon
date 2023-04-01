@@ -13,12 +13,19 @@ stripe.api_key = 'sk_test_51MltK7EBOpB8WMsEGsB51xLyAgs77LcOmFOr8mmzF2cPB0Fb0TeKX
 def create_payment_intent():
     if request.is_json:
         data = request.json
-        print(data)
+        # print("TEST data (start)")
+        # print(data)
+        # print("TEST data (end)")
         total_amount = 0
-        checkout_description = ", ".join(
-            [f"{item['itemName']} x{item['quantity']}" for item in data])
+
+        # ======== CHECKOUT DESCRIPTION (START) ========
+        # checkout_description = ", ".join(
+        #     [f"{item['itemName']} x{item['inputQuantity']}" for item in data])
+        # ======== CHECKOUT DESCRIPTION (END) ========
+
+        
         for eachItem in data:
-            item_quantity = eachItem['quantity']
+            item_quantity = eachItem['inputQuantity']
         # if product_id not in PRODUCTS:
         #     return jsonify({'error': 'Invalid product ID'}), 400
 
@@ -34,7 +41,7 @@ def create_payment_intent():
             payment_intent = stripe.PaymentIntent.create(
                 amount=total_amount,
                 currency='usd',
-                description=checkout_description,
+                description=f"{data}",
             )
             return jsonify({
                 'code': 200,

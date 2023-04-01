@@ -14,17 +14,6 @@ client = MongoClient(
 db = client['listingsMS']
 collection = db['listings1']
 
-# Help functions -- Start
-
-
-def get_quantity_by_product_id(product_id):
-    product = collection.find_one({'productID': product_id})
-    if product:
-        return product['quantity']
-    else:
-        return None
-# Help functions -- End
-
 # Get All Products from listing
 @app.route('/products', methods=['GET'])
 def getAllProducts():
@@ -74,25 +63,35 @@ def getProductByID(productID):
             }
         ), 404
 
+# ========================== EXTRA ==========================
+# @app.route('/products/<int:productID>/quantity', methods=['GET'])
+# def get_product_quantity(productID):
+#     quantity = get_quantity_by_product_id(productID)
+#     if quantity is not None:
+#         return jsonify(
+#             {
+#                 'code': 200,
+#                 'productID': productID,
+#                 'quantity': quantity
+#             }
+#         ), 200
+#     else:
+#         return jsonify(
+#             {
+#                 'code': 404,
+#                 'error': 'Product not found'
+#             }
+#         ), 404
+# Helper function for the route "/products/<int:productID>/quantity" -- Start
+# def get_quantity_by_product_id(product_id):
+#     product = collection.find_one({'productID': product_id})
+#     if product:
+#         return product['quantity']
+#     else:
+#         return None
+# Helper function for the route "/products/<int:productID>/quantity" -- End
+# ========================== EXTRA ==========================
 
-@app.route('/products/<int:productID>/quantity', methods=['GET'])
-def get_product_quantity(productID):
-    quantity = get_quantity_by_product_id(productID)
-    if quantity is not None:
-        return jsonify(
-            {
-                'code': 200,
-                'productID': productID,
-                'quantity': quantity
-            }
-        ), 200
-    else:
-        return jsonify(
-            {
-                'code': 404,
-                'error': 'Product not found'
-            }
-        ), 404
 
 # Add product to db
 @app.route('/add_product', methods=['POST'])
