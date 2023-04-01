@@ -50,7 +50,9 @@ const cartPage = Vue.createApp({
         axios
             .get('http://127.0.0.1:5100/get_cart/' + userId)
             .then((response) => {
+                console.log("In cart.js -- Start")
                 console.log(response.data);
+                console.log("In cart.js -- End")
                 this.cartItems = response.data;
             })
             .catch((error) => {
