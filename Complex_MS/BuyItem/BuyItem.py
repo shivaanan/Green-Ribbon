@@ -8,6 +8,7 @@ from os import environ
 import requests
 from invokes import invoke_http
 
+import amqp_setup
 import pika
 import json
 
@@ -15,9 +16,9 @@ app = Flask(__name__)
 CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5001/products"
-payment_URL = environ.get(
-    'payment_URL') or "http://localhost:5002/create_payment_intent"
+payment_URL = environ.get('payment_URL') or "http://localhost:5002/create_payment_intent"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
+rabbitMQhostname = environ.get('rabbit_host') or "localhost"
 
 
 @app.route("/buy_item", methods=['POST'])
@@ -84,11 +85,35 @@ def buy_item():
         "message": "Invalid JSON input: " + str(request.get_data())
     }), 400
 
-# ======================== HELPER FUNCTION ========================
+# ======================== HELPER FUNCTION (START) ========================
 def processOrder(products):
     payment_result = invoke_http(payment_URL, method='POST', json=products)
 
-    # Add AMQP HERE
+    # ========================= AMQP (START) =========================
+    code = payment_result["code"]
+    message = json.dumps(payment_result)
+    print("TEST code (START)")
+    print(code)
+    print("TEST code (END)")
+    amqp_setup.check_setup()
+
+    if code not in range(200, 300):
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+     
+        print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
+            code), payment_result)
+
+        return {
+            "code": 500,
+            "data": {"payment_result": payment_result},
+            "message": "Order creation failure sent for error handling."
+        }
+
+    else:    
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", 
+            body=message)
+    # ========================= AMQP (END) =========================
 
     # Return created Order
     return {
@@ -98,7 +123,7 @@ def processOrder(products):
             "payment_result": payment_result
         }
     }
-# ======================== HELPER FUNCTION ========================
+# ======================== HELPER FUNCTION (END) ========================
 
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
