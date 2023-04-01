@@ -52,7 +52,7 @@ def login_user():
 
 @app.route("/createuser", methods=["POST"])
 def create_user():
-    data = request.get_json()
+    data = request.get_json()   
     name = data["newName"]
     email = data["newEmail"]
     password = data["newPassword"]

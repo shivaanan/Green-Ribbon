@@ -24,12 +24,12 @@ from os import environ
 app = Flask(__name__)
 CORS(app, resources={r"*": {"origins": "*"}})
 
-accountMSURL = environ.get('account_URL') or 'http://localhost:5002'   #add port number
+accountMSURL = environ.get('account_URL') or 'http://localhost:5200'
 locationMSURL = environ.get('location_URL') or 'http://localhost:8080'
 listingMSURL = environ.get('listing_URL') or 'http://localhost:5001'
 
 # 1. Check if user exist in firebase 
-def exists(email, name): 
+def ifexists(email): 
     getallURL = accountMSURL + "/getallusers"
     result = invoke_http(getallURL, method='GET')
     users = result['data']
@@ -38,18 +38,62 @@ def exists(email, name):
         return error 
     if email in users: 
         error.append('user')
-    for key in users : 
-        try: 
-            if users[key]['name'] == name:
-                error.append('name')
-
-        except: 
-            pass 
     return error 
 
 # 2. Add new user to database
-
-
+@app.route("/createacc", methods=['POST'])
+def create_account(): 
+    data = request.get_json()
+    print(data)
+    data['newEmail'] = data['newEmail'].lower() 
+    email = data['newEmail']
+    try : 
+        ifexists(email)
+        errors = ifexists(email)
+        message = "Email already exists"
+        if len(errors) > 0: 
+            #amqpmsg = 'Tried to create account with Email: ' + email + "but ran into errors: " + message
+            #channel.basic_publish(exchange=exchangename, routing_key="", body=amqpmsg, properties=pika.BasicProperties(delivery_mode=2)) 
+            return jsonify(
+                {
+                    "code": 400, 
+                    "data": {
+                        "email": email 
+                    }, 
+                    "message": message 
+                }
+            ), 400 
+        accountURL = accountMSURL + "/createuser"
+        result = invoke_http(accountURL, method='POST', json=data)
+        status = result['success']
+        if status == False : 
+            return jsonify(
+                {
+                    "code": 400, 
+                    "data": {
+                        "result": result 
+                    }, 
+                    "message": message 
+                }
+            ), 400 
+        else : 
+            message = "Account created successfully"
+            #channel.basic_publish(exchange=exchangename, routing_key="", body=message)
+            return jsonify(
+                {
+                    "code": 201, 
+                    "data": result,
+                    "message": "Account created successfully"
+                }
+            ), 201 
+    except : 
+        return jsonify(
+            {
+                "code": 400,
+                "data": email,
+                "message": "Error creating account."
+            }
+        ), 400
 
 # 3. Verify user login 
 
@@ -58,7 +102,6 @@ def verifylogin():
     #get login post request 
     data = request.get_json()
     email = data['email'].lower() 
-    password = data['password']
     if email == "":
         return jsonify (
             {
@@ -68,10 +111,10 @@ def verifylogin():
             }
     ), 400 
     try: 
-        getallURL = accountMSURL + "/getbyuseremail/" + email  
-        result = invoke_http(getallURL, method='GET')
-        code = result['code']
-        if code == 400: 
+        accountURL = accountMSURL + "/loginuser" 
+        result = invoke_http(accountURL, method='POST', json=data)
+        status = result['success']
+        if status == False: 
             return jsonify( 
                 {
                     "code": 400, 
@@ -79,9 +122,8 @@ def verifylogin():
                     "message": "Incorrect login details"
                 }
         ), 400 
-        keys = list(result['data'].keys())
-        user = result['data'][keys[0]]
-        if user['email'] == email and user['password'] == password:
+        else : 
+            user = result['userId']
             return jsonify(
                     {
                         "code": 201,
@@ -89,17 +131,7 @@ def verifylogin():
                         "message": "Login successful"
                     }
                 ), 201
-        else:
-            return jsonify(
-                {
-                    "code": 400,
-                    "data": {
-                            "name": user['name'],
-                            "userid": user['email']
-                        },
-                    "message": "Incorrect login details or password."
-                }
-            ), 400
+    
     except:
         return jsonify(
             {
@@ -114,8 +146,8 @@ def verifylogin():
 def get_distance():
     try:
         destaddresses = {}
-        getallURL = listingMSURL + "/products"   
-        result = invoke_http(getallURL, method='GET')
+        listingURL = listingMSURL + "/products"   
+        result = invoke_http(listingURL, method='GET')
         for listing in result : 
             destaddresses[listing["productID"]] = listing["address"]
         print(destaddresses)
