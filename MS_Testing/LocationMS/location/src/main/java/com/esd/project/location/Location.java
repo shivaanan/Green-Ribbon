@@ -29,7 +29,6 @@ class LocationController {
     @RequestMapping("/location")
     public String getLocation() {
         try {
-            // Get the user's IP address
             URL ipApiUrl = new URL("https://api.ipify.org");
             HttpURLConnection ipApiCon = (HttpURLConnection) ipApiUrl.openConnection();
             BufferedReader ipApiIn = new BufferedReader(new InputStreamReader(ipApiCon.getInputStream()));
@@ -50,11 +49,10 @@ class LocationController {
             }
             ipInfoIn.close();
 
-            // Parse the JSON response to get the latitude and longitude values
+        
             JSONObject ipInfoJsonObj = new JSONObject(ipInfoResponse.toString());
             String latLng = ipInfoJsonObj.getString("loc");
 
-            // Use a geocoding API to get the user's location
             String url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latLng + "&key=AIzaSyCItPqAhCSJVc13yxvnZoHb7SyTajxJWJ8"; // Replace YOUR_API_KEY_HERE with your actual API key
 
             URL obj = new URL(url);
@@ -69,26 +67,30 @@ class LocationController {
             }
             in.close();
 
-            // Parse the JSON response
+        
             JSONObject jsonObj = new JSONObject(response.toString());
             if (jsonObj.has("results")) {
                 JSONArray results = jsonObj.getJSONArray("results");
                 JSONObject location = results.getJSONObject(0).getJSONObject("geometry").getJSONObject("location");
 
-                // Get the latitude and longitude values
                 double lat = location.getDouble("lat");
                 double lng = location.getDouble("lng");
-
-                // Return the latitude and longitude values as a string
-                return "Latitude: " + lat + ", Longitude: " + lng;
+                
+                JSONObject latLngObj = new JSONObject();
+                latLngObj.put("lat", lat);
+                latLngObj.put("lng", lng);
+            
+                return latLngObj.toString();
             } else {
-                return "No results found.";
+                return new JSONObject().put("error", "No results found.").toString();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error occurred: " + e.getMessage();
+            JSONObject errorObj = new JSONObject();
+            errorObj.put("error", "Error occurred: " + e.getMessage());
+            return errorObj.toString();
         }
     }
 
-    
+   
 }

@@ -79,5 +79,76 @@ def addUserNameAndEmail(userId, name, email):
 
     db.child("users").child(userId).set(data)
 
+
+@app.route("/getallusers", methods=["GET"])
+def getalluser(): 
+    try: 
+        data = db.child("users").get()
+        data = data.val()
+        num = len(data)
+        num = str(num)
+        if data == []:
+            return jsonify(
+                {
+                    "code": 400, 
+                    "data": {
+                        "data": data
+                    }, 
+                    "message": 'No users in database'
+                }
+            ), 400 
+    except: 
+        return jsonify(
+            {
+                "code": 400, 
+                "data": {
+                    "data": data 
+                }, 
+                "message": "Error occured when trying to get all users"
+            }
+        ), 400 
+    return jsonify( 
+        {
+            "code": 200,
+            "data": data,
+            "message": "Successfully returned " + num + " users"
+        }
+    ), 200 
+
+
+@app.route("/getbyuseremail/<string:email>", methods=['GET'])
+def getbyuseremail(email):
+    try: 
+        email = email.lower()
+        userobj = db.child("users").order_by_child("email").equal_to(email).get()
+        userobj = userobj.val() 
+        if userobj == []: 
+            return jsonify(
+                {
+                    "code": 400, 
+                    "data": {
+                        "email" : email  
+                    },
+                    "message": "User not found"
+                }
+            ), 400 
+    except: 
+        return jsonify(
+            {
+                "code": 400,
+                "data": { 
+                    "userid" : email 
+                }, 
+                "message": "Error occured when trying to get user"
+            }
+        ), 400
+    return jsonify(
+        {
+            "code": 200,
+            "data": userobj,
+        }
+    ), 200
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5200, debug=True)
