@@ -96,10 +96,8 @@ def create_account():
         ), 400
 
 # 3. Verify user login 
-
 @app.route("/verifylogin", methods=['POST']) 
-def verifylogin(): 
-    #get login post request 
+def verifylogin():
     data = request.get_json()
     email = data['email'].lower() 
     if email == "":
@@ -180,7 +178,7 @@ def get_distance():
                 distance = data['rows'][0]['elements'][0]['distance']['value'] / 1000  # Convert from meters to kilometers
                 distances[destaddress] = round(distance, 1) 
             else:
-                distances.append(-1)  # Set distance to -1 if Geocoding API returns an error
+                distances.append(-1) 
 
         return jsonify(distances)
     except :

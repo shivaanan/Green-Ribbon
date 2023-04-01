@@ -139,7 +139,7 @@ def getbyuseremail(email):
                 "data": { 
                     "userid" : email 
                 }, 
-                "message": "Error occured when trying to get user"
+                "message": "Error occured while trying to get user"
             }
         ), 400
     return jsonify(
