@@ -163,4 +163,4 @@ def get_distance():
 
 if __name__ == '__main__':
     CORS(app)
-    app.run(host='0.0.0.0', port=5200, debug=True)
+    app.run(host='0.0.0.0', port=5300, debug=True)
