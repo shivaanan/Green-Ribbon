@@ -50,7 +50,7 @@ class LocationController {
             }
             ipInfoIn.close();
 
-            // Parse the JSON response to get the latitude and longitude values
+        
             JSONObject ipInfoJsonObj = new JSONObject(ipInfoResponse.toString());
             String latLng = ipInfoJsonObj.getString("loc");
 
@@ -69,7 +69,7 @@ class LocationController {
             }
             in.close();
 
-            // Parse the JSON response
+        
             JSONObject jsonObj = new JSONObject(response.toString());
             if (jsonObj.has("results")) {
                 JSONArray results = jsonObj.getJSONArray("results");
@@ -78,17 +78,23 @@ class LocationController {
                 // Get the latitude and longitude values
                 double lat = location.getDouble("lat");
                 double lng = location.getDouble("lng");
-
-                // Return the latitude and longitude values as a string
-                return "Latitude: " + lat + ", Longitude: " + lng;
+                
+                // Return the latitude and longitude values as a object
+                JSONObject latLngObj = new JSONObject();
+                latLngObj.put("lat", lat);
+                latLngObj.put("lng", lng);
+            
+                return latLngObj.toString();
             } else {
-                return "No results found.";
+                return new JSONObject().put("error", "No results found.").toString();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error occurred: " + e.getMessage();
+            JSONObject errorObj = new JSONObject();
+            errorObj.put("error", "Error occurred: " + e.getMessage());
+            return errorObj.toString();
         }
     }
 
-    
+   
 }
