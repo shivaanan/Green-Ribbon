@@ -9,63 +9,87 @@ CORS(app)
 stripe.api_key = 'sk_test_51MltK7EBOpB8WMsEGsB51xLyAgs77LcOmFOr8mmzF2cPB0Fb0TeKXRRcv24nI6GId4wSEWovYyvWfx8iL2SmKpP800dNlhECw0'
 
 
-@app.route('/create_payment_intent', methods=['POST'])
-def create_payment_intent():
-    if request.is_json:
-        data = request.json
-        # print("TEST data (start)")
-        # print(data)
-        # print("TEST data (end)")
-        total_amount = 0
+@app.route('/payment', methods=['POST'])
+def payment():
+    data = request.json
+    shoppingCart = data['dataObj']
+    card_details = data['cardDetails']
+    cardHolderName = data['cardName']
+    # print("print card (START)")
+    # print(card)
+    # print("print card (END)")
+    # print("TEST shoppingCart (start)")
+    # print(shoppingCart)
+    # print("TEST shoppingCart (end)")
+    total_amount = 0
+    # ======== CHECKOUT DESCRIPTION (START) ========
+    # checkout_description = ", ".join(
+    #     [f"{item['itemName']} x{item['inputQuantity']}" for item in shoppingCart])
+    # ======== CHECKOUT DESCRIPTION (END) ========
+    print("TEST card_details (START)")
+    print(card_details)
+    print("TEST card_details (END)")
 
-        # ======== CHECKOUT DESCRIPTION (START) ========
-        # checkout_description = ", ".join(
-        #     [f"{item['itemName']} x{item['inputQuantity']}" for item in data])
-        # ======== CHECKOUT DESCRIPTION (END) ========
+    for eachItem in shoppingCart:
+        item_quantity = eachItem['inputQuantity']
+    # if product_id not in PRODUCTS:
+    #     return jsonify({'error': 'Invalid product ID'}), 400
 
+    # product = PRODUCTS[product_id]
+
+    # Calculate the total amount
+        # Stripe expects the amount in cents
+        amount = int(eachItem['price']) * item_quantity * 100
+        total_amount += amount
+
+    try:
+        # Create a new PaymentIntent
+        payment_intent = stripe.PaymentIntent.create(
+            amount=total_amount,
+            currency='usd',
+            description=f"{shoppingCart}",
+        )
+        # print("TEST paymentIntent (START)")
+        # print(payment_intent)
+        # print("TEST paymentIntent (END)")
+
+        # card_details = {
+        #     "number": "4242 4242 4242 4242",
+        #     "exp_month": "04",
+        #     "exp_year": "24",
+        #     "cvc": "242"
+        # }
         
-        for eachItem in data:
-            item_quantity = eachItem['inputQuantity']
-        # if product_id not in PRODUCTS:
-        #     return jsonify({'error': 'Invalid product ID'}), 400
-
-        # product = PRODUCTS[product_id]
-
-        # Calculate the total amount
-            # Stripe expects the amount in cents
-            amount = int(eachItem['price']) * item_quantity * 100
-            total_amount += amount
-
-        try:
-            # Create a new PaymentIntent
-            payment_intent = stripe.PaymentIntent.create(
-                amount=total_amount,
-                currency='usd',
-                description=f"{data}",
+        token_response = stripe.Token.create(card=card_details)
+        
+        paymentResult = stripe.PaymentIntent.confirm(
+                payment_intent['id'],
+                payment_method_data={
+                    "type": "card",
+                    "card": {
+                        "token": token_response,
+                    },
+                    "billing_details": {
+                        "name": cardHolderName,  # Replace with a form input for the user's name
+                    },
+                },
             )
+        # print("TEST result (START)")
+        # print(paymentResult)
+        # print("TEST result (END)")
+        return jsonify({
+            'code': 201,
+            'message':'Payment Successful! Thank you for shopping with us :)',
+            'description': paymentResult['description']
+        }), 201
+        
+
+    except:
             return jsonify({
-                'code': 200,
-                'clientSecret': payment_intent['client_secret'],
-                'description': payment_intent['description']
-            })
-
-        except Exception as e:
-            print("Error:", e)
-            print(traceback.format_exc())
-            return jsonify(
-                {
-                    'code': 400, 
-                    'error': str(e)
-                }
-            ), 400
-
-    else:
-        return jsonify(
-            {
-            'code': 400, 
-            'error': 'Invalid JSON request'
-            }
-            ), 400
+            "code": 400,
+            "message": "Payment Unsuccessful! Invalid card details!"
+        }), 400
+        
 
 
 if __name__ == '__main__':
