@@ -14,7 +14,7 @@ CORS(app)
 
 # URLS used
 payment_URL = environ.get('payment_URL') or "http://localhost:5002/payment"
-order_URL = environ.get('orders_URL') or "http://127.0.0.1:5004"
+orders_URL = environ.get('orders_URL') or "http://localhost:5004"
 
 #### Endpoints Start ####
 
@@ -25,11 +25,11 @@ def return_item():
         data = request.get_json()
         orderID = data['orderID']
         data['status'] = 'Processing Refund'
-
-        url = f"http://orders_URL/orders/{orderID}"
+        url = f"{orders_URL}/orders/{orderID}"
         return_item_result = requests.put(url, json=data)
-        code = return_item_result["code"]
-        message = json.dumps(return_item_result)
+        checkReturn = return_item_result.json()
+        code = checkReturn["code"]
+        message = checkReturn["message"]
 
         if code not in range(200, 300):
             # Inform the error microservice
@@ -79,38 +79,62 @@ def refund_decision():
         cardHolderName = data['cardName']
 
         # Get order data from the external API endpoint
-        url = f"http://orders_URL/orders/{orderID}"
-        order_result = requests.get(url).json()
+        url = f"{orders_URL}/orders/{orderID}"
+        order_result = requests.get(url)
+        order_result = order_result.json()
+        code = order_result["code"]
+        order_result = order_result["order"]
 
-        if decision == 'accept':
-            # Update order status to "Refunded"
-            order_result['status'] = 'Refunded'
+        if code not in range(200, 300):
+            # Inform the error microservice
+            print('\n\n-----Publishing the (return item error) message with routing_key=order.error-----')
 
-            # Send PUT request to update order status
-            return_result = requests.put(url, json=order_result)
+            # Publish to AMQP Error Queue ### Should i make this different from the one before
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
-            # Processing of Refund via Stripe Wrapper (Uses helper function)
-            combinedData = {"dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
-            processRefund(combinedData)
-
-            # Publish message to RabbitMQ exchange with routing key 'refund.accept'
-            return_message = json.dumps(return_result)
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.refund.accept",
-                                             body=return_message)
-
-            return jsonify({'message': f"Refund accepted for Order {orderID}."})
-        
-
-        elif decision == 'reject':
-            # Publish message to RabbitMQ exchange with routing key 'refund.reject'
-            message = json.dumps(order_result)
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.refund.reject",
-                                             body=message)
-
-            return jsonify({'message': f"Refund rejected for Order {orderID}."})
-
+            # Reply from the invocation is not used;
+            # continue even if this invocation fails        
+            print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
+                code), order_result)
+            
+            # Return error
+            return {
+                "code": 500,
+                "data": {"return_item_result": order_result},
+                "message": "Return Item failed and sent for error handling."
+            }
         else:
-            return jsonify({'message': f"Invalid decision '{decision}'. Decision should be either 'accept' or 'reject'."})
+            if decision == 'accept':
+                # Update order status to "Refunded"
+                order_result['status'] = 'Refunded'
+
+                # Send PUT request to update order status
+                return_result = requests.put(url, json=order_result)
+                return_result = return_result.json()
+                
+                # Processing of Refund via Stripe Wrapper (Uses helper function)
+                combinedData = {"dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
+                processRefund(combinedData)
+                
+                # Publish message to RabbitMQ exchange with routing key 'refund.accept'
+                return_message = json.dumps(return_result)
+                amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.refund.accept",
+                                                body=return_message)
+
+                return jsonify({'message': f"Refund accepted for Order {orderID}."})
+            
+
+            elif decision == 'reject':
+                # Publish message to RabbitMQ exchange with routing key 'refund.reject'
+                message = json.dumps(order_result)
+                amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.refund.reject",
+                                                body=message)
+
+                return jsonify({'message': f"Refund rejected for Order {orderID}."})
+
+            else:
+                return jsonify({'message': f"Invalid decision '{decision}'. Decision should be either 'accept' or 'reject'."})
 
     except Exception as e:
         return jsonify({'code': 404, 'error': str(e)}), 404
