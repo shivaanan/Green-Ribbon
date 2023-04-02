@@ -19,7 +19,6 @@ channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, dura
 ############   Error queue   #############
 queue_name = 'Error' #?##
 channel.queue_declare(queue=queue_name, durable=True) 
-
 routing_key = '*.error' #?##
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) 
 
@@ -28,7 +27,13 @@ queue_name = 'Activity_Log' #?##
 channel.queue_declare(queue=queue_name, durable=True)
 
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='#') #?##
-    
+
+############   Return_Item queue    #############
+queue_name = 'Return_Item' #?##
+channel.queue_declare(queue=queue_name, durable=True)
+routing_key = 'return_item.#'
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) #?##
+
 
 """
 This function in this module sets up a connection and a channel to a local AMQP broker,
