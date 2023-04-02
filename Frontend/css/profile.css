@@ -1,0 +1,79 @@
+
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+h1 {
+	font-weight: bold;
+	margin: 0;
+}
+
+h2 {
+	text-align: center;
+}
+
+p {
+	font-size: 14px;
+	font-weight: 100;
+	line-height: 20px;
+	letter-spacing: 0.5px;
+	margin: 20px 0 30px;
+}
+
+span {
+	font-size: 12px;
+}
+
+a {
+	color: #333;
+	font-size: 14px;
+	text-decoration: none;
+	margin: 15px 0;
+}
+
+a:hover{
+    color: #368373;
+}
+
+button {
+	border-radius: 20px;
+	border: 1px solid white;
+    background-color: #afcdc7;
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 12px 45px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	/* transition: transform 80ms ease-in; */
+}
+
+button:hover{
+    background-color: #afcdc7;
+    cursor: pointer;
+}
+
+button:active {
+	background-color: #368373;
+	transform: scale(0.95);
+}
+
+.active-filter-btn{
+	border-radius: 20px;
+	border: 1px solid white;
+    background-color: #368373;
+	color: #FFFFFF;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 12px 45px;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	/* transition: transform 80ms ease-in; */
+}
+
+button:focus {
+	outline: none;
+}
+
+.nav {
+	--bs-nav-link-color: rgb(177, 207, 201);
+	--bs-nav-link-hover-color: #368373;
+}
