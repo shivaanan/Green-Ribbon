@@ -23,12 +23,13 @@ def payment():
     # print("TEST shoppingCart (end)")
     total_amount = 0
     # ======== CHECKOUT DESCRIPTION (START) ========
-    # checkout_description = ", ".join(
-    #     [f"{item['itemName']} x{item['inputQuantity']}" for item in shoppingCart])
+    checkout_description = ", ".join(
+        [f"{item['itemName']} x{item['inputQuantity']}" for item in shoppingCart])
     # ======== CHECKOUT DESCRIPTION (END) ========
-    print("TEST card_details (START)")
-    print(card_details)
-    print("TEST card_details (END)")
+
+    # print("TEST card_details (START)")
+    # print(card_details)
+    # print("TEST card_details (END)")
 
     for eachItem in shoppingCart:
         item_quantity = eachItem['inputQuantity']
@@ -42,6 +43,11 @@ def payment():
         amount = int(eachItem['price']) * item_quantity * 100
         total_amount += amount
 
+    checkout_amount = total_amount/100 # in dollars
+    purchase_summary = {
+         "checkoutDescription":checkout_description,
+         "totalAmount": checkout_amount
+    }
     try:
         # Create a new PaymentIntent
         payment_intent = stripe.PaymentIntent.create(
@@ -79,18 +85,21 @@ def payment():
         # print("TEST result (END)")
         return jsonify({
             'code': 201,
+            'paymentStatus':'Payment_Successful',
             'message':'Payment Successful! Thank you for shopping with us :)',
-            'description': paymentResult['description']
+            'description': paymentResult['description'],
+            'purchaseSummary':purchase_summary,
         }), 201
         
 
     except:
             return jsonify({
             "code": 400,
+            'paymentStatus':'Payment_Unsuccessful',
             "message": "Payment Unsuccessful! Invalid card details!"
         }), 400
         
 
 
 if __name__ == '__main__':
-    app.run(port=5002, debug=True)
+    app.run(host='0.0.0.0', port=5002, debug=True)

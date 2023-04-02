@@ -4,6 +4,7 @@
 
 import json
 import os
+import requests
 
 import amqp_setup
 
@@ -24,8 +25,15 @@ def callback(channel, method, properties, body): # required signature for the ca
 
 def processOrderLog(order):
     print("Recording an order log:")
+    send_notification(order)
     print(order)
 
+def send_notification(data):
+    try:
+        response = requests.post("http://127.0.0.1:5005/paymentNotification", json=data)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print("Error sending notification:", e)
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
     print("\nThis is " + os.path.basename(__file__), end='')

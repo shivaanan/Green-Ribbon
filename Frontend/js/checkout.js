@@ -39,7 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
       exp_year: exp_year,
       cvc: CVCInput,
     };
-
+    console.log("sessionStorage (START)")
+    console.log(sessionStorage)
+    console.log("sessionStorage (END)")
     var userId = sessionStorage.getItem("userId");
     // console.log("WHEN CLICK CHECKOUT -- START");
     // console.log(userId);
