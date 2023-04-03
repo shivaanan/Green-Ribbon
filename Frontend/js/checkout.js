@@ -39,28 +39,18 @@ document.addEventListener("DOMContentLoaded", function () {
       exp_year: exp_year,
       cvc: CVCInput,
     };
-    console.log("sessionStorage (START)")
-    console.log(sessionStorage)
-    console.log("sessionStorage (END)")
+    console.log("sessionStorage (START)");
+    console.log(sessionStorage);
+    console.log("sessionStorage (END)");
     var userId = sessionStorage.getItem("userId");
     // console.log("WHEN CLICK CHECKOUT -- START");
     // console.log(userId);
-    const getCartResponse = await fetch(
-      "http://127.0.0.1:5200/get_cart/" + userId,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const jsonData = await getCartResponse.json();
-    // console.log(jsonData)
 
     // Card Holder Name
     const cardHolderName = document.getElementById("cardHolderName").value;
     const combinedData = {
-      dataObj: jsonData,
+      userId: userId,
+      // dataObj: jsonData,
       cardDetails: card_details,
       cardName: cardHolderName,
     };

@@ -13,7 +13,7 @@ import pika
 import json
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"*": {"origins": "*"}})
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5002/products"
 payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
@@ -25,18 +25,21 @@ rabbitMQhostname = environ.get('rabbit_host') or "localhost"
 @app.route("/buy_item", methods=['POST'])
 def buy_item():
     data = request.json
-    shoppingCart = data['dataObj']
+    # shoppingCart = data['dataObj']
+    userId = data['userId']
     card_details = data['cardDetails']
     cardHolderName = data['cardName']
     try:
-        # product_ids = data['productID']
-
-        # frontend_base_url = data.get('frontend_base_url', 'http://localhost:3000')
-        # Fetch the product information from the Listing Micro Service
-        # Replace with the actual URL of your Listing Micro Service
+        cartQuery = {
+        "userId": userId
+        }
+        # invoke cartMS to get the cart
+        getCartResponse = invoke_http(cart_URL + "/get_cart", method='GET', json=cartQuery)
+        shoppingCart = getCartResponse["cart_list"]
         # print("TEST shoppingCart (START)")
         # print(shoppingCart)
         # print("TEST shoppingCart (END)")
+
         for eachItem in shoppingCart:
             product_ID = eachItem['productID']
             productName = eachItem['itemName']
@@ -62,27 +65,28 @@ def buy_item():
                     'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity"
                 }), 400
             
-        combinedData = {"dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
+        combinedData = {"userId": userId, "dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
         processOrderResult = processOrder(combinedData)
         # print("TEST processOrderResult (START)")
         # print(processOrderResult)
         # print("TEST processOrderResult (END)")
 
-        # invoking orderMS
-        if processOrderResult["code"] == 201:
-            for eachItem in shoppingCart:
-                userId = eachItem['userId']
-                order_ms_url = f"{order_URL}/add_order/{userId}"
+        # ======================== invoking orderMS (START) ========================
+        # if processOrderResult["code"] == 201:
+        #     for eachItem in shoppingCart:
+        #         userId = eachItem['userId']
+        #         order_ms_url = f"{order_URL}/add_order/{userId}"
 
-                orderResponse = requests.get(order_ms_url)
-                checkOrder = orderResponse.json()
+        #         orderResponse = requests.get(order_ms_url)
+        #         checkOrder = orderResponse.json()
             
-            return jsonify({
-                'code': 200,
-                'success': 'Item per user per product has been logged into database'
-            })
-        
-        # return jsonify(processOrderResult), processOrderResult["code"]
+        #     return jsonify({
+        #         'code': 200,
+        #         'success': 'Item per user per product has been logged into database'
+        #     })
+        # ======================== invoking orderMS (START) ========================
+
+        return jsonify(processOrderResult), processOrderResult["code"]
 
     except Exception as e:
         # Unexpected error in code
