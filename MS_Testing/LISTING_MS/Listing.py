@@ -18,11 +18,14 @@ collection = db['listings1']
 @app.route('/products', methods=['GET'])
 def getAllProducts():
     try:
+        
         products = list(collection.find())
+        print(products)
+        print("testing")
         product_list = []
+
         for product in products:
             product_dict = {
-                'code': 200,
                 'sellerID': product['sellerID'],
                 'productID': product["productID"],
                 'itemName': product['itemName'],
@@ -34,9 +37,23 @@ def getAllProducts():
                 'imgURL': product["imgURL"]
             }
             product_list.append(product_dict)
-        return jsonify(product_list)
-    except Exception as e:
-        return jsonify({'code': 404, 'error': str(e)}), 404
+        return jsonify(
+            {
+                "code": 200, 
+                "message": "Retrieved all products",
+                "data" : {
+                    "products" : product_list
+                }
+            }
+        ), 200
+    
+    except:
+        return jsonify( 
+            {
+                "code": 400, 
+                "message": "Unable to retrieve all products"
+            }
+        ), 400 
 
 # Get 1 Product
 @app.route('/products/<int:productID>', methods=['GET'])
