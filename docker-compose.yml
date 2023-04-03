@@ -1,0 +1,138 @@
+version: "3.8"
+
+networks:
+  G6T4-net:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
+
+services:
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    networks:
+      - G6T4-net
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  ###################################
+  # Account: The Account SIMPLE MICROSERVICE
+  ###################################  
+  Account:
+    build:
+      context: ./MS_Testing/Account_MS
+      dockerfile: Account.Dockerfile
+    image: mrtaooo/account:1.0
+    networks:
+      - G6T4-net
+    container_name: Account
+    restart: always
+    ports:
+      - "5001:5001"
+
+  ###################################
+  # Listing: The Listing SIMPLE MICROSERVICE
+  ###################################  
+  Listing:
+    build:
+      context: ./MS_Testing/Listing_MS
+      dockerfile: Listing.Dockerfile
+    image: mrtaooo/listing:1.0
+    networks:
+      - G6T4-net
+    container_name: Listing
+    restart: always
+    ports:
+      - "5002:5002"
+
+  ###################################
+  # Cart: The Cart SIMPLE MICROSERVICE
+  ###################################  
+  Cart:
+    build:
+      context: ./MS_Testing/Cart_MS
+      dockerfile: Cart.Dockerfile
+    image: mrtaooo/cart:1.0
+    networks:
+      - G6T4-net
+    container_name: Cart
+    restart: always
+    ports:
+      - "5003:5003"
+
+  ###################################
+  # Payment: The Payment SIMPLE MICROSERVICE
+  ###################################  
+  Payment:
+    build:
+      context: ./MS_Testing/Payment_MS
+      dockerfile: Payment.Dockerfile
+    image: mrtaooo/payment:1.0
+    networks:
+      - G6T4-net
+    container_name: Payment
+    restart: always
+    ports:
+      - "5005:5005"
+
+###################################################################### BREAK ######################################################################
+
+  ###################################
+  # BuyItem: The BuyItem COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
+  ###################################  
+  BuyItem:
+    build:
+      context: ./Complex_MS/BuyItem
+      dockerfile: BuyItem.Dockerfile
+    image: mrtaooo/buyitem:1.0
+    networks:
+      - G6T4-net
+    container_name: BuyItem
+    restart: always
+    depends_on:
+      - Listing
+      - Payment
+      - Cart
+      - rabbitmq
+    ports:
+      - "5200:5200"
+    environment:
+      # - location_URL: http://Location:8080
+      listing_URL: http://Listing:5002
+      cart_URL: http://Cart:5003
+      # - order_URL: http://Order:5004
+      payment_URL: http://Payment:5005
+      rabbit_host: rabbitmq
+
+  ###################################
+  # LoginAccount: The LoginAccount COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
+  ###################################  
+  LoginAccount:
+    build:
+      context: ./Complex_MS/LoginAccount
+      dockerfile: LoginAccount.Dockerfile
+    image: mrtaooo/loginaccount:1.0
+    networks:
+      - G6T4-net
+    container_name: LoginAccount
+    restart: always
+    depends_on:
+      - Account
+      - Listing
+      - rabbitmq
+      # - Location
+    ports:
+      - "5100:5100"
+    environment:
+      - account_URL=http://Account:5001
+      # - location_URL: http://Location:8080
+      - listing_URL=http://Listing:5002
+
