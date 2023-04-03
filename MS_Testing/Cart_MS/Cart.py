@@ -111,7 +111,7 @@ def getAllCartItems(user_id):
 
 @app.route('/delete_from_cart/<user_id>', methods = ['DELETE'])
 def delete_from_cart(user_id):
-    if getAllCartItems(user_id).length() > 0:
+    if len(getAllCartItems(user_id)) > 0:
         collection.delete_many({'userId': user_id})
         return jsonify({'success': True}), 200
     else:
