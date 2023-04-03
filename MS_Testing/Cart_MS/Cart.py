@@ -101,6 +101,22 @@ def add_to_cart():
 
     return jsonify({"success": True}), 200
 
+# Get all cart items of a single user
+def getAllCartItems(user_id):
+    cart_items = []
+    for item in collection.find({'userId': user_id}):
+        cart_items.append(item)
+    
+    return cart_items
+
+@app.route('/delete_from_cart/<user_id>', methods = ['DELETE'])
+def delete_from_cart(user_id):
+    if getAllCartItems(user_id).length() > 0:
+        collection.delete_many({'userId': user_id})
+        return jsonify({'success': True}), 200
+    else:
+        return jsonify({'success': False, 'message': 'Cart is empty'})
+
 #  port 5002
 if __name__ == '__main__':
     app.run(port = 5003, debug = True)
