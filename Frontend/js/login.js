@@ -74,27 +74,28 @@ function signUp() {
 
 	console.log("-------In user signUp------");
         
-	axios.post('http://127.0.0.1:5000/createuser', {
+	axios.post('http://127.0.0.1:5100/create_acct', {
 		"newName" : name,
 		"newEmail":  email,
 		"newPassword" : password
 		})
 		.then(response => {
 			// console.log(response.data);
-			console.log(response.data["success"]);
+			console.log(response.data["message"]);
 
-			if (response.data["success"]) {
-				// Redirect to home page
-				document.getElementById("creationStatus").innerHTML = "Creation successful, Please login using your credentials";
-			  } else {
-				// Show error message
-				document.getElementById("creationStatus").innerHTML = "Email exists!";
+			document.getElementById("creationStatus").innerHTML = "Creation successful, Please login using your credentials";
+			// if (response.data["success"]) {
+			// 	// Redirect to home page
+			//   } else {
+			// 	// Show error message
 				
-			  }
+			//   }
 			
 		})
 		
 		.catch(error => {
+			console.log(error.response.data["message"]);
+			document.getElementById("creationStatus").innerHTML = "Email exists!";
 			
 		});
 

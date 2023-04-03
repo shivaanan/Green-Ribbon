@@ -17,65 +17,38 @@ locationMSURL = environ.get('location_URL') or 'http://localhost:8080'
 listingMSURL = environ.get('listing_URL') or 'http://localhost:5002'
 
 # Check if user exist 
-def ifexists(email): 
-    getallURL = accountMSURL + "/getallusers"
-    result = invoke_http(getallURL, method='GET')
-    users = result['data']
-    error = []
-    if email in users: 
-        error.append('user')
-    if users == {} : 
-        return error 
-    return error 
+# def ifexists(email): 
+#     getallURL = accountMSURL + "/getallusers"
+#     result = invoke_http(getallURL, method='GET')
+#     users = result['data']
+#     error = []
+#     if email in users: 
+#         error.append('user')
+#     if users == {} : 
+#         return error 
+#     return error 
 
 # Add new user to database
-@app.route("/createacc", methods=['POST'])
+@app.route("/create_acct", methods=['POST'])
 def create_account(): 
     data = request.get_json()
-    print(data)
-    data['newEmail'] = data['newEmail'].lower() 
-    email = data['newEmail']
+
     try : 
-        ifexists(email)
-        errors = ifexists(email)
-        message = "Email already exists"
-        if len(errors) > 0: 
-            return jsonify(
-                {
-                    "code": 400, 
-                    "data": {
-                        "email": email 
-                    }, 
-                    "message": message 
-                }
-            ), 400 
-        accountURL = accountMSURL + "/createuser"
-        result = invoke_http(accountURL, method='POST', json=data)
-        status = result['success']
-        if status == False : 
-            return jsonify(
-                {
-                    "code": 400, 
-                    "data": {
-                        "result": result 
-                    }, 
-                    "message": message 
-                }
-            ), 400 
-        else : 
-            return jsonify(
-                {
-                    "code": 201, 
-                    "data": result,
-                    "message": "Account created successfully"
-                }
-            ), 201 
-    except : 
+
+        createAccountURL = accountMSURL + "/createuser"
+        result = invoke_http(createAccountURL, method='POST', json=data)
+
+        return jsonify(
+            {
+                "code": 201, 
+                "message": "Account created successfully"
+            }
+        ), 201 
+    except Exception as e: 
         return jsonify(
             {
                 "code": 400,
-                "data": email,
-                "message": "Error creating account."
+                "message": "Error occurred when trying to create user" 
             }
         ), 400
 
