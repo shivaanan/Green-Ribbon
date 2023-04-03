@@ -96,7 +96,7 @@ def payment():
             return jsonify({
             "code": 400,
             'paymentStatus':'Payment_Unsuccessful',
-            "message": "Payment Unsuccessful! Invalid card details!"
+            "message": "Payment Unsuccessful!"
         }), 400
         
 

@@ -2,17 +2,44 @@
 
 import os
 import json
+import amqp_setup
+import pika
+
 from flask import Flask, request
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from os import environ ###
 from dotenv import load_dotenv
+
 load_dotenv()
-SENDGRID_API_KEY = "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"
+SENDGRID_API_KEY = os.environ['SENDGRID_API_KEY']
+
 app = Flask(__name__)
 
-@app.route('/paymentNotification', methods=['POST'])
-def paymentNotification():
-    data = request.json
+
+monitorBindingKey='#'
+
+def receiveOrderLog():
+    amqp_setup.check_setup()
+        
+    queue_name = 'Payment'
+    
+    amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    amqp_setup.channel.start_consuming() # an implicit loop waiting to receive messages; 
+
+def callback(channel, method, properties, body): # required signature for the callback; no return
+    print("\nReceived an order log by " + __file__)
+    processOrderLog(json.loads(body))
+    print() # print a new line feed
+
+def processOrderLog(order):
+    print("Recording an order log:")
+    print(order)
+    send_notification(order) # Send payment status to users 
+    
+
+def send_notification(data):
+
     # code = data.get('code', 0)
     # message = data.get('message', '')
 
@@ -25,7 +52,7 @@ def paymentNotification():
 
     # code = data['code']
     paymentStatus = data['paymentStatus']
-    email="lintao199@gmail.com"
+    email="lintao.main@gmail.com"
 
     if paymentStatus == 'Payment_Successful':
         subject = "Purchase Successful"
@@ -43,7 +70,7 @@ def paymentNotification():
 
 def send_email(to_email, subject, content):
     message = Mail(
-        from_email="esdg6t4@gmail.com",
+        from_email="lintao199@gmail.com",
         to_emails=to_email,
         subject=subject,
         plain_text_content=content
@@ -65,6 +92,14 @@ def send_email(to_email, subject, content):
     except Exception as e:
         print(e)
         print("Error sending email")
+    print() # print a new line feed
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5006, debug=True)
+
+if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
+    print("\nThis is " + os.path.basename(__file__), end='')
+    print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
+    receiveOrderLog()
+
+
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5006, debug=True)
