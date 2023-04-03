@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 
 # URLS used
-payment_URL = environ.get('payment_URL') or "http://localhost:5002/payment"
+payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
 orders_URL = environ.get('orders_URL') or "http://localhost:5004"
 
 #### Endpoints Start ####

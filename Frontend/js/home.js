@@ -1,7 +1,7 @@
 
 // console.log("in home.js");
 // console.log(sessionStorage.getItem("userId"));
-
+// sessionStorage.setItem("userId", 1);
 const homePage = Vue.createApp({
     data() {
         return {
@@ -16,7 +16,7 @@ const homePage = Vue.createApp({
         userId = this.userId;
         // retrieve products from the backend
         axios
-            .get("http://127.0.0.1:5001/products")
+            .get("http://127.0.0.1:5002/products")
             .then((response) => {
                 console.log("hi");
                 console.log(response.data[0]);
@@ -28,7 +28,7 @@ const homePage = Vue.createApp({
 
         // retrieve cart count from the backend
         axios
-            .get('http://127.0.0.1:5100/get_cart_count/' + userId)
+            .get('http://127.0.0.1:5200/get_cart_count/' + userId)
             .then((response) => {
                 this.cartCount = response.data["cart_count"];})
 
@@ -84,7 +84,7 @@ const homePage = Vue.createApp({
             </div>`;
 
             // Make an axios post request to the buyItem microservice
-            axios.post('http://127.0.0.1:5100/add_to_cart', {
+            axios.post('http://127.0.0.1:5200/add_to_cart', {
                 "userId": userId,
                 "productId": productID,
                 "qtyInput": qtyInput
