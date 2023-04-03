@@ -31,7 +31,7 @@ def processOrderLog(order):
 # ============================== PAYMENT EMAIL (START) ==============================
 def send_notification(data):
     try:
-        response = requests.post("http://127.0.0.1:5005/paymentNotification", json=data)
+        response = requests.post("http://127.0.0.1:5006/paymentNotification", json=data)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print("Error sending notification:", e)
