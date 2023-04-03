@@ -101,7 +101,7 @@ def add_to_cart():
 
     return jsonify({"success": True}), 200
 
-# Get all cart items of a single user
+# Helper function to get all cart items of a single user
 def getAllCartItems(user_id):
     cart_items = []
     for item in collection.find({'userId': user_id}):
