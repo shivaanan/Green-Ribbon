@@ -15,8 +15,8 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-listing_URL = environ.get('listing_URL') or "http://localhost:5001/products"
-payment_URL = environ.get('payment_URL') or "http://localhost:5002/payment"
+listing_URL = environ.get('listing_URL') or "http://localhost:5002/products"
+payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
 rabbitMQhostname = environ.get('rabbit_host') or "localhost"
 
