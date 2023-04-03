@@ -6,20 +6,8 @@ import pika
 import os 
 import json
 import requests
+import amqp_setup
 from os import environ 
-
-# connect to rabbitMQ 
-# rabbitMQhostname = os.environ['rabbit_host'] or "localhost"
-# port = 5672
-# connection = pika.BlockingConnection(
-#     pika.ConnectionParameters(
-#         host=rabbitMQhostname, port=port, 
-#         heartbeat=3600, blocked_connection_timeout=3600,
-#     )
-# ) 
-# channel = connection.channel()
-# exchangename = "order_topic"
-# exchangetype = "topic"
 
 app = Flask(__name__)
 CORS(app, resources={r"*": {"origins": "*"}})
@@ -28,19 +16,19 @@ accountMSURL = environ.get('account_URL') or 'http://localhost:5200'
 locationMSURL = environ.get('location_URL') or 'http://localhost:8080'
 listingMSURL = environ.get('listing_URL') or 'http://localhost:5001'
 
-# 1. Check if user exist in firebase 
+# Check if user exist 
 def ifexists(email): 
     getallURL = accountMSURL + "/getallusers"
     result = invoke_http(getallURL, method='GET')
     users = result['data']
     error = []
-    if users == {} : 
-        return error 
     if email in users: 
         error.append('user')
+    if users == {} : 
+        return error 
     return error 
 
-# 2. Add new user to database
+# Add new user to database
 @app.route("/createacc", methods=['POST'])
 def create_account(): 
     data = request.get_json()
@@ -52,8 +40,8 @@ def create_account():
         errors = ifexists(email)
         message = "Email already exists"
         if len(errors) > 0: 
-            #amqpmsg = 'Tried to create account with Email: ' + email + "but ran into errors: " + message
-            #channel.basic_publish(exchange=exchangename, routing_key="", body=amqpmsg, properties=pika.BasicProperties(delivery_mode=2)) 
+            amqpmsg = 'Tried to create account with Email: ' + email + "but ran into errors: " + message
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.error", body=amqpmsg, properties=pika.BasicProperties(delivery_mode=2)) 
             return jsonify(
                 {
                     "code": 400, 
@@ -77,8 +65,8 @@ def create_account():
                 }
             ), 400 
         else : 
-            message = "Account created successfully"
-            #channel.basic_publish(exchange=exchangename, routing_key="", body=message)
+            amqpmessage = "Account created successfully"
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", body=amqpmessage)
             return jsonify(
                 {
                     "code": 201, 
@@ -95,9 +83,10 @@ def create_account():
             }
         ), 400
 
-# 3. Verify user login 
+# Verify user login 
 @app.route("/verifylogin", methods=['POST']) 
-def verifylogin():
+def verifylogin(): 
+    #get login post request 
     data = request.get_json()
     email = data['email'].lower() 
     if email == "":
@@ -152,7 +141,9 @@ def get_distance():
 
         locresponse = invoke_http(locationMSURL + "/location", method='POST')
         print(locresponse)
-
+        if locresponse == []: 
+            amqpmessage = "Error getting user location"
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="location.error", body=amqpmessage,properties=pika.BasicProperties(delivery_mode=2))
 
         distances = {}
         for destaddress in destaddresses:
@@ -178,7 +169,9 @@ def get_distance():
                 distance = data['rows'][0]['elements'][0]['distance']['value'] / 1000  # Convert from meters to kilometers
                 distances[destaddress] = round(distance, 1) 
             else:
-                distances.append(-1) 
+                distances.append(-1)  # Set distance to -1 if Geocoding API returns an error
+                amqpmessage = "Error calculating distance"
+                amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="location.error", body=amqpmessage,properties=pika.BasicProperties(delivery_mode=2))
 
         return jsonify(distances)
     except :
