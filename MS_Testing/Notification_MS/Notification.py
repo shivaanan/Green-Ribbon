@@ -5,7 +5,8 @@ import json
 from flask import Flask, request
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-
+from dotenv import load_dotenv
+load_dotenv()
 SENDGRID_API_KEY = "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"
 app = Flask(__name__)
 
