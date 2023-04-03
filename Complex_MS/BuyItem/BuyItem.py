@@ -16,85 +16,83 @@ app = Flask(__name__)
 CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5001/products"
-payment_URL = environ.get('payment_URL') or "http://localhost:5002/create_payment_intent"
+payment_URL = environ.get('payment_URL') or "http://localhost:5002/payment"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
 rabbitMQhostname = environ.get('rabbit_host') or "localhost"
 
 
 @app.route("/buy_item", methods=['POST'])
 def buy_item():
-    if request.is_json:
-        shoppingCart = request.json
-        try:
-            # product_ids = data['productID']
+    data = request.json
+    shoppingCart = data['dataObj']
+    card_details = data['cardDetails']
+    cardHolderName = data['cardName']
+    try:
+        # product_ids = data['productID']
 
-            # frontend_base_url = data.get('frontend_base_url', 'http://localhost:3000')
-            # Fetch the product information from the Listing Micro Service
-            # Replace with the actual URL of your Listing Micro Service
-            print("TEST shoppingCart (START)")
-            print(shoppingCart)
-            print("TEST shoppingCart (END)")
-            for eachItem in shoppingCart:
-                product_ID = eachItem['productID']
-                productName = eachItem['itemName']
-                listing_ms_url = f"{listing_URL}/{product_ID}"
+        # frontend_base_url = data.get('frontend_base_url', 'http://localhost:3000')
+        # Fetch the product information from the Listing Micro Service
+        # Replace with the actual URL of your Listing Micro Service
+        # print("TEST shoppingCart (START)")
+        # print(shoppingCart)
+        # print("TEST shoppingCart (END)")
+        for eachItem in shoppingCart:
+            product_ID = eachItem['productID']
+            productName = eachItem['itemName']
+            listing_ms_url = f"{listing_URL}/{product_ID}"
 
-                listingResponse = requests.get(listing_ms_url)
-                checkProduct = listingResponse.json()
-                # print("TEST START")
-                # print(eachItem)
-                # print(listingResponse.json())
-                # print("TEST END")
+            listingResponse = requests.get(listing_ms_url)
+            checkProduct = listingResponse.json()
+            # print("TEST START")
+            # print(eachItem)
+            # print(listingResponse.json())
+            # print("TEST END")
 
-                checkQuantity = checkProduct['quantity']
-                currentQuantity = eachItem['inputQuantity']
-                # print("TEST START")
-                # print(checkQuantity)
-                # print(currentQuantity)
-                # print("TEST END")
+            checkQuantity = checkProduct['quantity']
+            currentQuantity = eachItem['inputQuantity']
+            # print("TEST START")
+            # print(checkQuantity)
+            # print(currentQuantity)
+            # print("TEST END")
 
-                if currentQuantity > checkQuantity:
-                    return jsonify({
-                        'code': 404,
-                        'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity"
-                    }), 404
-
-            processOrderResult = processOrder(shoppingCart)
-            print("TEST processOrderResult (START)")
-            print(processOrderResult)
-            print("TEST processOrderResult (END)")
+            if currentQuantity > checkQuantity:
+                return jsonify({
+                    'code': 400,
+                    'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity"
+                }), 400
             
-            return jsonify(processOrderResult), processOrderResult["code"]
+        combinedData = {"dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
+        processOrderResult = processOrder(combinedData)
+        # print("TEST processOrderResult (START)")
+        # print(processOrderResult)
+        # print("TEST processOrderResult (END)")
+        
+        return jsonify(processOrderResult), processOrderResult["code"]
 
-        except Exception as e:
-            # Unexpected error in code
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            ex_str = str(e) + " at " + str(exc_type) + ": " + \
-                fname + ": line " + str(exc_tb.tb_lineno)
-            print(ex_str)
+    except Exception as e:
+        # Unexpected error in code
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        ex_str = str(e) + " at " + str(exc_type) + ": " + \
+            fname + ": line " + str(exc_tb.tb_lineno)
+        print(ex_str)
 
-            return jsonify({
-                "code": 500,
-                "message": "place_order.py internal error: " + ex_str
-            }), 500
+        return jsonify({
+            "code": 400,
+            "message": "place_order.py internal error: " + ex_str
+        }), 400
 
-    # if reached here, not a JSON request.
-    return jsonify({
-        "code": 400,
-        "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
+    
 
 # ======================== HELPER FUNCTION (START) ========================
 def processOrder(products):
     payment_result = invoke_http(payment_URL, method='POST', json=products)
-
     # ========================= AMQP (START) =========================
     code = payment_result["code"]
     message = json.dumps(payment_result)
-    print("TEST code (START)")
-    print(code)
-    print("TEST code (END)")
+    # print("TEST code (START)")
+    # print(code)
+    # print("TEST code (END)")
     amqp_setup.check_setup()
 
     if code not in range(200, 300):
@@ -119,9 +117,9 @@ def processOrder(products):
     return {
         "code": 201,
         "data": {
-            "message": "Payment Intent created Successfully by STRIPE",
             "payment_result": payment_result
-        }
+        },
+        "message": "Payment Successful! Thank you for shopping with us :)"
     }
 # ======================== HELPER FUNCTION (END) ========================
 

@@ -15,10 +15,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.2.4/css/simple-line-icons.min.css"
         rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css" />
+
     <script src="https://js.stripe.com/v3/"></script>
 
     <script type="module" src="js/cart.js"></script>
-    
+
     <script src="js/checkout.js"></script>
 
     <!-- ensures that user is logged in -->
@@ -64,7 +66,7 @@
     </div>
     <div class="container">
 
-        
+
         <table class="table">
             <thead>
                 <tr>
@@ -79,7 +81,7 @@
             <tbody>
                 <tr v-for="product in cartItems">
                     <!-- <th scope="row">1</th> -->
-                
+
                     <td><img :src="product.imgURL" style="width: 100px;"></td>
                     <td>
                         <h6>{{ product.itemName }}</h6>
@@ -114,11 +116,29 @@
                     <td class="text-left"> $71.97 </td>
                 </tr>
                 <tr>
-                    <td scope="col" class="col-9">
-                        <div id="card-element" style="border: 1px solid black; border-radius: 5px; padding: 10px; width: 75%;"></div>
+                    <td scope="col" class="col-7">
+                        <!-- <div id="card-element" style="border: 1px solid black; border-radius: 5px; padding: 10px; width: 75%;"></div> -->
+                        <div style="border: 1px solid black; border-radius: 5px; width: 75%;" class="p-2 mb-2">
+                            <i class="fas fa-credit-card"></i> <input type="text" maxlength="16"
+                                placeholder="Card Number" style="border: none; width: 60%;" required id="cardNumber">
+
+                            <i class="fas fa-calendar-alt"></i> <input type="text" placeholder="MM/YY"
+                                style="border: none; width: 15%;" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" required
+                                placeholder="MM/YY" maxlength="5" id="expDate">
+
+                            <i class="fas fa-key"></i><input type="text" placeholder="CVC"
+                                style="border: none; width: 15%;" required maxlength="3" id="CVC">
+                        </div>
+
                         <!-- Error Message: Your card number is incomplete. -->
                         <div id="error-message" class="alert alert-danger" style="display: none; width: 75%;"></div>
                     </td>
+                    <!-- <td scope="col" class="col-1">
+                        <input type="text" placeholder="MM/YY">
+                    </td>
+                    <td scope="col" class="col-1">
+                        <input type="text" placeholder="CVC">
+                    </td> -->
                     <td class="col-2"> GST (8%) </td>
                     <td class="text-left"> $10 </td>
                 </tr>
@@ -131,7 +151,7 @@
                 <tr>
                     <td scope="col" class="col-8"></td>
                     <td class="text-right">
-                        <button class="btn btn-success btn-lg" id="submit">
+                        <button class="btn btn-success btn-lg" id="checkout-button">
                             Checkout
                         </button>
                     </td>

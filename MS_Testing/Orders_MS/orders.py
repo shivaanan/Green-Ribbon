@@ -86,7 +86,7 @@ def getOrderByID(orderID):
             'imgURL': order["imgURL"],
             'status' : order["status"]
         }
-        return jsonify(order_dict)
+        return jsonify({'code':200, 'order': order_dict})
     else:
         return jsonify(
             {
@@ -161,9 +161,9 @@ def update_order_status(orderID):
         result = collection.update_one({"orderID": orderID}, {"$set": {"status": newStatus}})
 
         if result.modified_count == 1:
-            return jsonify({'message': f"Order {orderID} updated successfully"})
+            return jsonify({'code':200, 'message': f"Order {orderID} updated successfully"})
         else:
-            return jsonify({'message': f"No order with ID {orderID} found"}), 404
+            return jsonify({'code':404, 'message': f"No order with ID {orderID} found"}), 404
     except Exception as e:
         return jsonify({'code': 404, 'error': str(e)}), 404
 
