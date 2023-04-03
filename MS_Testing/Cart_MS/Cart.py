@@ -109,13 +109,25 @@ def getAllCartItems(user_id):
     
     return cart_items
 
+# Delete all items in cart once purchase has been made
 @app.route('/delete_from_cart/<user_id>', methods = ['DELETE'])
 def delete_from_cart(user_id):
     if len(getAllCartItems(user_id)) > 0:
         collection.delete_many({'userId': user_id})
         return jsonify({'success': True}), 200
     else:
-        return jsonify({'success': False, 'message': 'Cart is empty'})
+        return jsonify({'success': False, 'message': 'Cart has been cleared'})
+    
+@app.route('/delete_one_item', methods = ['DELETE'])
+def delete_one_item():
+    data = request.get_json()
+    userId = data['userId']
+    productID = data['productID']
+    if len(getAllCartItems(userId)) > 0:
+        collection.delete_one({'userId': userId, 'productID': productID})
+        return jsonify({'success': True}), 200
+    else:
+        return jsonify({'success': False, 'message': 'Item has been deleted from the cart'})
 
 #  port 5002
 if __name__ == '__main__':
