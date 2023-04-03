@@ -12,9 +12,9 @@ from os import environ
 app = Flask(__name__)
 CORS(app, resources={r"*": {"origins": "*"}})
 
-accountMSURL = environ.get('account_URL') or 'http://localhost:5200'
+accountMSURL = environ.get('account_URL') or 'http://localhost:5001'
 locationMSURL = environ.get('location_URL') or 'http://localhost:8080'
-listingMSURL = environ.get('listing_URL') or 'http://localhost:5001'
+listingMSURL = environ.get('listing_URL') or 'http://localhost:5002'
 
 # Check if user exist 
 def ifexists(email): 
@@ -186,4 +186,4 @@ def get_distance():
 
 if __name__ == '__main__':
     CORS(app)
-    app.run(host='0.0.0.0', port=5300, debug=True)
+    app.run(host='0.0.0.0', port=5100, debug=True)
