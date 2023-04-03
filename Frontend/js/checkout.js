@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // console.log(typeof combinedData);
     // console.log("TEST CARD (END)");
 
-    const paymentResponse = await fetch("http://127.0.0.1:5100/buy_item", {
+    const paymentResponse = await fetch("http://127.0.0.1:5200/buy_item", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
