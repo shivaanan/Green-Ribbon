@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // console.log("WHEN CLICK CHECKOUT -- START");
     // console.log(userId);
     const getCartResponse = await fetch(
-      "http://127.0.0.1:5100/get_cart/" + userId,
+      "http://127.0.0.1:5200/get_cart/" + userId,
       {
         method: "GET",
         headers: {

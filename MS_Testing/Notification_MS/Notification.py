@@ -52,11 +52,11 @@ def send_email(to_email, subject, content):
         sg = SendGridAPIClient(SENDGRID_API_KEY)
         response = sg.send(message)
 
-        # print("TEST (START)")
-        # print(sg)
-        # print("BREAK")
-        # print(response)
-        # print("TEST (END)")
+        print("TEST (START)")
+        print(sg)
+        print("BREAK")
+        print(response)
+        print("TEST (END)")
 
         print(response.status_code)
         print(response.body)
