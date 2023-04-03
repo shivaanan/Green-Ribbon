@@ -24,7 +24,7 @@ def create_account():
 
     try : 
 
-        createAccountURL = accountMSURL + "/createuser"
+        createAccountURL = accountMSURL + "/create_acct"
         result = invoke_http(createAccountURL, method='POST', json=data)
 
         return jsonify(
@@ -33,7 +33,7 @@ def create_account():
                 "message": "Account created successfully"
             }
         ), 201 
-    except Exception as e: 
+    except: 
         return jsonify(
             {
                 "code": 400,

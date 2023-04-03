@@ -77,12 +77,6 @@ function signUp() {
 			console.log(response.data["message"]);
 
 			document.getElementById("creationStatus").innerHTML = "Creation successful, Please login using your credentials";
-			// if (response.data["success"]) {
-			// 	// Redirect to home page
-			//   } else {
-			// 	// Show error message
-				
-			//   }
 			
 		})
 		

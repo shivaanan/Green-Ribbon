@@ -98,6 +98,7 @@ def create_user():
             }
         ), 400 
     
+# helper function that
 # saves user's name and email (saving users particulars)
 def addUserNameAndEmail(userId, name, email):
     data = {
@@ -105,7 +106,7 @@ def addUserNameAndEmail(userId, name, email):
         "email" : email
     }
 
-    db.child("users").child(userId).set(data)
+    db.child("users").child("users").child(userId).set(data)
 
 @app.route("/getbyuseremail/<string:email>", methods=['GET'])
 def getbyuseremail(email):
