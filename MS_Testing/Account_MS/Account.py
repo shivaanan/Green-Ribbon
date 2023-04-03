@@ -31,7 +31,7 @@ db = firebase_app.database()
 # password = "123456"
 
 
-@app.route("/loginuser", methods=['POST'])
+@app.route("/verify_login", methods=['POST'])
 def login_user():
     data = request.get_json()
     email = data["email"]
@@ -42,12 +42,25 @@ def login_user():
     try:
         user = auth.sign_in_with_email_and_password(email, password)
         print(user["localId"])
-        print("succesful")
-        return jsonify({"success": True,
-                        "userId": user["localId"]})
+        print("successful")
+
+        return jsonify(
+            {
+                "code": 201, 
+                "message": "Login successful",
+                "data" : {
+                    "userId": user["localId"]
+                }
+            }
+        ), 201
 
     except:
-        return jsonify({"success": False})
+        return jsonify( 
+                {
+                    "code": 400, 
+                    "message": "Incorrect login details"
+                }
+        ), 400 
        
 
 @app.route("/create_acct", methods=["POST"])
