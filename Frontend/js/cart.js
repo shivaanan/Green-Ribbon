@@ -48,7 +48,7 @@ const cartPage = Vue.createApp({
         // retrieve products from the backend
         // need change -> extract from buyItem Complex microservice
         axios
-            .get('http://127.0.0.1:5100/get_cart/' + userId)
+            .get('http://127.0.0.1:5200/get_cart/' + userId)
             .then((response) => {
                 console.log("In cart.js -- Start")
                 console.log(response.data);
