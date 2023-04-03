@@ -141,7 +141,9 @@ def get_distance():
 
         locresponse = invoke_http(locationMSURL + "/location", method='POST')
         print(locresponse)
-
+        if locresponse == []: 
+            amqpmessage = "Error getting user location"
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="location.error", body=amqpmessage,properties=pika.BasicProperties(delivery_mode=2))
 
         distances = {}
         for destaddress in destaddresses:
