@@ -40,8 +40,6 @@ def create_account():
         errors = ifexists(email)
         message = "Email already exists"
         if len(errors) > 0: 
-            amqpmsg = 'Tried to create account with Email: ' + email + "but ran into errors: " + message
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.error", body=amqpmsg, properties=pika.BasicProperties(delivery_mode=2)) 
             return jsonify(
                 {
                     "code": 400, 
@@ -65,8 +63,6 @@ def create_account():
                 }
             ), 400 
         else : 
-            amqpmessage = "Account created successfully"
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.info", body=amqpmessage)
             return jsonify(
                 {
                     "code": 201, 
@@ -102,6 +98,8 @@ def verifylogin():
         result = invoke_http(accountURL, method='POST', json=data)
         status = result['success']
         if status == False: 
+            amqpmessage = "Error retrieving account, incorrect login details"
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="login.error", body=amqpmessage)
             return jsonify( 
                 {
                     "code": 400, 
@@ -110,6 +108,8 @@ def verifylogin():
                 }
         ), 400 
         else : 
+            amqpmessage = "Account retrieved successfully"
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="login.info", body=amqpmessage)
             user = result['userId']
             return jsonify(
                     {
@@ -120,6 +120,8 @@ def verifylogin():
                 ), 201
     
     except:
+        amqpmessage = "Error retrieving account, incorrect login details"
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="login.error", body=amqpmessage)
         return jsonify(
             {
                 "code": 400,
