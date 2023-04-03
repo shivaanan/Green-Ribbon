@@ -16,11 +16,12 @@ const homePage = Vue.createApp({
         userId = this.userId;
         // retrieve products from the backend
         axios
-            .get("http://127.0.0.1:5002/products")
+            .get("http://127.0.0.1:5100/products")
             .then((response) => {
                 console.log("hi");
                 console.log(response.data[0]);
-                this.products = response.data;
+                // this.products = response.data;
+                this.products = response.data["data"]["products"];
             })
             .catch((error) => {
                 console.log(error);

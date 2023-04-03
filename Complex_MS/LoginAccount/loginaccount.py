@@ -129,7 +129,34 @@ def get_distance():
             }
         ), 400
 
+# Get all products
+@app.route("/products", methods=['GET'])
+def get_all_products(): 
 
+    try : 
+
+        productListingURL = listingMSURL + "/products"
+        result = invoke_http(productListingURL, method='GET')
+
+        data = result["data"]
+
+        return jsonify(
+            {
+                    "code": 201,
+                    "data": data,
+                    "message": "Retrieved all products"
+            }
+        ), 200
+     
+    except: 
+
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Unable to retrieve all products"
+            }
+        ), 400
+    
 if __name__ == '__main__':
     CORS(app)
     app.run(host='0.0.0.0', port=5100, debug=True)

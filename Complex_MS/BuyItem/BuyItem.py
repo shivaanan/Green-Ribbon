@@ -18,6 +18,7 @@ CORS(app)
 listing_URL = environ.get('listing_URL') or "http://localhost:5002/products"
 payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
+order_URL = environ.get('order_URL') or "http://127.0.0.1:5004"
 rabbitMQhostname = environ.get('rabbit_host') or "localhost"
 
 
@@ -66,8 +67,22 @@ def buy_item():
         # print("TEST processOrderResult (START)")
         # print(processOrderResult)
         # print("TEST processOrderResult (END)")
+
+        # invoking orderMS
+        if processOrderResult["code"] == 201:
+            for eachItem in shoppingCart:
+                userId = eachItem['userId']
+                order_ms_url = f"{order_URL}/add_order/{userId}"
+
+                orderResponse = requests.get(order_ms_url)
+                checkOrder = orderResponse.json()
+            
+            return jsonify({
+                'code': 200,
+                'success': 'Item per user per product has been logged into database'
+            })
         
-        return jsonify(processOrderResult), processOrderResult["code"]
+        # return jsonify(processOrderResult), processOrderResult["code"]
 
     except Exception as e:
         # Unexpected error in code

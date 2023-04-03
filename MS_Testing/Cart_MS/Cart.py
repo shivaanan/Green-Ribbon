@@ -59,11 +59,13 @@ def getAllProducts():
         print(cart_list)
         return jsonify({
             'code': 200,
-            'cart_list': cart_list})
-    
+            'cart_list': cart_list
+        }), 200    
     except Exception as e:
-        return jsonify({'code':404,'error': str(e)}),404
-    
+        return jsonify({
+            'code':404,
+            'error': str(e)
+        }),404
 
 
 @app.route('/add_to_cart',methods = ['POST'])
@@ -79,7 +81,7 @@ def add_to_cart():
     price = product['price']
     dateOfPost = product['dateOfPost']
     availability = product['availability']
-    # location = data['location']
+    address = product['address']
     imgURL = product["imgURL"]
     
     # Check if item already in cart
@@ -94,12 +96,14 @@ def add_to_cart():
             "inputQuantity": input_quantity,
             "price": price,
             "dateOfPost": dateOfPost,
-            # 'location': location,
+            'address': address,
             "imgURL": imgURL
             }
         )
-
-    return jsonify({"success": True}), 200
+    return jsonify({
+        'code': 201,
+        "success": True
+    }), 201
 
 # Helper function to get all cart items of a single user
 def getAllCartItems(user_id):
@@ -114,9 +118,15 @@ def getAllCartItems(user_id):
 def delete_from_cart(user_id):
     if len(getAllCartItems(user_id)) > 0:
         collection.delete_many({'userId': user_id})
-        return jsonify({'success': True}), 200
+        return jsonify({
+            'code': 200,
+            'success': True
+        }), 200
     else:
-        return jsonify({'success': False, 'message': 'Cart has been cleared'})
+        return jsonify({
+            'code': 400,
+            'success': False, 'message': 'Cart has been cleared'
+        }), 400
     
 @app.route('/delete_one_item', methods = ['DELETE'])
 def delete_one_item():
@@ -125,9 +135,15 @@ def delete_one_item():
     productID = data['productID']
     if len(getAllCartItems(userId)) > 0:
         collection.delete_one({'userId': userId, 'productID': productID})
-        return jsonify({'success': True}), 200
+        return jsonify({
+            'code': 200,
+            'success': True
+        }), 200
     else:
-        return jsonify({'success': False, 'message': 'Item has been deleted from the cart'})
+        return jsonify({
+            'code': 400,
+            'success': False, 'message': 'Item has been deleted from the cart'
+        }), 400
 
 #  port 5002
 if __name__ == '__main__':
