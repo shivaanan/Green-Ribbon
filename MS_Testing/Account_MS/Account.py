@@ -50,25 +50,40 @@ def login_user():
         return jsonify({"success": False})
        
 
-@app.route("/createuser", methods=["POST"])
+@app.route("/create_acct", methods=["POST"])
 def create_user():
     data = request.get_json()   
     name = data["newName"]
     email = data["newEmail"]
     password = data["newPassword"]
+    print(name)
+    print(email)
+    print(password)
 
     try:
         user = auth.create_user_with_email_and_password(email, password)
+        print(user)
 
         info = auth.get_account_info(user['idToken'])
         userId = info["users"][0]["localId"]
 
         addUserNameAndEmail(userId, name, email)
 
-        return jsonify({"success": True})
+        return jsonify(
+            {
+                "code": 201, 
+                "message": "Account created successfully"
+            }
+        ), 201
 
     except:
-        return jsonify({"success": False})
+        # return jsonify({"success": False})
+        return jsonify(
+            {
+                "code": 400, 
+                "message": "Error occurred when trying to create user" 
+            }
+        ), 400 
     
 # saves user's name and email (saving users particulars)
 def addUserNameAndEmail(userId, name, email):
@@ -78,43 +93,6 @@ def addUserNameAndEmail(userId, name, email):
     }
 
     db.child("users").child(userId).set(data)
-
-
-@app.route("/getallusers", methods=["GET"])
-def getalluser(): 
-    try: 
-        data = db.child("users").get()
-        data = data.val()
-        num = len(data)
-        num = str(num)
-        if data == []:
-            return jsonify(
-                {
-                    "code": 400, 
-                    "data": {
-                        "data": data
-                    }, 
-                    "message": 'No users in database'
-                }
-            ), 400 
-    except: 
-        return jsonify(
-            {
-                "code": 400, 
-                "data": {
-                    "data": data 
-                }, 
-                "message": "Error occured when trying to get all users"
-            }
-        ), 400 
-    return jsonify( 
-        {
-            "code": 200,
-            "data": data,
-            "message": "Successfully returned " + num + " users"
-        }
-    ), 200 
-
 
 @app.route("/getbyuseremail/<string:email>", methods=['GET'])
 def getbyuseremail(email):
@@ -148,6 +126,45 @@ def getbyuseremail(email):
             "data": userobj,
         }
     ), 200
+
+### not using this function ###
+
+# @app.route("/getallusers", methods=["GET"])
+# def getalluser(): 
+#     try: 
+#         data = db.child("users").get()
+#         data = data.val()
+#         num = len(data)
+#         num = str(num)
+#         if data == []:
+#             return jsonify(
+#                 {
+#                     "code": 400, 
+#                     "data": {
+#                         "data": data
+#                     }, 
+#                     "message": 'No users in database'
+#                 }
+#             ), 400 
+#     except: 
+#         return jsonify(
+#             {
+#                 "code": 400, 
+#                 "data": {
+#                     "data": data 
+#                 }, 
+#                 "message": "Error occured when trying to get all users"
+#             }
+#         ), 400 
+#     return jsonify( 
+#         {
+#             "code": 200,
+#             "data": data,
+#             "message": "Successfully returned " + num + " users"
+#         }
+#     ), 200 
+
+
 
 
 if __name__ == '__main__':
