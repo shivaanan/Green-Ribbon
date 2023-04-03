@@ -16,17 +16,6 @@ accountMSURL = environ.get('account_URL') or 'http://localhost:5001'
 locationMSURL = environ.get('location_URL') or 'http://localhost:8080'
 listingMSURL = environ.get('listing_URL') or 'http://localhost:5002'
 
-# Check if user exist 
-# def ifexists(email): 
-#     getallURL = accountMSURL + "/getallusers"
-#     result = invoke_http(getallURL, method='GET')
-#     users = result['data']
-#     error = []
-#     if email in users: 
-#         error.append('user')
-#     if users == {} : 
-#         return error 
-#     return error 
 
 # Add new user to database
 @app.route("/create_acct", methods=['POST'])
@@ -53,53 +42,35 @@ def create_account():
         ), 400
 
 # Verify user login 
-@app.route("/verifylogin", methods=['POST']) 
+@app.route("/verify_login", methods=['POST']) 
 def verifylogin(): 
     #get login post request 
     data = request.get_json()
-    email = data['email'].lower() 
-    if email == "":
-        return jsonify (
-            {
-                "code": 400,
-                "data": None,
-                "message": "Please key in the proper login details"
-            }
-    ), 400 
+
     try: 
-        accountURL = accountMSURL + "/loginuser" 
+        accountURL = accountMSURL + "/verify_login" 
         result = invoke_http(accountURL, method='POST', json=data)
-        status = result['success']
-        if status == False: 
-            amqpmessage = "Error retrieving account, incorrect login details"
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="login.error", body=amqpmessage)
-            return jsonify( 
+
+        amqpmessage = "Account retrieved successfully"
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="login.info", body=amqpmessage)
+
+        data = result['data']
+        return jsonify(
                 {
-                    "code": 400, 
-                    "data": result, 
-                    "message": "Incorrect login details"
+                    "code": 201,
+                    "data": data,
+                    "message": "Login successful"
                 }
-        ), 400 
-        else : 
-            amqpmessage = "Account retrieved successfully"
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="login.info", body=amqpmessage)
-            user = result['userId']
-            return jsonify(
-                    {
-                        "code": 201,
-                        "data": user,
-                        "message": "Login successful"
-                    }
-                ), 201
+            ), 201
     
     except:
         amqpmessage = "Error retrieving account, incorrect login details"
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="login.error", body=amqpmessage)
+
         return jsonify(
             {
                 "code": 400,
-                "data": result,
-                "message": "Incorrect login details or password."
+                "message": "Incorrect login details"
             }
         ), 400
 

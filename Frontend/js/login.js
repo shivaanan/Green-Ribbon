@@ -26,33 +26,26 @@ function signIn() {
 
 	console.log("-------In user signIn------");
         
-	axios.post('http://127.0.0.1:5200/loginuser', {
+	axios.post('http://127.0.0.1:5100/verify_login', {
 		"email":  email,
 		"password" : password
 		})
 		.then(response => {
 			// console.log(response.data);
-			console.log(response.data["success"]);
-
-			if (response.data["success"]) {
-				
-				let userId = response.data["userId"];
-				
-				// stores userId in session storage
-				sessionStorage.setItem("userId", userId);
-				console.log(sessionStorage.getItem("userId"));
-				
-				// Redirect to home page
-				window.location.href = "home.html";
-
-			  } else {
-				// Show error message
-				document.getElementById("error").innerHTML = "Invalid email or password";
-			  }
+			let userId = response.data["data"]["userId"];
 			
+			// stores userId in session storage
+			sessionStorage.setItem("userId", userId);
+			console.log(sessionStorage.getItem("userId"));
+			
+			// Redirect to home page
+			window.location.href = "home.html";
+
 		})
 		
 		.catch(error => {
+			// Show error message
+			document.getElementById("error").innerHTML = "Invalid email or password";
 			
 		});
 	console.log("-------end user signIn------");
