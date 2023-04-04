@@ -29,7 +29,10 @@ def receiveOrderLog():
 
 def callback(channel, method, properties, body): # required signature for the callback; no return
     print("\nReceived an order log by " + __file__)
-    processOrderLog(json.loads(body))
+    try:
+        processOrderLog(json.loads(body))
+    except json.JSONDecodeError as e:
+        print(f"Failed to parse JSON: {e}")
     print() # print a new line feed
 
 def processOrderLog(order):
