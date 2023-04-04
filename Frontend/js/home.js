@@ -37,11 +37,7 @@ const homePage = Vue.createApp({
     },
 
     computed: {
-        // make a computed property for the cart count
-        cartCount() {
 
-            
-        },
     },
 
     methods: {
