@@ -147,9 +147,23 @@ def add_product():
                 'availability': availability,
                 'address': address,
                 "imgURL": imgURL})
-        return getAllProducts()
-    except Exception as e:
-        return jsonify({'code': 404, 'error': str(e)}), 404
+        return jsonify(
+            {
+                "code": 200, 
+                "message": "Successfully added product",
+                "data" : {
+                    "all_products" : getAllProducts()
+                }   
+            }
+        ), 200
+    
+    except:
+        return jsonify(
+            {
+                "code": 400, 
+                "message": "Error updating product quantity",
+            }
+        ), 400
 
 
 def get_next_sequence_value(sequence_name):
@@ -159,7 +173,7 @@ def get_next_sequence_value(sequence_name):
     return sequence_value['seq']
 
 
-@app.route('/edit/', methods=['PUT'])
+@app.route('/update_product_qty', methods=['PUT'])
 def edit_product():
     try:
         data = request.get_json()
@@ -168,17 +182,44 @@ def edit_product():
 
         collection.update_one({"productID": productID}, {"$inc": {"quantity": -soldQuantity}})
 
-        return getAllProducts()
-    except Exception as e:
-        return jsonify({'code': 404, 'error': str(e)}), 404
+        return jsonify(
+            {
+                "code": 200, 
+                "message": "Updated product quantity",
+            }
+        ), 200
+    
+    except:
+        return jsonify(
+            {
+                "code": 400, 
+                "message": "Error updating product quantity",
+            }
+        ), 400
 
 # removing sold OR no quantity products
 
 
-@app.route('/delete/<product_id>', methods=['DELETE'])
+@app.route('/remove_product/<product_id>', methods=['DELETE'])
 def delete_product(product_id):
-    collection.delete_one({_id: product_id})
-    return getAllProducts()
+    try: 
+
+        collection.delete_one({_id: product_id})
+
+        return jsonify(
+            {
+                "code": 200, 
+                "message": "Product Successfully Deleted",
+            }
+        ), 200
+    
+    except:
+        return jsonify(
+            {
+                "code": 400, 
+                "message": "Error deleting product",
+            }
+        ), 400
 
 
 if __name__ == '__main__':
