@@ -71,20 +71,20 @@ def getAllProducts():
 @app.route('/add_to_cart',methods = ['POST'])
 def add_to_cart():  
     data = request.get_json()
-    userId = data["userId"]
-    quantity = data["quantity"]
+    buyerID = data["userId"]
+    inputQuantity = data["qtyInput"]
     productID = data["productID"]
     product = data['product']
 
+    sellerID = product["sellerID"]
     itemName = product["itemName"]
-    quantity = product['quantity']
     price = product['price']
     dateOfPost = product['dateOfPost']
     address = product['address']
     imgURL = product["imgURL"]
     
     # Check if item already in cart
-    existing_cart_item = collection.find_one({'userId': userId, 'productID': productID})
+    existing_cart_item = collection.find_one({'buyerID': buyerID, 'productID': productID})
     if existing_cart_item:
         return jsonify({
             'code': 400,
@@ -92,10 +92,11 @@ def add_to_cart():
         })
     else:
         collection.insert_one({ 
-            "userId": userId, 
+            "buyerID": buyerID,
+            "sellerID": sellerID, 
             "productID": productID,
             "itemName": itemName,
-            "quantity": quantity,
+            "inputQuantity": inputQuantity,
             "price": price,
             "dateOfPost": dateOfPost,
             'address': address,
