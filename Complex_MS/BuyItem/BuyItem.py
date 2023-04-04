@@ -39,35 +39,17 @@ def buy_item():
         # print(getCartResponse)
         # print("TEST getCartResponse (END)")
         shoppingCart = getCartResponse['data']["cart_list"]
-        # print("TEST shoppingCart (START)")
-        # print(shoppingCart)
-        # print("TEST shoppingCart (END)")
+        print("TEST shoppingCart (START)")
+        print(shoppingCart)
+        print("TEST shoppingCart (END)")
 
-        for eachItem in shoppingCart:
-            product_ID = eachItem['productID']
-            productName = eachItem['itemName']
-            listing_ms_url = f"{listing_URL}/products/{product_ID}"
-
-            listingResponse = requests.get(listing_ms_url)
-            data = listingResponse.json()
-
-            checkProduct = data['data']['product']
-            # print("TEST START")
-            # # print(eachItem)
-            # print(checkProduct)
-            # print("TEST END")
-
-            checkQuantity = checkProduct['quantity']
-            currentQuantity = eachItem['inputQuantity']
-            # print("TEST START")
-            # print(checkQuantity)
-            # print(currentQuantity)
-            # print("TEST END")
-
-            if currentQuantity > checkQuantity:
-                return jsonify({
+        listing_ms_url = f"{listing_URL}/check_item_quantity"
+        checkQuantityResponse = invoke_http(listing_ms_url, method='POST', json=shoppingCart)
+        if checkQuantityResponse['code']==400:
+            errorMessage = checkQuantityResponse['error']
+            return jsonify({
                     'code': 400,
-                    'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity"
+                    'message': errorMessage
                 }), 400
             
         combinedData = {"userId": userId, "dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
@@ -127,7 +109,7 @@ def processOrder(products):
         return {
             "code": 500,
             "data": {"payment_result": payment_result},
-            "message": "Order creation failure sent for error handling."
+            "message": payment_result['message']
         }
 
     else:    

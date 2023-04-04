@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ),
     });
     const data = await paymentResponse.json();
+    console.log(data)
     // console.log("paymentResponse START")
     // console.log(data)
     // console.log("paymentResponse END")
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (data.code !== 201) {
       // PAYMENT FAILED
-      const errorMessage = data.data.payment_result.message;
+      const errorMessage = data['message'];
       console.error("Payment failed:", errorMessage);
       const errorMessageElement = document.getElementById("error-message");
       errorMessageElement.textContent = errorMessage;
