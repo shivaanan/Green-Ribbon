@@ -26,113 +26,121 @@ services:
   ###################################
   # Account: The Account SIMPLE MICROSERVICE
   ###################################  
-  Account:
+  account:
     build:
       context: ./MS_Testing/Account_MS
       dockerfile: Account.Dockerfile
     image: mrtaooo/account:1.0
     networks:
       - G6T4-net
-    container_name: Account
+    container_name: account
     restart: always
     ports:
       - "5001:5001"
+    environment:
+      PYTHONUNBUFFERED: 1
 
   ###################################
   # Listing: The Listing SIMPLE MICROSERVICE
   ###################################  
-  Listing:
+  listing:
     build:
       context: ./MS_Testing/Listing_MS
       dockerfile: Listing.Dockerfile
     image: mrtaooo/listing:1.0
     networks:
       - G6T4-net
-    container_name: Listing
+    container_name: listing
     restart: always
     ports:
       - "5002:5002"
+    environment:
+      PYTHONUNBUFFERED: 1
 
   ###################################
   # Cart: The Cart SIMPLE MICROSERVICE
   ###################################  
-  Cart:
+  cart:
     build:
       context: ./MS_Testing/Cart_MS
       dockerfile: Cart.Dockerfile
     image: mrtaooo/cart:1.0
     networks:
       - G6T4-net
-    container_name: Cart
+    container_name: cart
     restart: always
     ports:
       - "5003:5003"
+    environment:
+      PYTHONUNBUFFERED: 1
 
   ###################################
   # Payment: The Payment SIMPLE MICROSERVICE
   ###################################  
-  Payment:
+  payment:
     build:
       context: ./MS_Testing/Payment_MS
       dockerfile: Payment.Dockerfile
     image: mrtaooo/payment:1.0
     networks:
       - G6T4-net
-    container_name: Payment
+    container_name: payment
     restart: always
     ports:
       - "5005:5005"
+    environment:
+      PYTHONUNBUFFERED: 1
 
 ###################################################################### BREAK ######################################################################
 
   ###################################
   # BuyItem: The BuyItem COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
   ###################################  
-  BuyItem:
+  buyitem:
     build:
       context: ./Complex_MS/BuyItem
       dockerfile: BuyItem.Dockerfile
     image: mrtaooo/buyitem:1.0
     networks:
       - G6T4-net
-    container_name: BuyItem
+    container_name: buyitem
     restart: always
     depends_on:
-      - Listing
-      - Payment
-      - Cart
+      - listing
+      - payment
+      - cart
       - rabbitmq
     ports:
       - "5200:5200"
     environment:
-      # - location_URL: http://Location:8080
-      listing_URL: http://Listing:5002
-      cart_URL: http://Cart:5003
-      # - order_URL: http://Order:5004
-      payment_URL: http://Payment:5005
+      # - location_URL: http://location:8080
+      listing_URL: http://listing:5002
+      cart_URL: http://cart:5003
+      # - order_URL: http://order:5004
+      payment_URL: http://payment:5005
       rabbit_host: rabbitmq
 
   ###################################
   # LoginAccount: The LoginAccount COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
   ###################################  
-  LoginAccount:
+  loginaccount:
     build:
       context: ./Complex_MS/LoginAccount
       dockerfile: LoginAccount.Dockerfile
     image: mrtaooo/loginaccount:1.0
     networks:
       - G6T4-net
-    container_name: LoginAccount
+    container_name: loginaccount
     restart: always
     depends_on:
-      - Account
-      - Listing
+      - account
+      - listing
       - rabbitmq
       # - Location
     ports:
       - "5100:5100"
     environment:
-      - account_URL=http://Account:5001
-      # - location_URL: http://Location:8080
-      - listing_URL=http://Listing:5002
+      - account_URL=http://account:5001
+      # - location_URL: http://location:8080
+      - listing_URL=http://listing:5002
 
