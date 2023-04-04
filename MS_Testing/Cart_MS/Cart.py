@@ -17,10 +17,10 @@ collection = db['Cart']
 def getAllProducts():
 
     data = request.get_json()
-    userId = data["userId"]
+    buyerID = data["buyerID"]
     
     try:
-        cart_items = collection.find({"userId": userId})
+        cart_items = collection.find({"buyerID": buyerID})
         cart_list = []
         print(cart_list)
 
@@ -29,15 +29,20 @@ def getAllProducts():
             cart_list.append(a_item)
 
         print(cart_list)
+
         return jsonify({
-            'code': 200,
-            'cart_list': cart_list
-        }), 200    
-    except Exception as e:
+                'code': 200,
+                'message': 'Retrieved all cart items',
+                'data' : {
+                    'cart_list': cart_list
+                }
+            }), 200    
+        
+    except:
         return jsonify({
-            'code':404,
-            'error': str(e)
-        }),404
+            'code':400,
+            'message': 'Unable to retrieve all cart items'
+        }),400
 
 
 @app.route('/add_to_cart',methods = ['POST'])
@@ -76,23 +81,23 @@ def add_to_cart():
             }
         )
     return jsonify({
-        'code': 201,
+        'code': 200,
         "message": "Item has been successfully added to cart"
-    }), 201
+    }), 200
 
 # Helper function to get all cart items of a single user
-def getAllCartItems(user_id):
+def getAllCartItems(buyerID):
     cart_items = []
-    for item in collection.find({'userId': user_id}):
+    for item in collection.find({'buyerID': buyerID}):
         cart_items.append(item)
     
     return cart_items
 
 # Delete all items in cart once purchase has been made
-@app.route('/delete_from_cart/<user_id>', methods = ['DELETE'])
-def delete_from_cart(user_id):
-    if len(getAllCartItems(user_id)) > 0:
-        collection.delete_many({'userId': user_id})
+@app.route('/delete_from_cart/<buyerID>', methods = ['DELETE'])
+def delete_from_cart(buyerID):
+    if len(getAllCartItems(buyerID)) > 0:
+        collection.delete_many({'buyerID': buyerID})
         return jsonify({
             'code': 200,
             'success': "Cart has been deleted"
@@ -103,10 +108,10 @@ def delete_from_cart(user_id):
             'message': 'Cart has is initially empty'
         }), 400
     
-@app.route('/delete_one_item/<userId>/<int:productID>', methods = ['DELETE'])
-def delete_one_item(userId, productID):
-    if len(getAllCartItems(userId)) > 0:
-        collection.delete_one({'userId': userId, 'productID': productID})
+@app.route('/delete_one_item/<buyerID>/<int:productID>', methods = ['DELETE'])
+def delete_one_item(buyerID, productID):
+    if len(getAllCartItems(buyerID)) > 0:
+        collection.delete_one({'buyerID': buyerID, 'productID': productID})
         return jsonify({
             'code': 200,
             'message': "Item has been deleted from the cart"
