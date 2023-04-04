@@ -32,7 +32,6 @@ def getAllProducts():
                 'quantity': product['quantity'],
                 'price': product['price'],
                 'dateOfPost': product['dateOfPost'],
-                'availability': product['availability'],
                 'address': product['address'],
                 'imgURL': product["imgURL"]
             }
@@ -67,7 +66,6 @@ def getProductByID(productID):
             'quantity': product['quantity'],
             'price': product['price'],
             'dateOfPost': product['dateOfPost'],
-            'availability': product['availability'],
             'address': product['address'],
             'imgURL': product["imgURL"]
         }
@@ -131,7 +129,6 @@ def add_product():
         quantity = data['quantity']
         price = data['price']
         dateOfPost = data['dateOfPost']
-        availability = data['availability']
         address = data['address']
         imgURL = data["imgURL"]
 
@@ -144,7 +141,6 @@ def add_product():
                 'quantity': quantity,
                 'price': price,
                 'dateOfPost': dateOfPost,
-                'availability': availability,
                 'address': address,
                 "imgURL": imgURL})
         return jsonify(
