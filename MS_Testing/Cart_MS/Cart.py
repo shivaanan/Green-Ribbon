@@ -16,8 +16,8 @@ cart = {}
 
 # # Get 1 Product
 # @app.route('/products/<int:productID>', methods=['GET'])
-def getProductByID(productID):
-    product = collection.find_one({'productID': productID})
+# def getProductByID(productID):
+#     product = collection.find_one({'productID': productID})
     # if product:
     #     product_dict = {
     #         'productID': product["productID"], 
@@ -30,7 +30,7 @@ def getProductByID(productID):
     #         'imgURL': product["imgURL"]
     #     }
         # return jsonify(product_dict)
-    return product
+    # return product
 
 #     else:
 #         return jsonify(
@@ -53,7 +53,7 @@ def getAllProducts():
         print(cart_list)
 
         for a_item in cart_items:
-            a_item['_id'] = str(a_item['_id'])  # convert ObjectId to string
+            a_item['_id'] = str(a_item['_id'])
             cart_list.append(a_item)
 
         print(cart_list)
@@ -72,7 +72,7 @@ def getAllProducts():
 def add_to_cart():  
     data = request.get_json()
     userId = data["userId"]
-    input_quantity = data["qtyInput"]
+    quantity = data["quantity"]
     productID = data["productID"]
     product = data['product']
 
@@ -86,13 +86,16 @@ def add_to_cart():
     # Check if item already in cart
     existing_cart_item = collection.find_one({'userId': userId, 'productID': productID})
     if existing_cart_item:
-        return jsonify({'success': False, 'message': 'Item already in cart.'})
+        return jsonify({
+            'code': 400,
+            'message': 'Item already in cart.'
+        })
     else:
         collection.insert_one({ 
             "userId": userId, 
             "productID": productID,
             "itemName": itemName,
-            "inputQuantity": quantity,
+            "quantity": quantity,
             "price": price,
             "dateOfPost": dateOfPost,
             'address': address,
