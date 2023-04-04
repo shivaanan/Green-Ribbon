@@ -39,6 +39,7 @@ const cartPage = Vue.createApp({
         return {
             cartItems: [],
             userId: sessionStorage.getItem("userId"),
+            
         };
     }, // data
 
@@ -65,6 +66,26 @@ const cartPage = Vue.createApp({
     },
 
     computed: {
+        
+        subtotal() {
+            
+            var totalPrice = this.cartItems.map(function(item) {
+                return item.price * item.inputQuantity;
+              }).reduce(function(total, value) {
+                return total + value;
+              }, 0);
+              
+            return totalPrice;
+        },
+
+        gst(){
+            return this.subtotal * 0.08;
+        },
+
+        grandTotal(){
+            return this.subtotal + this.gst;
+        }
+
 
         
     },
@@ -79,7 +100,7 @@ const cartPage = Vue.createApp({
             axios
             .delete('http://127.0.0.1:5200/delete_cart_item/' + userId + '/' + productID)
             .then((response) => {
-                
+
 
                 // Filter out the item with the specified ID
                 var newCartItems = this.cartItems.filter(function(item) {
@@ -92,7 +113,7 @@ const cartPage = Vue.createApp({
 
                 document.getElementById("delete_alert").innerHTML = `
                     <div class="alert alert-warning" role="alert">
-                        This is a warning alert—check it out!
+                        Removed item from cart!
                     </div>`
     
                     setTimeout(function() {
@@ -103,9 +124,7 @@ const cartPage = Vue.createApp({
             })
             
             .catch((error) => {
-                // console.log(error);
-                // let error_message = error.response.data["message"];
-                // console.log(error_message);
+    
             });
         },
 
