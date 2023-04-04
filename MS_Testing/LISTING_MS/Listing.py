@@ -74,7 +74,7 @@ def getProductByID(productID):
                 "code": 200, 
                 "message": "Retrieved 1 product",
                 "data" : {
-                    "products" : product_dict
+                    "product" : product_dict
                 }
             }
         ), 200
@@ -169,7 +169,7 @@ def get_next_sequence_value(sequence_name):
     return sequence_value['seq']
 
 
-@app.route('/update_product_qty', methods=['PUT'])
+@app.route('/update_sold_product_qty', methods=['PUT'])
 def edit_product():
     try:
         data = request.get_json()
@@ -196,11 +196,11 @@ def edit_product():
 # removing sold OR no quantity products
 
 
-@app.route('/remove_product/<product_id>', methods=['DELETE'])
+@app.route('/remove_product/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     try: 
 
-        collection.delete_one({_id: product_id})
+        collection.delete_many({"productID": product_id})
 
         return jsonify(
             {
