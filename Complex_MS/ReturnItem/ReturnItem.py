@@ -74,9 +74,6 @@ def refund_decision():
         data = request.get_json()
         orderID = data['orderID']
         decision = data['decision'] # either "accept" or "reject"
-        shoppingCart = data['dataObj']
-        card_details = data['cardDetails']
-        cardHolderName = data['cardName']
 
         # Get order data from the external API endpoint
         url = f"{orders_URL}/orders/{orderID}"
@@ -106,6 +103,10 @@ def refund_decision():
             }
         else:
             if decision == 'accept':
+                shoppingCart = data['dataObj']
+                card_details = data['cardDetails']
+                cardHolderName = data['cardName']
+
                 # Update order status to "Refunded"
                 order_result['status'] = 'Refunded'
 
@@ -134,7 +135,7 @@ def refund_decision():
                 return jsonify({'code': 200,'message': f"Refund rejected for Order {orderID}."})
 
             else:
-                return jsonify({'message': f"Invalid decision '{decision}'. Decision should be either 'accept' or 'reject'."})
+                return jsonify({'code': 400,'message': f"Invalid decision '{decision}'. Decision should be either 'accept' or 'reject'."})
 
     except Exception as e:
         return jsonify({'code': 404, 'error': str(e)}), 404
