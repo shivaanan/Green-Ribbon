@@ -71,21 +71,6 @@ def buy_item():
         # print(processOrderResult)
         # print("TEST processOrderResult (END)")
 
-        # ======================== invoking orderMS (START) ========================
-        # if processOrderResult["code"] == 201:
-        #     for eachItem in shoppingCart:
-        #         userId = eachItem['userId']
-        #         order_ms_url = f"{order_URL}/add_order/{userId}"
-
-        #         orderResponse = requests.get(order_ms_url)
-        #         checkOrder = orderResponse.json()
-            
-        #     return jsonify({
-        #         'code': 200,
-        #         'success': 'Item per user per product has been logged into database'
-        #     })
-        # ======================== invoking orderMS (START) ========================
-
         return jsonify(processOrderResult), processOrderResult["code"]
 
     except Exception as e:
