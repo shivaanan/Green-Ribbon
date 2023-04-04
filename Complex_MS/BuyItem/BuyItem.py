@@ -13,13 +13,19 @@ import pika
 import json
 
 app = Flask(__name__)
-CORS(app, resources={r"*": {"origins": "*"}})
+CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5002/products"
 payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
 order_URL = environ.get('order_URL') or "http://127.0.0.1:5004"
 rabbitMQhostname = environ.get('rabbit_host') or "localhost"
+
+# listing_URL = environ.get('listing_URL') or "http://listing:5002/products"
+# payment_URL = environ.get('payment_URL') or "http://payment:5005/payment"
+# cart_URL = environ.get('cart_URL') or "http://cart:5003"
+# order_URL = environ.get('order_URL') or "http://order:5004"
+# rabbitMQhostname = environ.get('rabbit_host') or "rabbitmq"
 
 
 @app.route("/buy_item", methods=['POST'])
@@ -43,7 +49,7 @@ def buy_item():
         for eachItem in shoppingCart:
             product_ID = eachItem['productID']
             productName = eachItem['itemName']
-            listing_ms_url = f"{listing_URL}/{product_ID}"
+            listing_ms_url = f"{listing_URL}/products/{product_ID}"
 
             listingResponse = requests.get(listing_ms_url)
             checkProduct = listingResponse.json()
@@ -155,7 +161,7 @@ def add_to_cart():
 
     # use axios to make a post request to listingMS
     # listingMS will return the product with the productID
-    product = invoke_http(listing_URL + "/" + str(productID), method='GET')
+    product = invoke_http(listing_URL + "/products/" + str(productID), method='GET')
     print(product)
     # check if the quantity is available
     # if not, return error message
@@ -233,4 +239,4 @@ def get_cart_helper_func(userId):
 
 
 if __name__ == '__main__':
-    app.run(port=5200, debug=True)
+    app.run(host='0.0.0.0', port=5200, debug=True)
