@@ -57,7 +57,7 @@ def verifylogin():
         data = result['data']
         return jsonify(
                 {
-                    "code": 201,
+                    "code": 200,
                     "data": data,
                     "message": "Login successful"
                 }
@@ -125,7 +125,6 @@ def get_distance():
          return jsonify(
             {
                 "code": 400,
-                "data": response,
                 "message": "Failed to calculate distance"
             }
         ), 400
@@ -143,7 +142,7 @@ def get_all_products():
 
         return jsonify(
             {
-                    "code": 201,
+                    "code": 200,
                     "data": data,
                     "message": "Retrieved all products"
             }
