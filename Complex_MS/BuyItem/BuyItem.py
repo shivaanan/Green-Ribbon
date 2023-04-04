@@ -13,19 +13,13 @@ import pika
 import json
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"*": {"origins": "*"}})
 
-listing_URL = environ.get('listing_URL') or "http://localhost:5002/products"
+listing_URL = environ.get('listing_URL') or "http://localhost:5002"
 payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
 order_URL = environ.get('order_URL') or "http://127.0.0.1:5004"
 rabbitMQhostname = environ.get('rabbit_host') or "localhost"
-
-# listing_URL = environ.get('listing_URL') or "http://listing:5002/products"
-# payment_URL = environ.get('payment_URL') or "http://payment:5005/payment"
-# cart_URL = environ.get('cart_URL') or "http://cart:5003"
-# order_URL = environ.get('order_URL') or "http://order:5004"
-# rabbitMQhostname = environ.get('rabbit_host') or "rabbitmq"
 
 
 @app.route("/buy_item", methods=['POST'])
@@ -148,31 +142,33 @@ def processOrder(products):
     }
 # ======================== HELPER FUNCTION (END) ========================
 
+
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
+    
 
     data = request.get_json()
     print(data)
     userId = data["userId"]
-    productID = data["productId"]
-    qtyInput = int(data["qtyInput"])
+    productID = data["productID"]
+    qtyInput = data["qtyInput"]
     print("printing product")
     print(productID)
 
     # use axios to make a post request to listingMS
     # listingMS will return the product with the productID
-    product = invoke_http(listing_URL + "/products/" + str(productID), method='GET')
-    print(product)
+    result = invoke_http(listing_URL + "/products/" + str(productID), method='GET')
+    product = result["data"]["product"]
+
     # check if the quantity is available
     # if not, return error message
-    if (product["quantity"] < qtyInput):
+    if (product["quantity"] < int(qtyInput)):
         print("qty less that inventory")
-        return jsonify(
-            {
-                'success': False,
-                'error': 'Enter valid quantity!'
-            }
-        )
+
+        return jsonify({
+            'code': 400,
+            "message": "Enter valid quantity!"
+        }), 400
 
     # if yes, invoke cartMS to add to cart
     # cartMS will return the cart
@@ -182,61 +178,53 @@ def add_to_cart():
         "qtyInput": qtyInput,
         "product": product
     }
+    # try:
     cart = invoke_http(cart_URL + "/add_to_cart", method='POST', json=data)
 
-    if (cart["success"]):
-        return jsonify(
-            {
-                'success': True
-            }
-        ), 200
+    if (cart["code"] == 200):
+    
+        return jsonify({
+            'code': 200,
+            "message": "Item added to cart!"
+        }), 200
+    
+    else:
+        return jsonify({
+            'code': 400,
+            "message": "Item already in cart!"
+        }), 400
 
-    return jsonify({
-        'success': False,
-        "error": "Item already in cart"
-    })
 
-
+# display user cart on UI
 @app.route('/get_cart/<userId>', methods=['GET'])
 def get_cart(userId):
 
-    # data = request.get_json()
-    data = {
-        "userId": userId
-    }
-    # invoke cartMS to get the cart
-    cart = invoke_http(cart_URL + "/get_cart", method='GET', json=data)
+    try: 
+        data = {
+            "buyerID": userId
+        }
+        # invoke cartMS to get the cart
+        result = invoke_http(cart_URL + "/get_cart", method='GET', json=data)
 
-    cart_list = cart["cart_list"]
+        cart_list = result["data"]["cart_list"]
 
-    return jsonify(cart_list)
+        return jsonify({
+            'code': 200,
+            'message': 'Cart retrieved successfully',
+            'data': {
+                'cart_list': cart_list
+            }
+        })
+    
 
-
-@app.route("/get_cart_count/<userId>", methods=['GET'])
-def get_cart_count(userId):
-    # data = request.get_json();
-    # userId = data["userId"]
-
-    cart = get_cart_helper_func(userId)
-    count = len(cart["cart_list"])
-
-    print(count)
-    return jsonify({
-        "cart_count": count})
-
-# helper function to get cart
+    except: 
+        return jsonify({
+            'code': 400,
+            'message': 'Unable to retrieve all cart items'
+        }), 400
 
 
-def get_cart_helper_func(userId):
-    data = {
-        "userId": userId
-    }
-
-    # invoke cartMS to get the cart
-    cart = invoke_http(cart_URL + "/get_cart", method='GET', json=data)
-
-    return cart
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5200, debug=True)
+    app.run(port=5200, debug=True)
