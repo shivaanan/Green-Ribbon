@@ -12,7 +12,7 @@ connection = pika.BlockingConnection(
 
 channel = connection.channel()
 
-exchangename= "order_topic" #?##
+exchangename= "account_topic" #?##
 exchangetype= "topic" #?##
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
