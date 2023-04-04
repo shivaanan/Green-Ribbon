@@ -90,36 +90,34 @@ def getProductByID(productID):
             }
         ), 400
 
-# FOR PAYMENT
+# # FOR PAYMENT
+# @app.route('/check_item_quantity', methods=['POST'])
+# def check_item_quantity():
+#     shoppingCart = request.get_json()
+#     for eachItem in shoppingCart:
+#         product_ID = eachItem['productID']
+#         productName = eachItem['itemName']
 
+#         product = collection.find_one({'productID': product_ID})
+#         product_dict = {
+#             'sellerID': product['sellerID'],
+#             'productID': product["productID"],
+#             'itemName': product['itemName'],
+#             'quantity': product['quantity'],
+#             'price': product['price'],
+#             'dateOfPost': product['dateOfPost'],
+#             'address': product['address'],
+#             'imgURL': product["imgURL"]
+#         }
 
-@app.route('/check_item_quantity', methods=['POST'])
-def check_item_quantity():
-    shoppingCart = request.get_json()
-    for eachItem in shoppingCart:
-        product_ID = eachItem['productID']
-        productName = eachItem['itemName']
+#         checkQuantity = product_dict['quantity']
+#         currentQuantity = eachItem['inputQuantity']
 
-        product = collection.find_one({'productID': product_ID})
-        product_dict = {
-            'sellerID': product['sellerID'],
-            'productID': product["productID"],
-            'itemName': product['itemName'],
-            'quantity': product['quantity'],
-            'price': product['price'],
-            'dateOfPost': product['dateOfPost'],
-            'address': product['address'],
-            'imgURL': product["imgURL"]
-        }
-
-        checkQuantity = product_dict['quantity']
-        currentQuantity = eachItem['inputQuantity']
-
-        if currentQuantity > checkQuantity:
-            return jsonify({
-                'code': 400,
-                'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity"
-            }), 400
+#         if currentQuantity > checkQuantity:
+#             return jsonify({
+#                 'code': 400,
+#                 'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity"
+#             }), 400
 
 
 # Not in scenario

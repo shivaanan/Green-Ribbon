@@ -19,6 +19,8 @@ def payment():
     shoppingCart = data['dataObj']
     card_details = data['cardDetails']
     cardHolderName = data['cardName']
+    buyerID = data['buyerID']
+    sellerIDs = data['sellerIDs']
     # print("print card (START)")
     # print(card)
     # print("print card (END)")
@@ -98,6 +100,8 @@ def payment():
             'message':'Payment Successful! Thank you for shopping with us :)',
             'description': shoppingCart,
             'purchaseSummary':purchase_summary,
+            'buyerID':buyerID,
+            'sellerIDs':sellerIDs,
         }), 201
         
 
@@ -105,7 +109,9 @@ def payment():
             return jsonify({
             "code": 400,
             'paymentStatus':'Payment_Unsuccessful',
-            "message": "Payment Unsuccessful!"
+            "message": "Payment Unsuccessful!",
+            'buyerID':buyerID,
+            'sellerIDs':sellerIDs,
         }), 400
         
 
