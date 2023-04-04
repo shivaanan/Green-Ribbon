@@ -8,8 +8,8 @@
     <!-- fontawesome cdn -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <!-- custom css -->
     <link rel="stylesheet" href="css/profile.css">
 
@@ -49,7 +49,8 @@
     <div style="background-color: #b1cfc9;">
         <h1 class="text text-center py-4">Profile</h1>
     </div>
-    <!-- Profile -->
+
+    <!-- Profile ------------------------------------------------------------------------------------------>
     <section>
       <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -81,194 +82,256 @@
       </div>
     </section>
     <!-- Profile End -->
+
+
   <div class="container">
-    <!-- Tabbed menu -->
+    <!-- Nav tabs -->
     <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="listings-tab" data-bs-toggle="tab" data-bs-target="#listings" type="button" role="tab" aria-controls="listings" aria-selected="true">Listings</button>
+        <button class="nav-link active" id="userListings-tab" data-bs-toggle="tab" data-bs-target="#userListings" 
+        type="button" role="tab" aria-controls="userListings" aria-selected="true">Listings</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">Order History</button>
+        <button class="nav-link" id="orderHistory-tab" data-bs-toggle="tab" data-bs-target="#orderHistory" 
+        type="button" role="tab" aria-controls="orderHistory" aria-selected="false">Order History</button>
       </li>
     </ul>
-    <!-- Tab contents -->
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="listings" role="tabpanel" aria-labelledby="listings-tab">
-        <!-- Listings -->
-          <div class="d-flex flex-wrap mt-4">
-            <div v-for="product in products">
-              <!-- Only display user's products -->
-              <span v-if="product.sellerID==0"> 
-                <div class="card mx-2 mb-3 p-2" style="background-color: #f5ece4; width: 15rem;" :id="`productCard${product.productID}`">
-                  <img class="card-img-top" style="height:170px;" :src="product.imgURL">
-                  <div class="card-body">
-                    <h4 class="card-title">{{ product.itemName }}</h4>
-                    <p class="card-text text-wrap">
-                      Date of Post: {{ product.dateOfPost }}
-                      <br>
-                      Price per Unit: {{ product.price }}
-                      <br>
-                      Quantity: {{ product.quantity }}
-                      <br>
-                    </p>
-                  </div>
+
+    <!-- Tab panes -------------------------------------------------------------------------------------------------------->
+    <div class="tab-content">
+      
+      <div class="tab-pane active" id="userListings" role="tabpanel" aria-labelledby="userListings-tab">
+        <!-- User Listings -->
+        <div class="d-flex flex-wrap mt-4">
+          <div v-for="product in products">
+            <!-- Only display user's products -->
+            <span v-if="product.sellerID==0"> 
+              <div class="card mx-2 mb-3 p-2" style="background-color: #f5ece4; width: 15rem;" :id="`productCard${product.productID}`">
+                <img class="card-img-top" style="height:170px;" :src="product.imgURL">
+                <div class="card-body">
+                  <h4 class="card-title">{{ product.itemName }}</h4>
+                  <p class="card-text text-wrap">
+                    Date of Post: {{ product.dateOfPost }}
+                    <br>
+                    Price per Unit: {{ product.price }}
+                    <br>
+                    Quantity: {{ product.quantity }}
+                    <br>
+                  </p>
                 </div>
-              </span>
-            </div>
+              </div>
+            </span>
           </div>
         </div>
-        <!-- End Listings -->
-    </div>
-      <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-        <!-- Order History -->
-          <section id = "orders">
-              <div class = "container my-4">
-                  <div class = "row g-0 gy-3">
-                      <div class = "d-flex flex-wrap justify-content-center filter-button-group">
-                          <!-- <button class="mx-2 active-filter-btn" data-filter = "*">All Orders</button> -->
-                          <button class="mx-2 active-filter-btn" data-filter = ".buy">Bought</button>
-                          <button class="mx-2" data-filter = ".sell">Sold</button>
-                      </div>
-                  
-                      <div class = "orders-list row gx-0 gy-3">
-
-                        <!-- dynamic buy order history -->
-                        <div v-for="buyOrder in buyHistory">
-                          <div class = "col-md-6 col-lg-4 col-xl-3 p-2 buy">
-                            <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
-                              <div class="card-header">Order: {{buyOrder.orderID}} [{{buyOrder.status}}]</div>
-                              <img style="height:170px;" :src="buyOrder.imgURL">
-                              <div class="card-body">
-                                <h5 class="card-title">{{buyOrder.itemName}}, {{quantity}}</h5>
-                                <p class="card-text">
-                                  Quantity: {{buyOrder.quantity}}
-                                  <br>
-                                  Order date: {{buyOrder.dateOfOrder}}
-                                </p>
-                                <a @click="returnItem" class="btn btn-primary">Request Refund</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- dynamic sell order history -->
-                        <div v-for="sellOrder in sellHistory">
-                          <div class = "col-md-6 col-lg-4 col-xl-3 p-2 sell">
-                            <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
-                              <div class="card-header">Order: {{sellOrder.orderID}} [{{sellOrder.status}}]</div>
-                              <img style="height:170px;" :src="sellOrder.imgURL">
-                              <div class="card-body">
-                                <h5 class="card-title">{{sellOrder.itemName}}, {{quantity}}</h5>
-                                <p class="card-text">
-                                  Quantity: {{sellOrder.quantity}}
-                                  <br>
-                                  Order date: {{sellOrder.dateOfOrder}}
-                                </p>
-                                <div class="row">
-                                  <div class="col">
-                                    <button @click="approveRefund" type="button" class="btn btn-outline-success btn-sm mb-2">Allow Refund</button>
-                                  </div>
-                                  <div class="col">
-                                    <button @click="rejectRefund" type="button" class="btn btn-outline-danger btn-sm mb-2">Reject Refund</button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Sample buy card -->
-                        <div class = "col-md-6 col-lg-4 col-xl-3 buy">
-                          <div class="card bg-light" style="max-width: 15rem;">
-                              <div class="card-header">Order: 100 [Completed]</div>
-                              <img style="height:170px;" src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-\u2026">
-                              <div class="card-body">
-                                <h5 class="card-title">Chair</h5>
-                                <p class="card-text">
-                                  Quantity: 3 
-                                  <br>
-                                  Order date: 01/01/2001
-                                </p>
-                              </div> 
-                            <a href="#" class="btn btn-outline-secondary mx-4">Request Refund</a>
-                          </div>
-                        </div>
-
-                        <!-- Sammple sell card -->
-                        <div class = "col-md-6 col-lg-4 col-xl-3 sell">
-                            <div class="card bg-light" style="max-width: 15rem;">
-                              <div class="card-header">Order: 200 [Refunded]</div>
-                              <img style="height:170px;" src="https://plus.unsplash.com/premium_photo-1670958553950-fcb8b675d662?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVuY2lsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60">
-                                <div class="card-body">
-                                  <h5 class="card-title">Pencil</h5>
-                                  <p class="card-text">
-                                    Quantity: 5 
-                                    <br>
-                                    Order date: 01/01/2001
-                                  </p>                                
-                                </div>
-                                <div class="row">
-                                  <div class="col">
-                                    <button type="button" class="btn btn-outline-success btn-sm mb-2">Allow Refund</button>
-                                  </div>
-                                  <div class="col">
-                                    <button type="button" class="btn btn-outline-danger btn-sm mb-2">Reject Refund</button>
-                                  </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                      </div>
-                  </div>
-              </div>
-          </section>  
-        <!-- end of order history -->
+        <!-- End User Listings -->
       </div>
+
+      <div class="tab-pane" id="orderHistory" role="tabpanel" aria-labelledby="orderHistory-tab">
+        <!-- Order History ------------------------------------------------------------------------------------------>
+        <section id = "orders">
+          <div class = "container my-4">
+            <div class = "row g-0 gy-3">
+              <div class = "d-flex flex-wrap justify-content-center filter-button-group">
+                  <!-- <button class="mx-2 active-filter-btn" data-filter = "*">All Orders</button> -->
+                  <button class="mx-2 active-filter-btn" data-filter = ".buy">Bought</button>
+                  <button class="mx-2" data-filter = ".sell">Sold</button>
+              </div>
+
+              <div class = "orders-list row gx-0 gy-3">
+                <!-- dynamic buy order history -->
+                <div v-for="(buyOrder, index) in buyHistory" :key="index">
+                  <div class = "col-md-6 col-lg-4 col-xl-3 p-2 buy">
+                    <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
+                      <div class="card-header">Order: {{buyOrder.orderID}} [{{buyOrder.status}}]</div>
+                      <img style="height:170px;" :src="buyOrder.imgURL">
+                      <div class="card-body">
+                        <h5 class="card-title">{{buyOrder.itemName}}, {{quantity}}</h5>
+                        <p class="card-text">
+                          Quantity: {{buyOrder.quantity}}
+                          <br>
+                          Order date: {{buyOrder.dateOfOrder}}
+                        </p>
+                        <button :id="buyOrder.orderID+buyOrder.itemName" @click="returnItem(buyOrder)" 
+                        class="btn btn-outline-secondary mx-4">Request Refund</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- dynamic sell order history -->
+                <div v-for="(sellOrder, index) in sellHistory" :key="index">
+                  <div class = "col-md-6 col-lg-4 col-xl-3 p-2 sell">
+                    <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
+                      <div class="card-header">Order: {{sellOrder.orderID}} [{{sellOrder.status}}]</div>
+                      <img style="height:170px;" :src="sellOrder.imgURL">
+                      <div class="card-body">
+                        <h5 class="card-title">{{sellOrder.itemName}}, {{quantity}}</h5>
+                        <p class="card-text">
+                          Quantity: {{sellOrder.quantity}}
+                          <br>
+                          Order date: {{sellOrder.dateOfOrder}}
+                        </p>
+                        <div v-if="sellOrder.status=='Refund Requested'">
+                          <!-- Button trigger modal -->
+                          <button :id="'approve'+sellOrder.orderID+sellOrder.itemName" 
+                            @click="approveRefund(sellOrder)"
+                            class="btn btn-outline-success btn-sm mb-2 mx-4" 
+                            data-bs-toggle="modal" data-bs-target="#allowRefund">Allow Refund</button>
+                          <button :id="'reject'+sellOrder.orderID+sellOrder.itemName" 
+                            @click="rejectRefund(sellOrder)"
+                            class="btn btn-outline-danger btn-sm mb-2 mx-4">Reject Refund</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Sample buy card -->
+                <div class = "col-md-6 col-lg-4 col-xl-3 buy">
+                  <div class="card bg-light" style="max-width: 15rem;">
+                      <div class="card-header">Order: 100 [Completed]</div>
+                      <img style="height:170px;" src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-\u2026">
+                      <div class="card-body">
+                        <h5 class="card-title">Chair</h5>
+                        <p class="card-text">
+                          Quantity: 3 
+                          <br>
+                          Order date: 01/01/2001
+                        </p>
+                      </div> 
+                      <a @click="returnItem(buyOrder)" 
+                      class="btn btn-outline-secondary mx-4">Request Refund</a>
+                  </div>
+                </div>
+
+                <!-- Sample sell card -->
+                <div class = "col-md-6 col-lg-4 col-xl-3 sell">
+                    <div class="card bg-light" style="max-width: 15rem;">
+                      <div class="card-header">Order: 200 [Refunded]</div>
+                      <img style="height:170px;" src="https://plus.unsplash.com/premium_photo-1670958553950-fcb8b675d662?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVuY2lsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60">
+                        <div class="card-body">
+                          <h5 class="card-title">Pencil</h5>
+                          <p class="card-text">
+                            Quantity: 5 
+                            <br>
+                            Order date: 01/01/2001
+                          </p>                                
+                        </div>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-outline-success btn-sm mb-2 mx-4" 
+                        data-bs-toggle="modal" data-bs-target="#allowRefund">Allow Refund</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm mb-2 mx-4">Reject Refund</button>
+                    </div>
+                </div>
+                    
+              </div>
+            </div>
+          </div>
+        </section>  
+      <!-- End of order history -->
+      </div>
+
     </div>
-    <!-- End of Tabs -->
+    <!-- End of Tab Content -->
   </div>  
 
-    <!-- jquery -->
-    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
-    <!-- isotope js -->
-    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
-    <!-- bootstrap js -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-    crossorigin="anonymous"></script>
-    <!-- Axios -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- Vue.js 3 CDN -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- custom js -->    
-    <script src="js/profile.js"></script>
+  
 
-    <script>
-      // init Isotope
-      var $grid = $('.orders-list').isotope({
-        // options
-      });
+  <!-- Refund Payment Modal -------------------------------------------------------------------------------------------------->
+  <form class="needs-validation" novalidate="">
+    <div class="modal fade" id="allowRefund" tabindex="-1" aria-labelledby="allowRefundLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="allowRefundLabel">Allow Refund</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="cc-name">Name on card</label>
+                  <input type="text" class="form-control" id="cardHolderName" placeholder="" required="">
+                  <div class="invalid-feedback">
+                    Name on card is required
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <i class="fas fa-credit-card"></i>
+                  <label for="cc-number">&nbsp Credit card number</label>
+                  <input type="text" class="form-control" id="cardNumber" placeholder="" required="" maxlength="16">
+                  <div class="invalid-feedback">
+                    Credit card number is required
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <i class="fas fa-calendar-alt"></i>
+                  <label for="cc-expiration">&nbsp Expiration</label>
+                  <input type="text" class="form-control" id="expDate" placeholder="MM/YY" required="" maxlength="5">
+                  <div class="invalid-feedback">
+                    Expiration date required
+                  </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <i class="fas fa-key"></i>
+                  <label for="cc-cvv">&nbsp CVC</label>
+                  <input type="text" class="form-control" id="CVC" placeholder="" required="" maxlength="3">
+                  <div class="invalid-feedback">
+                    Security code required
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button @click='sendPayment' type="submit" class="btn btn-success" id="refund-button">Refund</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <!-- End Refund Payment Modal -->
 
-      // filter items on page load
-      var filterValue = $('.filter-button-group').find('.active-filter-btn').attr('data-filter');
+  <!-- jquery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+  <!-- isotope js -->
+  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+  <!-- bootstrap js -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+  integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- Vue.js 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- custom js -->    
+  <script src="js/profile.js"></script>
+
+  <script>
+    // init Isotope
+    var $grid = $('.orders-list').isotope({
+      // options
+    });
+
+    // filter items on page load
+    var filterValue = $('.filter-button-group').find('.active-filter-btn').attr('data-filter');
+    $grid.isotope({ filter: filterValue });
+
+    // filter items on button click
+    $('.filter-button-group').on( 'click', 'button', function() {
+      var filterValue = $(this).attr('data-filter');
+      resetFilterBtns();
+      $(this).addClass('active-filter-btn');
       $grid.isotope({ filter: filterValue });
+    });
 
-      // filter items on button click
-      $('.filter-button-group').on( 'click', 'button', function() {
-        var filterValue = $(this).attr('data-filter');
-        resetFilterBtns();
-        $(this).addClass('active-filter-btn');
-        $grid.isotope({ filter: filterValue });
+    var filterBtns = $('.filter-button-group').find('button');
+
+    function resetFilterBtns(){
+      filterBtns.each(function(){
+        $(this).removeClass('active-filter-btn');
       });
+    }
 
-      var filterBtns = $('.filter-button-group').find('button');
-
-      function resetFilterBtns(){
-        filterBtns.each(function(){
-          $(this).removeClass('active-filter-btn');
-        });
-      }
-
-    </script>
+  </script>
 </body>
 </html>

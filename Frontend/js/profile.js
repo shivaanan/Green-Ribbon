@@ -1,15 +1,33 @@
+// Payment Form Validation
+(function () {
+    'use strict'
+    window.addEventListener('load', function () {
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.getElementsByClassName('needs-validation')
+  
+      // Loop over them and prevent submission
+      Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+  
+          form.classList.add('was-validated')
+        }, false)
+      })
+    }, false)
+  })()
 
-// console.log("in home.js");
-// console.log(sessionStorage.getItem("userId"));
-
+// Vue
 const profilePage = Vue.createApp({
     data() {
         return {
             products: [],
             buyHistory: [],
             sellHistory: [],
-            userId: 0,
-            // userId: sessionStorage.getItem("userId"),
+            tempObj: null,
+            userId: sessionStorage.getItem("userId"),
         };
     }, // data
 
@@ -18,7 +36,7 @@ const profilePage = Vue.createApp({
         userId = this.userId;
         // retrieve all user listings
         axios
-            .get("http://127.0.0.1:5001/products")
+            .get("http://127.0.0.1:5002/products")
             .then((response) => {
                 console.log("hi");
                 console.log(response.data[0]);
@@ -56,15 +74,10 @@ const profilePage = Vue.createApp({
             .catch((error) => {
                 console.log(error);
             });
- 
         
     },
 
     computed: {
-        // getAllHistorySorted() {
-        //     return [...this.buyHistory, ...this.sellHistory].sort((a, b) => {
-        //         return new Date(b.order_date) - new Date(a.order_date); // sort ascending
-        //         })
 
         listingCount() {
             let count = 0;
@@ -74,65 +87,118 @@ const profilePage = Vue.createApp({
               }
             }
             return count;
-          },
-        
+          }, 
+          
     },
 
     methods: {
-//--------------------------------------------------------------------------------
-        returnItem() {   
-            let orderID = this.orderID;
+
+        // Buyer send refund request------------------------------------------------------------------------
+        returnItem(buyOrder) {   
+            let orderID = buyOrder.orderID;
             // Make an axios post request to the ReturnItem microservice
-            axios.post('http://127.0.0.1:5200/return_item', {
+            axios.post('http://127.0.0.1:5300/return_item', {
                 "orderID": orderID,
             })
             .then(response => {
                 console.log(response.data);
                 // Handle the response as needed
-
                 if (response.data["success"]) {
-                    //not sure how to give each button a unique ID
-                    button.textContent = 'Requested';
+                    // Change text and disable button
+                    let button = document.getElementById(buyOrder.orderID+buyOrder.itemName)
+                    button.textContent = "Refund Requested";
+                    button.disabled = true
+                    alert("Refund requested");
                 }
                 else {
-                    //idk pray?
+                    alert("Refund request failed. Please try again");
                 }
             })
             .catch(error => {
                 console.log(error);
-                // Handle the error as needed
             });
         },
 
-        approveRefund() {   
-            let orderID = this.orderID;
-            let decision = 'accept'
-            //Where do I pluck the dataObj from?
+        // Seller send refund approval-----------------------------------------------------------------------
+        approveRefund(sellOrder) {   
+            let orderID = sellOrder.orderID;
+            let decision = 'accept';
 
             // Make an axios post request to the ReturnItem microservice
-            axios.post('http://127.0.0.1:5200/refund_decision', {
+            axios.post('http://127.0.0.1:5300/refund_decision', {
                 "orderID": orderID,
                 "decision": decision
             })
             .then(response => {
                 console.log(response.data);
-                // Handle the response as needed
-
+                // Remove refund buttons 
                 if (response.data["success"]) {
-                    //not sure how to give each button a unique ID
-                    button.textContent = 'Requested';
+                    let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
+                    let rejectButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
+                    approveButton.remove();
+                    rejectButton.remove();
+                    alert("Refund allowed");
                 }
                 else {
-                    //idk pray?
+                    alert("Refund failed. Please try again");
                 }
             })
             .catch(error => {
                 console.log(error);
-                // Handle the error as needed
             });
         },
 
+        // Seller reject refund approval pt1-------------------------------------------------------------------
+        rejectRefund(sellOrder) {   
+            let orderID = sellOrder.orderID;
+            let decision = 'reject';
+            this.tempObj = {
+                            "shippingCart": sellOrder,
+                            "orderID": orderID,
+                            "decision": decision
+                            };
+        },
 
+        //Seller submit cc info to refund pt 2-------------------------------------------------------------------
+            
+        sendPayment() {
+            // Make an axios post request to the ReturnItem microservice
+            let cardNumberInput = document.getElementById("cardNumber").value;
+            let expDateInput = document.getElementById("expDate").value;
+            let [exp_month, exp_year] = expDateInput.split("/");
+            let CVCInput = document.getElementById("CVC").value;
+            let cardHolderName = document.getElementById("cardHolderName").value;
+
+            let card_details = {
+                                number: cardNumberInput,
+                                exp_month: exp_month,
+                                exp_year: exp_year,
+                                cvc: CVCInput,
+                                };
+
+            this.tempObj.cardDetails = card_details;
+            this.tempObj.cardName = cardHolderName;
+            console.log(tempObj);
+
+            axios.post('http://127.0.0.1:5300/refund_decision', this.tempObj)
+            .then(response => {
+                console.log(response.data);
+                // Remove refund buttons
+                if (response.data["success"]) {
+                    let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
+                    let rejectButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
+                    approveButton.remove();
+                    rejectButton.remove();
+                    alert("Refund rejected");
+                }
+                else {
+                    alert("Refund rejection failed. Please try again");
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        },
 
     },
 });
