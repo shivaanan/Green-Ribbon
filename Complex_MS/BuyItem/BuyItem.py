@@ -208,8 +208,8 @@ def get_cart(userId):
             'message': 'Unable to retrieve all cart items'
         }), 400
     
-# adding to order function
-@app.route('/add_to_orders', methods = ['POST'])
+# # adding to order function
+# @app.route('/add_to_orders', methods = ['POST'])
 def add_to_orders():
     paymentResult, paymentStatus, buyerID = buy_item()
     
@@ -242,8 +242,8 @@ def add_to_orders():
     
     
 
-# updating the listings automatically upon adding to orders
-@app.route('/update_listing', methods = ['PUT'])
+# # updating the listings automatically upon adding to orders
+# @app.route('/update_listing', methods = ['PUT'])
 def update_listing():
     result = add_to_orders()
     addOrdersStatus = result["code"]
@@ -281,8 +281,8 @@ def update_listing():
             }
         ), 400
     
-# delete from cart once listings have been updated
-@app.route('/delete_from_cart', methods = ['DELETE'])
+# # delete from cart once listings have been updated
+# @app.route('/delete_from_cart', methods = ['DELETE'])
 def delete_from_cart():
     result = update_listing()
     updateListingStatus = result["code"]
