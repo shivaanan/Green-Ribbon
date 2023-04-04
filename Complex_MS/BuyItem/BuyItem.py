@@ -85,6 +85,9 @@ def buy_item():
         print(processOrderResult)
         print("TEST processOrderResult (END)")
 
+        if processOrderResult['code'] == 201:
+            add_to_orders_DataObj = {"buyerID":userId, "paymentResult":jsonify(processOrderResult), "paymentStatus":201}
+            add_to_orders(add_to_orders_DataObj)
         return jsonify(processOrderResult), processOrderResult["code"]
 
     except Exception as e:
@@ -233,10 +236,13 @@ def get_cart(userId):
 # @app.route('/add_to_orders', methods = ['POST'])
 
 
-def add_to_orders():
-    paymentResult, paymentStatus, buyerID = buy_item()
+def add_to_orders(data):
+    # paymentResult, paymentStatus, buyerID = buy_item()
+    paymentResult = data['paymentResult']
+    paymentStatus = data['paymentStatus']
+    buyerID = data['buyerID']
 
-    if paymentStatus == 200:
+    if paymentStatus == 201:
         getAllItemsURL = cart_URL + "/get_cart"
         cartResult = invoke_http(getAllItemsURL, method='GET', json=buyerID)
         allCartItems = cartResult["data"]["cart_list"]
