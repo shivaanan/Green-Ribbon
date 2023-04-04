@@ -71,7 +71,7 @@ def buy_item():
         # print(processOrderResult)
         # print("TEST processOrderResult (END)")
 
-        return jsonify(processOrderResult), processOrderResult["code"]
+        return jsonify(processOrderResult), processOrderResult["code"], userId
 
     except Exception as e:
         # Unexpected error in code
@@ -207,9 +207,87 @@ def get_cart(userId):
             'code': 400,
             'message': 'Unable to retrieve all cart items'
         }), 400
+    
+# # adding to order function
+# @app.route('/add_to_orders', methods = ['POST'])
+# def add_to_orders():
+#     paymentResult, paymentStatus, buyerID = buy_item()
+    
+#     if paymentStatus == 200:
+#         getAllItemsURL = cart_URL + "/get_cart"
+#         cartResult = invoke_http(getAllItemsURL, method='GET', json = buyerID)
+#         allCartItems = cartResult["data"]["cart_list"]
+#         buyerID = allCartItems["buyerID"]
 
+#         addingOrderURL = order_URL + "/add_order/" + str(buyerID)
+#         addingOrderResult = invoke_http(addingOrderURL, method='POST', json = allCartItems)
 
+#         return jsonify(
+#             {
+#                 "code": 200, 
+#                 "message": "Order added successfully",
+#                 "data": {
+#                     "cart_list": allCartItems
+#                 }
+#             }
+#         ), 200
+    
+#     else: 
+#         return jsonify(
+#             {
+#                 "code": 400,
+#                 "message": "Order was not added successfully" 
+#             }
+#         ), 400
 
+# # updating the listings automatically upon adding to orders
+# @app.route('/update_listing', methods = ['PUT'])
+# def update_listing():
+#     addOrdersStatus = add_to_orders()["code"]
+#     allCartItems = add_to_orders()["data"]["cart-list"]
+
+#     if addOrdersStatus == 200:
+#         for item in allCartItems:
+#             productID = item["productID"]
+#             soldQuantity = item["inputQuantity"]
+#             updateListingURL = listing_URL + "/update_sold_product_qty"
+#             updateListingResult = invoke_http(updateListingURL, method = "PUT", json = {"productID": productID, "soldQuantity": soldQuantity})
+    
+#         return jsonify(
+#             {
+#                 "code": 200, 
+#                 "message": "Order added successfully",
+#                 "data": {
+#                     "cart_list": allCartItems
+#                 }
+#             }
+#         ), 200
+    
+#     else: 
+#         return jsonify(
+#             {
+#                 "code": 400,
+#                 "message": "Order was not added successfully" 
+#             }
+#         ), 400
+
+# deleting 1 item from cart on UI
+@app.route('/delete_cart_item/<userId>/<int:productID>', methods=['DELETE'])
+def delete_cart_item(userId, productID):
+
+    try:
+        result = invoke_http(cart_URL + "/delete_one_item/" + userId + "/" + str(productID), method='DELETE')
+
+        return jsonify({
+            'code': 200,
+            'message': 'Item deleted successfully'
+        })
+    
+    except:
+        return jsonify({
+            'code': 405,
+            'message': 'Unable to delete item'
+        }), 405
 
 if __name__ == '__main__':
     app.run(port=5200, debug=True)
