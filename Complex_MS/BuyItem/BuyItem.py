@@ -13,7 +13,7 @@ import pika
 import json
 
 app = Flask(__name__)
-CORS(app, resources={r"*": {"origins": "*"}})
+CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5002"
 payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
@@ -31,11 +31,14 @@ def buy_item():
     cardHolderName = data['cardName']
     try:
         cartQuery = {
-        "userId": userId
+        "buyerID": userId
         }
         # invoke cartMS to get the cart
         getCartResponse = invoke_http(cart_URL + "/get_cart", method='GET', json=cartQuery)
-        shoppingCart = getCartResponse["cart_list"]
+        # print("TEST getCartResponse (START)")
+        # print(getCartResponse)
+        # print("TEST getCartResponse (END)")
+        shoppingCart = getCartResponse['data']["cart_list"]
         # print("TEST shoppingCart (START)")
         # print(shoppingCart)
         # print("TEST shoppingCart (END)")
@@ -46,10 +49,12 @@ def buy_item():
             listing_ms_url = f"{listing_URL}/products/{product_ID}"
 
             listingResponse = requests.get(listing_ms_url)
-            checkProduct = listingResponse.json()
+            data = listingResponse.json()
+
+            checkProduct = data['data']['product']
             # print("TEST START")
-            # print(eachItem)
-            # print(listingResponse.json())
+            # # print(eachItem)
+            # print(checkProduct)
             # print("TEST END")
 
             checkQuantity = checkProduct['quantity']
@@ -66,10 +71,13 @@ def buy_item():
                 }), 400
             
         combinedData = {"userId": userId, "dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
+        # print("TEST CD (START)")
+        # print(combinedData)
+        # print("TEST CD (END)")
         processOrderResult = processOrder(combinedData)
-        # print("TEST processOrderResult (START)")
-        # print(processOrderResult)
-        # print("TEST processOrderResult (END)")
+        print("TEST processOrderResult (START)")
+        print(processOrderResult)
+        print("TEST processOrderResult (END)")
 
         return jsonify(processOrderResult), processOrderResult["code"], userId
 
@@ -91,12 +99,22 @@ def buy_item():
 # ======================== HELPER FUNCTION (START) ========================
 def processOrder(products):
     payment_result = invoke_http(payment_URL, method='POST', json=products)
+
+    # print("TEST payment_result (START)")
+    # print(payment_result)
+    # print("TEST payment_result (END)")
+
+
     # ========================= AMQP (START) =========================
     code = payment_result["code"]
     message = json.dumps(payment_result)
     # print("TEST code (START)")
     # print(code)
     # print("TEST code (END)")
+    ###################################
+    # print("TEST message (START)")
+    # print(message)
+    # print("TEST message (END)")
     amqp_setup.check_setup()
 
     if code not in range(200, 300):
