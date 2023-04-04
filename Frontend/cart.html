@@ -117,7 +117,7 @@
                         <input id="cardHolderName" type="text" style="border-radius: 5px; width: 75%;">
                     </td>
                     <td class="col-2"> Subtotal </td>
-                    <td class="text-left"> ${{ subtotal }} </td>
+                    <td class="text-left"> ${{ subtotal.toFixed(2) }} </td>
                 </tr>
                 <tr>
                     <td scope="col" class="col-7">
@@ -144,13 +144,13 @@
                         <input type="text" placeholder="CVC">
                     </td> -->
                     <td class="col-2"> GST (8%) </td>
-                    <td class="text-left"> ${{ gst }} </td>
+                    <td class="text-left"> ${{ gst.toFixed(2) }} </td>
                 </tr>
 
                 <tr>
                     <td scope="col" class="col-9"></td>
                     <td class="col-2"> Grand Total </td>
-                    <td class="text-left"> ${{ grandTotal }} </td>
+                    <td class="text-left"> ${{ grandTotal.toFixed(2) }} </td>
                 </tr>
                 <tr>
                     <td scope="col" class="col-8"></td>
