@@ -20,12 +20,11 @@ def receiveOrderLog():
 
 def callback(channel, method, properties, body): # required signature for the callback; no return
     print("\nReceived an order log by " + __file__)
-    processOrderLog(json.loads(body))
+    processOrderLog(body)
     print() # print a new line feed
 
 def processOrderLog(order):
     print("Recording an order log:")
-    
     print(order)
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
