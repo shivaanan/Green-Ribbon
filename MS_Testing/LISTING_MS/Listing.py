@@ -152,6 +152,9 @@ def edit_product():
             {
                 "code": 200, 
                 "message": "Updated product quantity",
+                "data" : {
+                    "product" : getProductByID(productID)
+                }
             }
         ), 200
     
