@@ -46,7 +46,7 @@ def login_user():
 
         return jsonify(
             {
-                "code": 201, 
+                "code": 200, 
                 "message": "Login successful",
                 "data" : {
                     "userId": user["localId"]
