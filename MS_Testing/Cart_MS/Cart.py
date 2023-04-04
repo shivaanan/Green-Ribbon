@@ -16,8 +16,8 @@ cart = {}
 
 # # Get 1 Product
 # @app.route('/products/<int:productID>', methods=['GET'])
-def getProductByID(productID):
-    product = collection.find_one({'productID': productID})
+# def getProductByID(productID):
+#     product = collection.find_one({'productID': productID})
     # if product:
     #     product_dict = {
     #         'productID': product["productID"], 
@@ -30,7 +30,7 @@ def getProductByID(productID):
     #         'imgURL': product["imgURL"]
     #     }
         # return jsonify(product_dict)
-    return product
+    # return product
 
 #     else:
 #         return jsonify(
@@ -53,7 +53,7 @@ def getAllProducts():
         print(cart_list)
 
         for a_item in cart_items:
-            a_item['_id'] = str(a_item['_id'])  # convert ObjectId to string
+            a_item['_id'] = str(a_item['_id'])
             cart_list.append(a_item)
 
         print(cart_list)
@@ -72,7 +72,7 @@ def getAllProducts():
 def add_to_cart():  
     data = request.get_json()
     userId = data["userId"]
-    input_quantity = data["qtyInput"]
+    quantity = data["quantity"]
     productID = data["productID"]
     product = data['product']
 
@@ -80,20 +80,22 @@ def add_to_cart():
     quantity = product['quantity']
     price = product['price']
     dateOfPost = product['dateOfPost']
-    availability = product['availability']
     address = product['address']
     imgURL = product["imgURL"]
     
     # Check if item already in cart
     existing_cart_item = collection.find_one({'userId': userId, 'productID': productID})
     if existing_cart_item:
-        return jsonify({'success': False, 'message': 'Item already in cart.'})
+        return jsonify({
+            'code': 400,
+            'message': 'Item already in cart.'
+        })
     else:
         collection.insert_one({ 
             "userId": userId, 
             "productID": productID,
             "itemName": itemName,
-            "inputQuantity": input_quantity,
+            "quantity": quantity,
             "price": price,
             "dateOfPost": dateOfPost,
             'address': address,
@@ -102,7 +104,7 @@ def add_to_cart():
         )
     return jsonify({
         'code': 201,
-        "success": True
+        "message": "Item has been successfully added to cart"
     }), 201
 
 # Helper function to get all cart items of a single user
@@ -120,30 +122,27 @@ def delete_from_cart(user_id):
         collection.delete_many({'userId': user_id})
         return jsonify({
             'code': 200,
-            'success': True
+            'success': "Cart has been deleted"
         }), 200
     else:
         return jsonify({
             'code': 400,
-            'success': False, 'message': 'Cart has been cleared'
+            'message': 'Cart has is initially empty'
         }), 400
     
-@app.route('/delete_one_item', methods = ['DELETE'])
-def delete_one_item():
-    data = request.get_json()
-    userId = data['userId']
-    productID = data['productID']
+@app.route('/delete_one_item/<userId>/<int:productID>', methods = ['DELETE'])
+def delete_one_item(userId, productID):
     if len(getAllCartItems(userId)) > 0:
         collection.delete_one({'userId': userId, 'productID': productID})
         return jsonify({
             'code': 200,
-            'success': True
+            'message': "Item has been deleted from the cart"
         }), 200
     else:
         return jsonify({
-            'code': 400,
-            'success': False, 'message': 'Item has been deleted from the cart'
-        }), 400
+            'code': 405,
+            'message': "Item was not added into cart initially"
+        }), 405
 
 #  port 5002
 if __name__ == '__main__':

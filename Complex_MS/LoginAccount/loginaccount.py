@@ -57,11 +57,11 @@ def verifylogin():
         data = result['data']
         return jsonify(
                 {
-                    "code": 201,
+                    "code": 200,
                     "data": data,
                     "message": "Login successful"
                 }
-            ), 201
+            ), 200
     
     except:
         amqpmessage = "Error retrieving account, incorrect login details"
@@ -81,7 +81,8 @@ def get_distance():
         destaddresses = {}
         listingURL = listingMSURL + "/products"   
         result = invoke_http(listingURL, method='GET')
-        for listing in result : 
+        print(result)
+        for listing in result["data"]["products"]: 
             destaddresses[listing["productID"]] = listing["address"]
         print(destaddresses)
 
@@ -124,7 +125,6 @@ def get_distance():
          return jsonify(
             {
                 "code": 400,
-                "data": response,
                 "message": "Failed to calculate distance"
             }
         ), 400
@@ -142,7 +142,7 @@ def get_all_products():
 
         return jsonify(
             {
-                    "code": 201,
+                    "code": 200,
                     "data": data,
                     "message": "Retrieved all products"
             }
