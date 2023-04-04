@@ -127,11 +127,8 @@ def delete_from_cart(user_id):
             'message': 'Cart has is initially empty'
         }), 400
     
-@app.route('/delete_one_item', methods = ['DELETE'])
-def delete_one_item():
-    data = request.get_json()
-    userId = data['userId']
-    productID = data['productID']
+@app.route('/delete_one_item/<userId>/<int:productID>', methods = ['DELETE'])
+def delete_one_item(userId, productID):
     if len(getAllCartItems(userId)) > 0:
         collection.delete_one({'userId': userId, 'productID': productID})
         return jsonify({
@@ -140,9 +137,9 @@ def delete_one_item():
         }), 200
     else:
         return jsonify({
-            'code': 400,
+            'code': 405,
             'message': "Item was not added into cart initially"
-        }), 400
+        }), 405
 
 #  port 5002
 if __name__ == '__main__':
