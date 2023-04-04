@@ -50,7 +50,7 @@ const profilePage = Vue.createApp({
             });
         // retrieve user buy history
         axios
-            .get("http://127.0.0.0:5004/purchased/"+ userId)
+            .get("http://127.0.0.1:5004/purchased/"+ userId)
             .then((response) => {
                 console.log(response.data[0]);
                 this.buyHistory = response.data;
@@ -63,7 +63,7 @@ const profilePage = Vue.createApp({
             });
         // retrieve user buy history
         axios
-            .get("http://127.0.0.0:5004/sold/"+ userId)
+            .get("http://127.0.0.1:5004/sold/"+ userId)
             .then((response) => {
                 console.log(response.data[0]);
                 this.sellHistory = response.data;
@@ -119,41 +119,12 @@ const profilePage = Vue.createApp({
             });
         },
 
-        // Seller send refund approval-----------------------------------------------------------------------
-        approveRefund(sellOrder) {   
+        // Seller reject refund approval pt1-------------------------------------------------------------------
+        acceptRefund(sellOrder) {   
             let orderID = sellOrder.orderID;
             let decision = 'accept';
-
-            // Make an axios post request to the ReturnItem microservice
-            axios.post('http://127.0.0.1:5300/refund_decision', {
-                "orderID": orderID,
-                "decision": decision
-            })
-            .then(response => {
-                console.log(response.data);
-                // Remove refund buttons 
-                if (response.data["success"]) {
-                    let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
-                    let rejectButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
-                    approveButton.remove();
-                    rejectButton.remove();
-                    alert("Refund allowed");
-                }
-                else {
-                    alert("Refund failed. Please try again");
-                }
-            })
-            .catch(error => {
-                console.log(error);
-            });
-        },
-
-        // Seller reject refund approval pt1-------------------------------------------------------------------
-        rejectRefund(sellOrder) {   
-            let orderID = sellOrder.orderID;
-            let decision = 'reject';
             this.tempObj = {
-                            "shippingCart": sellOrder,
+                            "dataObj": sellOrder,
                             "orderID": orderID,
                             "decision": decision
                             };
@@ -183,10 +154,38 @@ const profilePage = Vue.createApp({
             axios.post('http://127.0.0.1:5300/refund_decision', this.tempObj)
             .then(response => {
                 console.log(response.data);
-                // Remove refund buttons
                 if (response.data["success"]) {
+                    // Remove refund buttons
                     let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
-                    let rejectButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
+                    let rejectButton = document.getElementById('reject'+sellOrder.orderID+sellOrder.itemName);
+                    approveButton.remove();
+                    rejectButton.remove();
+                    alert("Refund successful");
+                }
+                else {
+                    alert("Refund failed. Please try again");
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        },
+
+        // Seller reject refund---------------------------------------------------------------------------------
+        rejectRefund(sellOrder) {   
+            let orderID = sellOrder.orderID;
+            let decision = 'reject';
+
+            axios.post('http://127.0.0.1:5300/refund_decision', {
+                "orderID": orderID,
+                "decision": decision
+            })
+            .then(response => {
+                console.log(response.data);
+                if (response.data["success"]) {
+                    // Remove refund buttons 
+                    let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
+                    let rejectButton = document.getElementById('reject'+sellOrder.orderID+sellOrder.itemName);
                     approveButton.remove();
                     rejectButton.remove();
                     alert("Refund rejected");
