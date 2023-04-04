@@ -132,6 +132,13 @@ def refund_decision():
                 amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.refund.reject",
                                                 body=message)
 
+                # Update order status to "Refund Rejected"
+                order_result['status'] = 'Refund Rejected'
+
+                # Send PUT request to update order status
+                return_result = requests.put(url, json=order_result)
+                return_result = return_result.json()
+
                 return jsonify({'code': 200,'message': f"Refund rejected for Order {orderID}."})
 
             else:
