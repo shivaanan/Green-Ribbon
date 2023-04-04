@@ -81,7 +81,8 @@ def get_distance():
         destaddresses = {}
         listingURL = listingMSURL + "/products"   
         result = invoke_http(listingURL, method='GET')
-        for listing in result : 
+        print(result)
+        for listing in result["data"]["products"]: 
             destaddresses[listing["productID"]] = listing["address"]
         print(destaddresses)
 
