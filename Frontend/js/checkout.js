@@ -125,8 +125,14 @@ document.addEventListener("DOMContentLoaded", function () {
       // console.log(purchasedItems_string)
       // console.log("TEST purchaseItems_string END")
 
-      purchasedItems_string = purchasedItems_string.replace(/'/g, '"');
-      purchasedItems_object = JSON.parse(purchasedItems_string);
+      if (typeof purchasedItems_string === 'string') {
+        purchasedItems_string = purchasedItems_string.replace(/'/g, '"');
+        purchasedItems_object = JSON.parse(purchasedItems_string);
+      } else{
+        purchasedItems_object = purchasedItems_string
+      }
+      
+      
       // console.log("TEST purchaseItems_object START")
       // console.log(purchasedItems_object)
       // console.log("TEST purchaseItems_object END")

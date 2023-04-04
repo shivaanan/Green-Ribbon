@@ -78,8 +78,8 @@ def buy_item():
         print("TEST processOrderResult (START)")
         print(processOrderResult)
         print("TEST processOrderResult (END)")
-
-        return jsonify(processOrderResult), processOrderResult["code"], userId
+        
+        return jsonify(processOrderResult), processOrderResult["code"]
 
     except Exception as e:
         # Unexpected error in code
