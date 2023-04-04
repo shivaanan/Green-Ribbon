@@ -19,7 +19,7 @@ const homePage = Vue.createApp({
             .get("http://127.0.0.1:5100/products")
             .then((response) => {
                 console.log("hi");
-                console.log(response.data[0]);
+                // console.log(response.data[0]);
                 // this.products = response.data;
                 this.products = response.data["data"]["products"];
             })
@@ -29,9 +29,11 @@ const homePage = Vue.createApp({
 
         // retrieve cart count from the backend
         axios
-            .get('http://127.0.0.1:5200/get_cart_count/' + userId)
+            .get('http://127.0.0.1:5200/get_cart/' + userId)
             .then((response) => {
-                this.cartCount = response.data["cart_count"];})
+                let cart_list = response.data["data"]["cart_list"];
+                this.cartCount = cart_list.length;
+            })
 
         console.log("-------end user  mounted------");
     },
@@ -83,36 +85,34 @@ const homePage = Vue.createApp({
             // Make an axios post request to the buyItem microservice
             axios.post('http://127.0.0.1:5200/add_to_cart', {
                 "userId": userId,
-                "productId": productID,
+                "productID": productID,
                 "qtyInput": qtyInput
             })
             .then(response => {
                 console.log(response.data);
                 // Handle the response as needed
 
-                if (response.data["success"]) {
-                    document.getElementById("modal-body").innerHTML = `
-                    <div>
-                        <i class="fa fa-check-circle" style="font-size:48px;color:green"></i>
-                        <h3>Successfully added to cart!</h3>
-                    </div>`
+               
+                document.getElementById("modal-body").innerHTML = `
+                <div>
+                    <i class="fa fa-check-circle" style="font-size:48px;color:green"></i>
+                    <h3>Successfully added to cart!</h3>
+                </div>`
 
-                    // Update the cart count
-                    this.cartCount += 1;
-                }
-                else {
-                    let error = response.data["error"];
-                    document.getElementById("modal-body").innerHTML = `
-                    <div>
-                        <i class="fa fa-remove" style="font-size:48px;color:red"></i>
-                        <h3>${error}</h3>
-                    </div>`
-
-                }
+                // Update the cart count
+                this.cartCount += 1;
+                
             })
             .catch(error => {
-                console.log(error);
+                // console.log(error);
+                // console.log(error.response.data);
                 // Handle the error as needed
+                let error_message = error.response.data["message"];
+                document.getElementById("modal-body").innerHTML = `
+                <div>
+                    <i class="fa fa-remove" style="font-size:48px;color:red"></i>
+                    <h3>${error_message}</h3>
+                </div>`
             });
         },
     },
