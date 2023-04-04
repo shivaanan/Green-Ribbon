@@ -80,7 +80,6 @@ def add_to_cart():
     quantity = product['quantity']
     price = product['price']
     dateOfPost = product['dateOfPost']
-    availability = product['availability']
     address = product['address']
     imgURL = product["imgURL"]
     
@@ -93,7 +92,7 @@ def add_to_cart():
             "userId": userId, 
             "productID": productID,
             "itemName": itemName,
-            "inputQuantity": input_quantity,
+            "inputQuantity": quantity,
             "price": price,
             "dateOfPost": dateOfPost,
             'address': address,
@@ -102,7 +101,7 @@ def add_to_cart():
         )
     return jsonify({
         'code': 201,
-        "success": True
+        "message": "Item has been successfully added to cart"
     }), 201
 
 # Helper function to get all cart items of a single user
@@ -120,12 +119,12 @@ def delete_from_cart(user_id):
         collection.delete_many({'userId': user_id})
         return jsonify({
             'code': 200,
-            'success': True
+            'success': "Cart has been deleted"
         }), 200
     else:
         return jsonify({
             'code': 400,
-            'success': False, 'message': 'Cart has been cleared'
+            'message': 'Cart has is initially empty'
         }), 400
     
 @app.route('/delete_one_item', methods = ['DELETE'])
@@ -137,12 +136,12 @@ def delete_one_item():
         collection.delete_one({'userId': userId, 'productID': productID})
         return jsonify({
             'code': 200,
-            'success': True
+            'message': "Item has been deleted from the cart"
         }), 200
     else:
         return jsonify({
             'code': 400,
-            'success': False, 'message': 'Item has been deleted from the cart'
+            'message': "Item was not added into cart initially"
         }), 400
 
 #  port 5002
