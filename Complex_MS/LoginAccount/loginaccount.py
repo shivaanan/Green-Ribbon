@@ -61,7 +61,7 @@ def verifylogin():
                     "data": data,
                     "message": "Login successful"
                 }
-            ), 201
+            ), 200
     
     except:
         amqpmessage = "Error retrieving account, incorrect login details"
