@@ -12,34 +12,6 @@ client = MongoClient('mongodb+srv://esdg6t4:zJZcldRJaXWpX77z@listingsmicroservic
 db = client['CartDB']
 collection = db['Cart']
 
-cart = {}
-
-# # Get 1 Product
-# @app.route('/products/<int:productID>', methods=['GET'])
-# def getProductByID(productID):
-#     product = collection.find_one({'productID': productID})
-    # if product:
-    #     product_dict = {
-    #         'productID': product["productID"], 
-    #         'itemName': product['itemName'], 
-    #         'quantity': product['quantity'],
-    #         'price': product['price'], 
-    #         'dateOfPost': product['dateOfPost'], 
-    #         'availability': product['availability'],
-    #         # 'location': product['location'],
-    #         'imgURL': product["imgURL"]
-    #     }
-        # return jsonify(product_dict)
-    # return product
-
-#     else:
-#         return jsonify(
-#             {
-#                 'code': 404,
-#                 'error': 'Product not found'
-#             }
-#         ), 404
-
 # Get All Cart Items of particular user
 @app.route('/get_cart', methods=['GET'])
 def getAllProducts():
