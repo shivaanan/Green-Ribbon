@@ -71,14 +71,22 @@ def getProductByID(productID):
             'address': product['address'],
             'imgURL': product["imgURL"]
         }
-        return jsonify(product_dict)
-    else:
         return jsonify(
             {
-                'code': 404,
-                'error': 'Product not found'
+                "code": 200, 
+                "message": "Retrieved 1 product",
+                "data" : {
+                    "products" : product_dict
+                }
             }
-        ), 404
+        ), 200
+    else:
+        return jsonify( 
+            {
+                "code": 400, 
+                "message": "Product not found"
+            }
+        ), 400 
 
 # ========================== EXTRA ==========================
 # @app.route('/products/<int:productID>/quantity', methods=['GET'])
@@ -110,6 +118,7 @@ def getProductByID(productID):
 # ========================== EXTRA ==========================
 
 
+# Not in scenario
 # Add product to db
 @app.route('/add_product', methods=['POST'])
 def add_product():
