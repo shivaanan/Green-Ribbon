@@ -62,7 +62,7 @@ def return_item():
                 body=message)
             
 
-        return jsonify({'message': f"Request for return item for Order {orderID} successful"})
+        return jsonify({'code': 200, 'message': f"Request for return item for Order {orderID} successful"})
     
     except Exception as e:
         return jsonify({'code': 404, 'error': str(e)}), 404
@@ -122,7 +122,7 @@ def refund_decision():
                 amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.refund.accept",
                                                 body=return_message)
 
-                return jsonify({'message': f"Refund accepted for Order {orderID}."})
+                return jsonify({'code': 200,'message': f"Refund accepted for Order {orderID}."})
             
 
             elif decision == 'reject':
@@ -131,7 +131,7 @@ def refund_decision():
                 amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="return_item.refund.reject",
                                                 body=message)
 
-                return jsonify({'message': f"Refund rejected for Order {orderID}."})
+                return jsonify({'code': 200,'message': f"Refund rejected for Order {orderID}."})
 
             else:
                 return jsonify({'message': f"Invalid decision '{decision}'. Decision should be either 'accept' or 'reject'."})

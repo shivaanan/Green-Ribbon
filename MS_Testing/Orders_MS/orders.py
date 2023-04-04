@@ -142,7 +142,6 @@ def add_order(userID):
                 'quantity': quantity,
                 'price': price,
                 'dateOfOrder': dateOfOrder,
-                'userID': userID,
                 'imgURL': imgURL,
                 'dateOfPost':dateOfPost,
                 'address':address,
@@ -165,19 +164,19 @@ def get_next_sequence_value(sequence_name):
 # Update the Status of an Order
 # Use case: Anything to do with refunding
 @app.route('/orders/<int:orderID>/<int:productID>', methods=['PUT'])
-def update_order_status(orderID):
+def update_order_status(orderID, productID):
     try:
         data = request.get_json()
         newStatus = data['status']
 
-        result = collection.update_one({"orderID": orderID}, {"$set": {"status": newStatus}})
+        result = collection.update_one({"orderID": orderID, "productID":productID}, {"$set": {"status": newStatus}})
 
         if result.modified_count == 1:
-            return jsonify({'code':200, 'message': f"Order {orderID} updated successfully"})
+            return jsonify({'code':200, 'message': f"Order {orderID}, Product {productID} updated successfully"})
         else:
-            return jsonify({'code':404, 'message': f"No order with ID {orderID} found"}), 404
+            return jsonify({'code':404, 'message': f"No order with ID {orderID} and Product {productID} found"}), 404
     except Exception as e:
-        return jsonify({'code': 404, 'error': str(e)}), 404
+        return jsonify({'code': 500, 'error': str(e)}), 500
 
 # Run
 if __name__ == '__main__':
