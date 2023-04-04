@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, jsonify
-from datetime import datetime
+import datetime
 import json
 
 from flask import Flask, render_template, request, jsonify
@@ -32,11 +32,14 @@ def getAllPurchased(userID): #
                 'orderID': order["orderID"],
                 'buyerID': order["buyerID"],
                 'sellerID': order["sellerID"],
+                'productID': order["productID"],
                 'itemName': order['itemName'],
                 'quantity': order['quantity'],
                 'price': order['price'],
                 'dateOfOrder': order['dateOfOrder'],
                 'imgURL': order["imgURL"],
+                'dateOfPost': order['dateOfPost'],
+                'address': order['address'],
                 'status' : order["status"]
             }
             order_list.append(order_dict)
@@ -57,11 +60,14 @@ def getAllSold(userID): #
                 'orderID': order["orderID"],
                 'buyerID': order["buyerID"],
                 'sellerID': order["sellerID"],
+                'productID': order["productID"],
                 'itemName': order['itemName'],
                 'quantity': order['quantity'],
                 'price': order['price'],
                 'dateOfOrder': order['dateOfOrder'],
                 'imgURL': order["imgURL"],
+                'dateOfPost': order['dateOfPost'],
+                'address': order['address'],
                 'status' : order["status"]
             }
             order_list.append(order_dict)
@@ -71,19 +77,22 @@ def getAllSold(userID): #
 
 # Look at 1 Order
 # Use case: When clicking into an order?
-@app.route('/orders/<int:orderID>', methods=['GET'])
-def getOrderByID(orderID):
-    order = collection.find_one({'orderID': orderID})
+@app.route('/orders/<int:orderID>/<int:productID>', methods=['GET'])
+def getOrderByID(orderID, productID):
+    order = collection.find_one({'orderID': orderID, 'productID':productID})
     if order:
         order_dict = {
             'orderID': order["orderID"],
             'buyerID': order["buyerID"],
             'sellerID': order["sellerID"],
+            'productID': order["productID"],
             'itemName': order['itemName'],
             'quantity': order['quantity'],
             'price': order['price'],
             'dateOfOrder': order['dateOfOrder'],
             'imgURL': order["imgURL"],
+            'dateOfPost': order['dateOfPost'],
+            'address': order['address'],
             'status' : order["status"]
         }
         return jsonify({'code':200, 'order': order_dict})
@@ -104,41 +113,44 @@ def add_order(userID):
         orderID =  get_next_sequence_value("order_id")
         
         # Get the order details from the request payload
-        data = request.get_json()
-        
-        itemName = data["itemName"]
-        buyerID = data["buyerID"]
-        sellerID = data["sellerID"]
-        quantity = data['quantity']
-        price = data['price']
-        dateOfOrder = data['dateOfOrder']
-        imgURL = data["imgURL"]
+        order_data = request.get_json() 
+        cart = order_data["cart"] # If theres more than one item passed in
+
+        buyerID = userID
+        current_date = datetime.date.today()
+        formatted_date = current_date.strftime("%d-%m-%Y")
+        dateOfOrder = formatted_date 
         status = "Completed"
 
-        # Validate the order data
-        if not imgURL:
-            return jsonify({'error': 'Item name is required.'}), 400
-        if not quantity or quantity < 0:
-            return jsonify({'error': 'Quantity must be a positive number.'}), 400
-        if not price or price < 0:
-            return jsonify({'error': 'Price must be a positive number.'}), 400
+        # Add the order(s) to the database
+        for data in cart:
+            itemName = data["itemName"]
+            sellerID = data["sellerID"]
+            productID = data["productID"]
+            quantity = data['inputQuantity']
+            price = data['price']
+            imgURL = data["imgURL"]
+            dateOfPost = data["dateOfPost"]
+            address = data["address"]
 
-        # Add the order to the database
-        collection.insert_one({
-            'orderID': orderID,
-            'buyerID': buyerID,
-            'sellerID': sellerID,
-            'itemName': itemName,
-            'quantity': quantity,
-            'price': price,
-            'dateOfOrder': dateOfOrder,
-            'userID': userID,
-            "imgURL": imgURL,
-            "status": status
-        })
+            collection.insert_one({
+                'orderID': orderID,
+                'buyerID': buyerID,
+                'sellerID': sellerID,
+                'productID':productID,
+                'itemName': itemName,
+                'quantity': quantity,
+                'price': price,
+                'dateOfOrder': dateOfOrder,
+                'userID': userID,
+                'imgURL': imgURL,
+                'dateOfPost':dateOfPost,
+                'address':address,
+                "status": status
+            })
 
         # Return a success response
-        return jsonify({'message': 'Order added successfully.'}), 200
+        return jsonify({'code':201, 'message': 'Order added successfully.'}), 201
 
     except Exception as e:
         # Return an error response if there was a problem adding the order to the database
@@ -152,7 +164,7 @@ def get_next_sequence_value(sequence_name):
 
 # Update the Status of an Order
 # Use case: Anything to do with refunding
-@app.route('/orders/<int:orderID>', methods=['PUT'])
+@app.route('/orders/<int:orderID>/<int:productID>', methods=['PUT'])
 def update_order_status(orderID):
     try:
         data = request.get_json()
