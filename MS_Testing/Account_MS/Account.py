@@ -133,6 +133,30 @@ def retrieve_email(userId):
         ), 400
 
 
+# retrieve user name
+@app.route("/retrieve_name/<userId>", methods=['GET'])
+def retrieve_name(userId):
+
+    name = db.child("users").child(userId).child("name").get()
+    print (name)
+    if name:
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Name retrieved successfully",
+                "data": {
+                    "name": name
+                }
+            }), 200
+    
+    else:
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Error occurred when trying to retrieve name"
+            }
+        ), 400
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
