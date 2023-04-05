@@ -26,7 +26,7 @@ const profilePage = Vue.createApp({
             products: [],
             buyHistory: [],
             sellHistory: [],
-            tempObj: null,
+            tempObj: [],
             userId: sessionStorage.getItem("userId"),
         };
     }, // data
@@ -130,7 +130,7 @@ const profilePage = Vue.createApp({
         },
 
         // Seller reject refund approval pt1-------------------------------------------------------------------
-        acceptRefund(sellOrder) {   
+        approveRefund(sellOrder) {   
             let orderID = sellOrder.orderID;
             let productID = sellOrder.productID;
             let decision = 'accept';
@@ -140,12 +140,13 @@ const profilePage = Vue.createApp({
                             "decision": decision,
                             "productID": productID
                             };
+            console.log(this.tempObj);
         },
 
         //Seller submit cc info to refund pt 2-------------------------------------------------------------------
             
         sendPayment() {
-            // Make an axios post request to the ReturnItem microservice
+            console.log(this.tempObj);
             let cardNumberInput = document.getElementById("cardNumber").value;
             let expDateInput = document.getElementById("expDate").value;
             let [exp_month, exp_year] = expDateInput.split("/");
@@ -153,24 +154,25 @@ const profilePage = Vue.createApp({
             let cardHolderName = document.getElementById("cardHolderName").value;
 
             let card_details = {
-                                number: cardNumberInput,
-                                exp_month: exp_month,
-                                exp_year: exp_year,
-                                cvc: CVCInput,
+                                "number": cardNumberInput,
+                                "exp_month": exp_month,
+                                "exp_year": exp_year,
+                                "cvc": CVCInput,
                                 };
+            console.log(card_details);                    
 
-            this.tempObj.cardDetails = card_details;
-            this.tempObj.cardName = cardHolderName;
+            this.tempObj["cardDetails"] = card_details;
+            this.tempObj["cardName"] = cardHolderName;
             console.log('please');
-            console.log(this.tempObj);
 
+            // Make an axios post request to the ReturnItem microservice
             axios.post('http://127.0.0.1:5300/refund_decision', this.tempObj)
             .then(response => {
                 console.log(response.data);
-                if (response.data["success"]) {
+                if (response.data["code"]==200) {
                     // Remove refund buttons
-                    let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
-                    let rejectButton = document.getElementById('reject'+sellOrder.orderID+sellOrder.itemName);
+                    let approveButton = document.getElementById('approve'+this.tempObj.orderID+this.tempObj.productID);
+                    let rejectButton = document.getElementById('reject'+this.tempObj.orderID+this.tempObj.productID);
                     approveButton.remove();
                     rejectButton.remove();
                     alert("Refund successful");

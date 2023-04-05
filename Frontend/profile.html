@@ -175,11 +175,11 @@
                         </p>
                         <div v-if="sellOrder.status=='Processing Refund'">
                           <!-- Button trigger modal -->
-                          <button :id="'approve'+sellOrder.orderID+sellOrder.itemName" 
+                          <button :id="'approve'+sellOrder.orderID+sellOrder.productID" 
                             @click="approveRefund(sellOrder)"
                             class="btn btn-outline-success btn-sm mb-2 mx-4" 
                             data-bs-toggle="modal" data-bs-target="#allowRefund">Allow Refund</button>
-                          <button :id="'reject'+sellOrder.orderID+sellOrder.itemName" 
+                          <button :id="'reject'+sellOrder.orderID+sellOrder.productID" 
                             @click="rejectRefund(sellOrder)"
                             class="btn btn-outline-danger btn-sm mb-2 mx-4">Reject Refund</button>
                         </div>
@@ -248,7 +248,7 @@
               </div>
           </div>
           <div class="modal-footer">
-            <button @click="sendPayment()" class="btn btn-success" id="refund-button">Refund</button>
+            <button type="button" @click="sendPayment()" class="btn btn-success" id="refund-button">Refund</button>
           </div>
         </div>
       </div>
