@@ -24,8 +24,9 @@ def return_item():
     try:
         data = request.get_json()
         orderID = data['orderID']
+        productID = data['productID']
         data['status'] = 'Processing Refund'
-        url = f"{orders_URL}/orders/{orderID}"
+        url = f"{orders_URL}/orders/{orderID}/{productID}"
         return_item_result = requests.put(url, json=data)
         checkReturn = return_item_result.json()
         code = checkReturn["code"]
@@ -73,10 +74,11 @@ def refund_decision():
     try:
         data = request.get_json()
         orderID = data['orderID']
+        productID = data['productID']
         decision = data['decision'] # either "accept" or "reject"
 
         # Get order data from the external API endpoint
-        url = f"{orders_URL}/orders/{orderID}"
+        url = f"{orders_URL}/orders/{orderID}/{productID}"
         order_result = requests.get(url)
         order_result = order_result.json()
         code = order_result["code"]
@@ -111,6 +113,7 @@ def refund_decision():
                 order_result['status'] = 'Refunded'
 
                 # Send PUT request to update order status
+                
                 return_result = requests.put(url, json=order_result)
                 return_result = return_result.json()
                 
