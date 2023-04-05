@@ -56,25 +56,28 @@ def send_payment_notification(data):
     print("Test data (START)")
     print(data)
     print("Test data (END)")
-
     # code = data['code']
-    paymentStatus = data['paymentStatus']
-    buyerEmail="lintao.main@gmail.com"
-    sellerEmail="lintao.contact@gmail.com"
+    message = data['message']
+    paymentStatus = message['paymentStatus']
+
+    buyerEmail = data['buyerEmail']
+    seller_Emails = data['sellerEmails']
 
     if paymentStatus == 'Payment_Successful':
         subjectBuyer = "Purchase Successful"
-        messageBuyer = f"You have purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
+        messageBuyer = f"You have purchased {message['purchaseSummary']['checkoutDescription']}. Total amount is ${message['purchaseSummary']['totalAmount']}USD"
 
         subjectSeller = "Purchase Successful"
-        messageSeller = f"Your items have been purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
+        messageSeller = f"We are excited to inform you that your item has been successfully sold on our platform! Congratulations on making a sale, and we appreciate your trust in using our services."
 
     else:
         return {"error": "Invalid status code"}, 400
 
     # Send email using SendGrid
     send_email(buyerEmail, subjectBuyer, messageBuyer)
-    send_email(sellerEmail, subjectSeller, messageSeller)
+
+    for eachSellerEmail in seller_Emails:
+        send_email(eachSellerEmail, subjectSeller, messageSeller)
 
     return {"message": "Email sent"}
 
