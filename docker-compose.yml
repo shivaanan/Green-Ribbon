@@ -225,6 +225,6 @@ services:
       # cart_URL: http://cart:5003
       order_URL: http://orders:5004
       payment_URL: http://payment:5005
-      rabbit_host: rabbitmq
+      rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
 
