@@ -133,6 +133,7 @@ def processOrder(products):
     # print("TEST payment_result (END)")
 
     paymentDescription = payment_result['description']
+
     buyerID = ""
     sellerIDs = []
     for eachDescription in paymentDescription:
@@ -148,9 +149,6 @@ def processOrder(products):
 
     getBuyerEmail_URL = ACCOUNT_URL + f"/{buyerID}"
     getBuyerEmail = invoke_http(getBuyerEmail_URL, method='GET')
-    print("WHO IS THIS")
-    print(getBuyerEmail)
-    print("WHO IS THIS")
     buyerEmail = getBuyerEmail['data']['email']
 
     getSellerEmails_set = set()
@@ -163,10 +161,10 @@ def processOrder(products):
 
     sellerEmails = list(getSellerEmails_set)
 
-    print("EMAILS (START)")
-    print(sellerEmails)
-    print(buyerEmail)
-    print("EMAILS (END)")
+    # print("EMAILS (START)")
+    # print(sellerEmails)
+    # print(buyerEmail)
+    # print("EMAILS (END)")
 
 
     
