@@ -97,7 +97,7 @@
       </li>
     </ul>
 
-    <!-- Tab panes -------------------------------------------------------------------------------------------------------->
+    <!-- Listings & Order History Tab panes -------------------------------------------------------------------------------------------------------->
     <div class="tab-content">
       
       <div class="tab-pane active" id="userListings" role="tabpanel" aria-labelledby="userListings-tab">
@@ -111,7 +111,7 @@
                 <div class="card-body">
                   <h4 class="card-title">{{ product.itemName }}</h4>
                   <p class="card-text text-wrap">
-                    Date of Post: {{ product.dateOfPost }}
+                    Date listed: {{ product.dateOfPost }}
                     <br>
                     Price per Unit: {{ product.price }}
                     <br>
@@ -125,25 +125,33 @@
         </div>
         <!-- End User Listings -->
       </div>
-
+      <!-- Order History ------------------------------------------------------------------------------------------>
       <div class="tab-pane" id="orderHistory" role="tabpanel" aria-labelledby="orderHistory-tab">
-        <!-- Order History ------------------------------------------------------------------------------------------>
-        <section id = "orders">
-          <div class = "container my-4">
-            <div class = "row g-0 gy-3">
-              <div class = "d-flex flex-wrap justify-content-center filter-button-group">
-                  <!-- <button class="mx-2 active-filter-btn" data-filter = "*">All Orders</button> -->
-                  <button class="mx-2 active-filter-btn" data-filter = ".buy">Bought</button>
-                  <button class="mx-2" data-filter = ".sell">Sold</button>
-              </div>
-
-              <!-- <div class = "orders-list row gx-0 gy-3"> -->
-                <!-- dynamic buy order history -->
-              
-                <div v-for="buyOrder in buyHistory">
-                  <div class = "col-md-6 col-lg-4 col-xl-3 m-4 buy">
-                    <div class="card bg-light" style="max-width: 15rem;">
-                      <div class="card-header">Order: {{buyOrder.orderID}} [{{buyOrder.status}}]</div>
+        
+        <div class="container mt-4">
+          <!-- Inner Nav tabs -->
+          <ul class="nav nav-pills mb-3 justify-content-center" id="miniTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="bought-tab" data-bs-toggle="tab" data-bs-target="#bought" 
+              type="button" role="tab" aria-controls="bought" aria-selected="true">Bought</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="sold-tab" data-bs-toggle="tab" data-bs-target="#sold" 
+              type="button" role="tab" aria-controls="sold" aria-selected="false">Sold</button>
+            </li>
+          </ul>
+      
+          <!-- Boy Sold Tab panes -------------------------------------------------------------------------------------------------------->
+          <div class="tab-content">
+            
+            <div class="tab-pane active" id="bought" role="tabpanel" aria-labelledby="bought-tab">
+          
+                <div class="container">
+                  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+                    <!-- dynamic sell order history -->
+                    <div v-for="buyOrder in buyHistory" class="col mb-4">
+                      <div class="card bg-light" style="max-width: 15rem;">
+                        <div class="card-header">Order: {{buyOrder.orderID}} [{{buyOrder.status}}]</div>
                       <img style="height:170px;" :src="buyOrder.imgURL">
                       <div class="card-body">
                         <h5 class="card-title">{{buyOrder.itemName}}</h5>
@@ -152,17 +160,24 @@
                           <br>
                           Order date: {{buyOrder.dateOfOrder}}
                         </p>
+                        <div v-if="buyOrder.status=='Completed'">
                         <button :id="buyOrder.orderID+buyOrder.itemName" @click="returnItem(buyOrder)" 
-                        class="btn btn-outline-secondary mx-4">Request Refund</button>
+                          class="btn btn-outline-secondary mx-4">Request Refund</button>
+                        </div>
+                      </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              <!-- </div> -->
 
-                <!-- dynamic sell order history -->
-                <div v-for="sellOrder in sellHistory">
-                  <div class = "col-md-6 col-lg-4 col-xl-3 m-2 mx-auto sell">
+            </div>
+      
+            <div class="tab-pane" id="sold" role="tabpanel" aria-labelledby="sold-tab">
+
+              <div class="container">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+                  <!-- dynamic sell order history -->
+                  <div v-for="sellOrder in sellHistory" class="col mb-4">
                     <div class="card bg-light" style="max-width: 15rem;">
                       <div class="card-header">Order: {{sellOrder.orderID}} [{{sellOrder.status}}]</div>
                       <img style="height:170px;" :src="sellOrder.imgURL">
@@ -173,28 +188,37 @@
                           <br>
                           Order date: {{sellOrder.dateOfOrder}}
                         </p>
-                        <div v-if="sellOrder.status=='Processing Refund'">
+                        <div v-if="sellOrder.status=='Processing Refund'" class="d-flex justify-content-center">
                           <!-- Button trigger modal -->
                           <button :id="'approve'+sellOrder.orderID+sellOrder.productID" 
                             @click="approveRefund(sellOrder)"
-                            class="btn btn-outline-success btn-sm mb-2 mx-4" 
+                            class="btn btn-outline-success mx-2 mb-2 w-100" 
                             data-bs-toggle="modal" data-bs-target="#allowRefund">Allow Refund</button>
                           <button :id="'reject'+sellOrder.orderID+sellOrder.productID" 
                             @click="rejectRefund(sellOrder)"
-                            class="btn btn-outline-danger btn-sm mb-2 mx-4">Reject Refund</button>
+                            class="btn btn-outline-danger mx-2 mb-2 w-100">Reject Refund</button>
                         </div>
+                        <!-- <div v-else>
+                          <button type="button" class="btn btn-primary invisible disabled">filler</button>
+                        </div> -->
                       </div>
                     </div>
                   </div>
                 </div>
-                    
               </div>
+              
+                
+            </div>
+
+            <!-- End of order history -->
+      
             </div>
           </div>
-        </section>  
+          <!-- End of Tab Content -->
+        </div>  
       <!-- End of order history -->
-      </div>
 
+      </div>
     </div>
     <!-- End of Tab Content -->
   </div>  
@@ -256,10 +280,11 @@
   </form>
   <!-- End Refund Payment Modal -->
 
+
   <!-- jquery -->
   <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
   <!-- isotope js -->
-  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+  <!-- <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script> -->
   <!-- bootstrap js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
   integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
@@ -270,7 +295,7 @@
   <!-- custom js -->    
   <script src="js/profile.js"></script>
 
-  <script>
+  <!-- <script>
     // init Isotope
     var $grid = $('.orders-list').isotope({
       // options
@@ -296,6 +321,6 @@
       });
     }
 
-  </script>
+  </script> -->
 </body>
 </html>

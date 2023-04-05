@@ -201,8 +201,8 @@ const profilePage = Vue.createApp({
                 console.log(response.data);
                 if (response.data["code"]==200) {
                     // Remove refund buttons 
-                    let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.itemName);
-                    let rejectButton = document.getElementById('reject'+sellOrder.orderID+sellOrder.itemName);
+                    let approveButton = document.getElementById('approve'+sellOrder.orderID+sellOrder.productID);
+                    let rejectButton = document.getElementById('reject'+sellOrder.orderID+sellOrder.productID);
                     approveButton.remove();
                     rejectButton.remove();
                     alert("Refund rejected");
