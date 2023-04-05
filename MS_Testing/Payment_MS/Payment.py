@@ -47,7 +47,7 @@ def payment():
 
     # Calculate the total amount
         # Stripe expects the amount in cents
-        amount = int(eachItem['price']) * item_quantity * 100
+        amount = int(eachItem['price'] * item_quantity * 100 * 1.08)
         total_amount += amount
 
     checkout_amount = total_amount/100 # in dollars
@@ -149,7 +149,7 @@ def refund():
     # print("TEST card_details (START)")
     # print(card_details)
     # print("TEST card_details (END)")
-
+    
     for eachItem in shoppingCart:
         item_quantity = eachItem['quantity']
     # if product_id not in PRODUCTS:
@@ -159,7 +159,7 @@ def refund():
 
     # Calculate the total amount
         # Stripe expects the amount in cents
-        amount = int(eachItem['price']) * item_quantity * 100
+        amount = int(eachItem['price'] * item_quantity * 100 * 1.08)
         total_amount += amount
 
     checkout_amount = total_amount/100 # in dollars

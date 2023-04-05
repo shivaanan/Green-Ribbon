@@ -20,6 +20,12 @@ channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, dura
 queue_name = 'Payment' #?##
 channel.queue_declare(queue=queue_name, durable=True) 
 routing_key = 'payment.#' #?##
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key)
+
+############   Return queue   #############
+queue_name = 'Return_Payment' #?##
+channel.queue_declare(queue=queue_name, durable=True) 
+routing_key = 'return_payment' #?##
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) 
 
 

@@ -26,7 +26,7 @@ def receiveOrderLog():
     
     amqp_setup.channel.basic_consume(queue=paymentQueue, on_message_callback=paymentNotification, auto_ack=True)
 
-    returnQueue = 'Return_Item'
+    returnQueue = 'Return_Payment'
     
     amqp_setup.channel.basic_consume(queue=returnQueue, on_message_callback=refundNotification, auto_ack=True)
     amqp_setup.channel.start_consuming() # an implicit loop waiting to receive messages; 
@@ -46,7 +46,6 @@ def processOrderLog(order):
     
 
 def send_payment_notification(data):
-
     # code = data.get('code', 0)
     # message = data.get('message', '')
 
@@ -56,25 +55,28 @@ def send_payment_notification(data):
     print("Test data (START)")
     print(data)
     print("Test data (END)")
-
     # code = data['code']
-    paymentStatus = data['paymentStatus']
-    buyerEmail="lintao.main@gmail.com"
-    sellerEmail="lintao.contact@gmail.com"
+    message = data['message']
+    paymentStatus = message['paymentStatus']
+
+    buyerEmail = data['buyerEmail']
+    seller_Emails = data['sellerEmails']
 
     if paymentStatus == 'Payment_Successful':
         subjectBuyer = "Purchase Successful"
-        messageBuyer = f"You have purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
+        messageBuyer = f"You have purchased {message['purchaseSummary']['checkoutDescription']}. Total amount is ${message['purchaseSummary']['totalAmount']}USD"
 
         subjectSeller = "Purchase Successful"
-        messageSeller = f"Your items have been purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
+        messageSeller = f"We are excited to inform you that your item has been successfully sold on our platform! Congratulations on making a sale, and we appreciate your trust in using our services."
 
     else:
         return {"error": "Invalid status code"}, 400
 
     # Send email using SendGrid
     send_email(buyerEmail, subjectBuyer, messageBuyer)
-    send_email(sellerEmail, subjectSeller, messageSeller)
+
+    for eachSellerEmail in seller_Emails:
+        send_email(eachSellerEmail, subjectSeller, messageSeller)
 
     return {"message": "Email sent"}
 
@@ -108,19 +110,20 @@ def send_refund_notification(data):
     print("Test data (END)")
 
     # code = data['code']
-    refundStatus = data['code']
-    buyerEmail="lintao.main@gmail.com"
-    sellerEmail="lintao.contact@gmail.com"
+    refundStatus = data['message']['code']
 
-    if refundStatus == 200:
-        orderID = data['orderID']
-        productID = data['productID']
+    buyerEmail=data['buyerEmail']
+    sellerEmail=data['sellerEmail']
+
+    if refundStatus == 201:
+        orderID = data['message']['description'][0]['orderID']
+        productID = data['message']['description'][0]['productID']
 
         subjectBuyer = "Refund Successful"
         messageBuyer = f"Your purchase of Product {productID} from Order {orderID} has been successfully refunded."
 
         subjectSeller = "Refund Successful"
-        messageSeller = f"You have successfully refunded Product {productID} from Order {orderID}."
+        messageSeller = f"We would like to inform you that you have successfully refunded Product {productID} from Order {orderID} to the Buyer."
 
     else:
         return {"error": "Invalid status code"}, 400
@@ -128,7 +131,6 @@ def send_refund_notification(data):
     # Send email using SendGrid
     send_email(buyerEmail, subjectBuyer, messageBuyer)
     send_email(sellerEmail, subjectSeller, messageSeller)
-
     return {"message": "Email sent"}
 
 def send_email(to_email, subject, content):

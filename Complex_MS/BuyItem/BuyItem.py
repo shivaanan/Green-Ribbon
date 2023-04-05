@@ -15,6 +15,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
+account_URL = environ.get('account_URL') or "http://127.0.0.1:5001"
 listing_URL = environ.get('listing_URL') or "http://localhost:5002"
 payment_URL = environ.get('payment_URL') or "http://localhost:5005"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
@@ -74,8 +75,7 @@ def buy_item():
                     'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity",
                 }), 400
 
-        combinedData = {"buyerID": userId, "sellerIDs": manySellerID, "dataObj": shoppingCart,
-                        "cardDetails": card_details, "cardName": cardHolderName}
+        combinedData = {"buyerID": userId, "sellerIDs": manySellerID, "dataObj": shoppingCart, "cardDetails": card_details, "cardName": cardHolderName}
         # print("TEST CD (START)")
         # print(combinedData)
         # print("TEST CD (END)")
@@ -132,9 +132,48 @@ def processOrder(products):
     # print(payment_result)
     # print("TEST payment_result (END)")
 
+    paymentDescription = payment_result['description']
+
+    buyerID = ""
+    sellerIDs = []
+    for eachDescription in paymentDescription:
+        buyerID = eachDescription['buyerID']
+        sellerIDs.append(eachDescription['sellerID'])
+
+    print("ID TEST(START)")
+    print(buyerID)
+    print(sellerIDs)
+    print("ID TEST(END)")
+
+    ACCOUNT_URL = account_URL + "/retrieve_email"
+
+    getBuyerEmail_URL = ACCOUNT_URL + f"/{buyerID}"
+    getBuyerEmail = invoke_http(getBuyerEmail_URL, method='GET')
+    buyerEmail = getBuyerEmail['data']['email']
+
+    getSellerEmails_set = set()
+    for eachSellerID in sellerIDs:
+        getSellerEmail_URL = ACCOUNT_URL + f"/{eachSellerID}"
+        getSellerEmail = invoke_http(getSellerEmail_URL, method='GET')
+        getSellerEmail = getSellerEmail['data']['email']
+
+        getSellerEmails_set.add(getSellerEmail)
+
+    sellerEmails = list(getSellerEmails_set)
+
+    # print("EMAILS (START)")
+    # print(sellerEmails)
+    # print(buyerEmail)
+    # print("EMAILS (END)")
+
+
+    
     # ========================= AMQP (START) =========================
     code = payment_result["code"]
-    message = json.dumps(payment_result)
+    message = payment_result
+
+    passMessage = {'message':message,'buyerEmail':buyerEmail, 'sellerEmails':sellerEmails}
+
     # print("TEST code (START)")
     # print(code)
     # print("TEST code (END)")
@@ -143,9 +182,10 @@ def processOrder(products):
     # print(message)
     # print("TEST message (END)")
     amqp_setup.check_setup()
+    json_message = json.dumps(passMessage)
 
     if code not in range(200, 300):
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", body=message, properties=pika.BasicProperties(delivery_mode=2))
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error", body=json_message, properties=pika.BasicProperties(delivery_mode=2))
 
         print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
             code), payment_result)
@@ -157,7 +197,7 @@ def processOrder(products):
         }
 
     else:
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info", body=message)
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info", body=json_message)
     # ========================= AMQP (END) =========================
 
     # Return created Order

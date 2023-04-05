@@ -182,16 +182,11 @@ def edit_product():
 
         collection.update_one({"productID": productID}, {
                               "$inc": {"quantity": -soldQuantity}})
-
-        return jsonify(
-            {
+        print("updated")
+        return jsonify({
                 "code": 200,
                 "message": "Updated product quantity",
-                "data": {
-                    "product": getProductByID(productID)
-                }
-            }
-        ), 200
+            }), 200
 
     except:
         return jsonify(
