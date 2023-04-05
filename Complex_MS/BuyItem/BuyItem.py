@@ -85,9 +85,9 @@ def buy_item():
         print(processOrderResult)
         print("TEST processOrderResult (END)")
 
-        if processOrderResult['code'] == 201:
-            add_to_orders_DataObj = {"buyerID":userId, "paymentResult":jsonify(processOrderResult), "paymentStatus":201}
-            add_to_orders(add_to_orders_DataObj)
+        # if processOrderResult['code'] == 201:
+        #     add_to_orders_DataObj = {"buyerID":userId, "paymentResult":jsonify(processOrderResult), "paymentStatus":201}
+        #     add_to_orders(add_to_orders_DataObj)
         return jsonify(processOrderResult), processOrderResult["code"]
 
     except Exception as e:
