@@ -34,6 +34,12 @@ channel.queue_declare(queue=queue_name, durable=True)
 routing_key = 'return_item.#'
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) #?##
 
+############   Payment queue   #############
+queue_name = 'Payment' #?##
+channel.queue_declare(queue=queue_name, durable=True) 
+routing_key = '#' #?##
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) 
+
 
 """
 This function in this module sets up a connection and a channel to a local AMQP broker,

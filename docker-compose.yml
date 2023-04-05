@@ -119,6 +119,7 @@ services:
       # - order_URL: http://order:5004
       payment_URL: http://payment:5005
       rabbit_host: rabbitmq
+      PYTHONUNBUFFERED: 1
 
   ###################################
   # LoginAccount: The LoginAccount COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
@@ -140,7 +141,8 @@ services:
     ports:
       - "5100:5100"
     environment:
-      - account_URL=http://account:5001
+      account_URL: http://account:5001
       # - location_URL: http://location:8080
-      - listing_URL=http://listing:5002
+      listing_URL: http://listing:5002
+      PYTHONUNBUFFERED: 1
 
