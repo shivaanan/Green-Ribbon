@@ -8,11 +8,11 @@
 		<version>3.1.0-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.esd.project</groupId>
+	<groupId>com</groupId>
 	<artifactId>location</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>location</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Location Spring Boot MS</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -42,7 +42,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-		<finalName> spring-boot-docker </finalName>
+		<!-- <finalName> spring-boot-docker </finalName> -->
 	</build>
 	<repositories>
 		<repository>
