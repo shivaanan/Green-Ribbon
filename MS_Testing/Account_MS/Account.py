@@ -7,6 +7,8 @@ from os import environ
 
 app = Flask(__name__)
 
+
+
 CORS(app)
 
 cred = credentials.Certificate({
