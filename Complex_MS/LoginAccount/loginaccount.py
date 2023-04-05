@@ -1,10 +1,7 @@
-import firebase 
 from flask import Flask, request, jsonify 
 from flask_cors import CORS 
 from invokes import invoke_http
 import pika 
-import os 
-import json
 import requests
 import amqp_setup
 from os import environ 
