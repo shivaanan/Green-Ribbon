@@ -1,6 +1,7 @@
 import stripe
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -12,9 +13,14 @@ stripe.api_key = 'sk_test_51MltK7EBOpB8WMsEGsB51xLyAgs77LcOmFOr8mmzF2cPB0Fb0TeKX
 @app.route('/payment', methods=['POST'])
 def payment():
     data = request.json
+    print("TEST data (START)")
+    print(data)
+    print("TEST data (END)")
     shoppingCart = data['dataObj']
     card_details = data['cardDetails']
     cardHolderName = data['cardName']
+    buyerID = data['buyerID']
+    sellerIDs = data['sellerIDs']
     # print("print card (START)")
     # print(card)
     # print("print card (END)")
@@ -33,6 +39,7 @@ def payment():
 
     for eachItem in shoppingCart:
         item_quantity = eachItem['inputQuantity']
+        item_price = eachItem['price']
     # if product_id not in PRODUCTS:
     #     return jsonify({'error': 'Invalid product ID'}), 400
 
@@ -40,7 +47,7 @@ def payment():
 
     # Calculate the total amount
         # Stripe expects the amount in cents
-        amount = int(eachItem['price']) * item_quantity * 100
+        amount = int(item_price * item_quantity * 100 * 1.08)
         total_amount += amount
 
     checkout_amount = total_amount/100 # in dollars
@@ -48,16 +55,21 @@ def payment():
          "checkoutDescription":checkout_description,
          "totalAmount": checkout_amount
     }
+    # print(f"TOTAL AMOUNT: {total_amount}")
+    # print(f"purchase summary: {purchase_summary}")
     try:
+        # stringShoppingCart = json.dumps(shoppingCart)
         # Create a new PaymentIntent
         payment_intent = stripe.PaymentIntent.create(
             amount=total_amount,
             currency='usd',
-            description=f"{shoppingCart}",
+            # description=f"{shoppingCart}",
+            # description=stringShoppingCart,
+            description=checkout_description,
         )
-        # print("TEST paymentIntent (START)")
-        # print(payment_intent)
-        # print("TEST paymentIntent (END)")
+        print("TEST paymentIntent (START)")
+        print(payment_intent)
+        print("TEST paymentIntent (END)")
 
         # card_details = {
         #     "number": "4242 4242 4242 4242",
@@ -87,8 +99,10 @@ def payment():
             'code': 201,
             'paymentStatus':'Payment_Successful',
             'message':'Payment Successful! Thank you for shopping with us :)',
-            'description': paymentResult['description'],
+            'description': shoppingCart,
             'purchaseSummary':purchase_summary,
+            'buyerID':buyerID,
+            'sellerIDs':sellerIDs,
         }), 201
         
 
@@ -96,7 +110,9 @@ def payment():
             return jsonify({
             "code": 400,
             'paymentStatus':'Payment_Unsuccessful',
-            "message": "Payment Unsuccessful!"
+            "message": "Payment Unsuccessful!",
+            'buyerID':buyerID,
+            'sellerIDs':sellerIDs,
         }), 400
         
 

@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ),
     });
     const data = await paymentResponse.json();
+    console.log(data)
     // console.log("paymentResponse START")
     // console.log(data)
     // console.log("paymentResponse END")
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (data.code !== 201) {
       // PAYMENT FAILED
-      const errorMessage = data.data.payment_result.message;
+      const errorMessage = data['message'];
       console.error("Payment failed:", errorMessage);
       const errorMessageElement = document.getElementById("error-message");
       errorMessageElement.textContent = errorMessage;
@@ -125,8 +126,14 @@ document.addEventListener("DOMContentLoaded", function () {
       // console.log(purchasedItems_string)
       // console.log("TEST purchaseItems_string END")
 
-      purchasedItems_string = purchasedItems_string.replace(/'/g, '"');
-      purchasedItems_object = JSON.parse(purchasedItems_string);
+      if (typeof purchasedItems_string === 'string') {
+        purchasedItems_string = purchasedItems_string.replace(/'/g, '"');
+        purchasedItems_object = JSON.parse(purchasedItems_string);
+      } else{
+        purchasedItems_object = purchasedItems_string
+      }
+      
+      
       // console.log("TEST purchaseItems_object START")
       // console.log(purchasedItems_object)
       // console.log("TEST purchaseItems_object END")

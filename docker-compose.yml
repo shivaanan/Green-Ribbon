@@ -1,8 +1,8 @@
 version: "3.8"
 
-networks:
-  G6T4-net:
-    driver: bridge
+# networks:
+#   G6T4-net:
+#     driver: bridge
 
 volumes:
   rabbitmq_data:
@@ -13,8 +13,8 @@ services:
   ####################################
   rabbitmq:
     image: rabbitmq:3-management
-    networks:
-      - G6T4-net
+    # networks:
+    #   - G6T4-net
     hostname: esd-rabbit
     container_name: esd-rabbit
     restart: always
@@ -35,8 +35,8 @@ services:
       context: ./MS_Testing/Account_MS
       dockerfile: Account.Dockerfile
     image: mrtaooo/account:1.0
-    networks:
-      - G6T4-net
+    # networks:
+    #   - G6T4-net
     container_name: account
     restart: always
     ports:
@@ -52,8 +52,8 @@ services:
       context: ./MS_Testing/Listing_MS
       dockerfile: Listing.Dockerfile
     image: mrtaooo/listing:1.0
-    networks:
-      - G6T4-net
+    # networks:
+    #   - G6T4-net
     container_name: listing
     restart: always
     ports:
@@ -69,8 +69,8 @@ services:
       context: ./MS_Testing/Cart_MS
       dockerfile: Cart.Dockerfile
     image: mrtaooo/cart:1.0
-    networks:
-      - G6T4-net
+    # networks:
+    #   - G6T4-net
     container_name: cart
     restart: always
     ports:
@@ -86,8 +86,8 @@ services:
       context: ./MS_Testing/Payment_MS
       dockerfile: Payment.Dockerfile
     image: mrtaooo/payment:1.0
-    networks:
-      - G6T4-net
+    # networks:
+    #   - G6T4-net
     container_name: payment
     restart: always
     ports:
@@ -105,8 +105,8 @@ services:
       context: ./Complex_MS/BuyItem
       dockerfile: BuyItem.Dockerfile
     image: mrtaooo/buyitem:1.0
-    networks:
-      - G6T4-net
+    # networks:
+    #   - G6T4-net
     container_name: buyitem
     restart: always
     depends_on:
@@ -123,6 +123,7 @@ services:
       # - order_URL: http://order:5004
       payment_URL: http://payment:5005
       rabbit_host: rabbitmq
+      PYTHONUNBUFFERED: 1
 
   ###################################
   # LoginAccount: The LoginAccount COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
@@ -132,8 +133,8 @@ services:
       context: ./Complex_MS/LoginAccount
       dockerfile: LoginAccount.Dockerfile
     image: mrtaooo/loginaccount:1.0
-    networks:
-      - G6T4-net
+    # networks:
+    #   - G6T4-net
     container_name: loginaccount
     restart: always
     depends_on:
@@ -144,7 +145,9 @@ services:
     ports:
       - "5100:5100"
     environment:
-      - account_URL=http://account:5001
+      rabbit_host: rabbitmq
+      account_URL: http://account:5001
       # - location_URL: http://location:8080
-      - listing_URL=http://listing:5002
+      listing_URL: http://listing:5002
+      PYTHONUNBUFFERED: 1
 

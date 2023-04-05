@@ -15,10 +15,12 @@ db = client['listingsMS']
 collection = db['listings1']
 
 # Get All Products from listing
+
+
 @app.route('/products', methods=['GET'])
 def getAllProducts():
     try:
-        
+
         products = list(collection.find())
         print(products)
         print("testing")
@@ -38,23 +40,25 @@ def getAllProducts():
             product_list.append(product_dict)
         return jsonify(
             {
-                "code": 200, 
+                "code": 200,
                 "message": "Retrieved all products",
-                "data" : {
-                    "products" : product_list
+                "data": {
+                    "products": product_list
                 }
             }
         ), 200
-    
+
     except:
-        return jsonify( 
+        return jsonify(
             {
-                "code": 400, 
+                "code": 400,
                 "message": "Unable to retrieve all products"
             }
-        ), 400 
+        ), 400
 
 # Get 1 Product
+
+
 @app.route('/products/<int:productID>', methods=['GET'])
 def getProductByID(productID):
     product = collection.find_one({'productID': productID})
@@ -71,20 +75,50 @@ def getProductByID(productID):
         }
         return jsonify(
             {
-                "code": 200, 
+                "code": 200,
                 "message": "Retrieved 1 product",
-                "data" : {
-                    "product" : product_dict
+                "data": {
+                    "product": product_dict
                 }
             }
         ), 200
     else:
-        return jsonify( 
+        return jsonify(
             {
-                "code": 400, 
+                "code": 400,
                 "message": "Product not found"
             }
-        ), 400 
+        ), 400
+
+# # FOR PAYMENT
+# @app.route('/check_item_quantity', methods=['POST'])
+# def check_item_quantity():
+#     shoppingCart = request.get_json()
+#     for eachItem in shoppingCart:
+#         product_ID = eachItem['productID']
+#         productName = eachItem['itemName']
+
+#         product = collection.find_one({'productID': product_ID})
+#         product_dict = {
+#             'sellerID': product['sellerID'],
+#             'productID': product["productID"],
+#             'itemName': product['itemName'],
+#             'quantity': product['quantity'],
+#             'price': product['price'],
+#             'dateOfPost': product['dateOfPost'],
+#             'address': product['address'],
+#             'imgURL': product["imgURL"]
+#         }
+
+#         checkQuantity = product_dict['quantity']
+#         currentQuantity = eachItem['inputQuantity']
+
+#         if currentQuantity > checkQuantity:
+#             return jsonify({
+#                 'code': 400,
+#                 'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity"
+#             }), 400
+
 
 # Not in scenario
 # Add product to db
@@ -105,28 +139,28 @@ def add_product():
         # ADD ERROR HANDLING
 
         collection.insert_one({
-                'productID': productID,
-                'sellerID': sellerID,
-                'itemName': itemName,
-                'quantity': quantity,
-                'price': price,
-                'dateOfPost': dateOfPost,
-                'address': address,
-                "imgURL": imgURL})
+            'productID': productID,
+            'sellerID': sellerID,
+            'itemName': itemName,
+            'quantity': quantity,
+            'price': price,
+            'dateOfPost': dateOfPost,
+            'address': address,
+            "imgURL": imgURL})
         return jsonify(
             {
-                "code": 200, 
+                "code": 200,
                 "message": "Successfully added product",
-                "data" : {
-                    "all_products" : getAllProducts()
-                }   
+                "data": {
+                    "all_products": getAllProducts()
+                }
             }
         ), 200
-    
+
     except:
         return jsonify(
             {
-                "code": 400, 
+                "code": 400,
                 "message": "Error updating product quantity",
             }
         ), 400
@@ -150,15 +184,18 @@ def edit_product():
 
         return jsonify(
             {
-                "code": 200, 
+                "code": 200,
                 "message": "Updated product quantity",
+                "data": {
+                    "product": getProductByID(productID)
+                }
             }
         ), 200
-    
+
     except:
         return jsonify(
             {
-                "code": 400, 
+                "code": 400,
                 "message": "Error updating product quantity",
             }
         ), 400
@@ -168,21 +205,21 @@ def edit_product():
 
 @app.route('/remove_product/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
-    try: 
+    try:
 
         collection.delete_many({"productID": product_id})
 
         return jsonify(
             {
-                "code": 200, 
+                "code": 200,
                 "message": "Product Successfully Deleted",
             }
         ), 200
-    
+
     except:
         return jsonify(
             {
-                "code": 400, 
+                "code": 400,
                 "message": "Error deleting product",
             }
         ), 400
