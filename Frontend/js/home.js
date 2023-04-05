@@ -5,14 +5,9 @@
 const homePage = Vue.createApp({
     data() {
         return {
-            displayProducts: [],
             products: [],
             userId: sessionStorage.getItem("userId"),
             cartCount: "",
-            distances: {},
-            // isLoading: true,
-            isLoading: false,
-            
         };
     }, // data
 
@@ -23,48 +18,14 @@ const homePage = Vue.createApp({
         axios
             .get("http://127.0.0.1:5100/products")
             .then((response) => {
-                // this.products = response.data["data"]["products"];
-                this.displayProducts = response.data["data"]["products"];
+                console.log("hi");
+                // console.log(response.data[0]);
+                // this.products = response.data;
+                this.products = response.data["data"]["products"];
             })
             .catch((error) => {
                 console.log(error);
             });
-
-        
-
-        // retrieve distance of the listings from the backend
-        // axios
-        // .get("http://127.0.0.1:5100/calculatedistance")
-        // .then((response) => {
-        //     console.log("hi");
-        //     // console.log(response.data[0]);
-        //     // this.products = response.data;
-        //     // console.log(this.products);
-        //     // this.products = response.data["data"]["distances"];
-        //     console.log(response.data["data"]["distances"]);
-        //     this.distances = response.data["data"]["distances"];
-            
-        //     this.products.forEach((product) => {
-        //         product.distance = this.distances[product.productID];
-        //     });
-            
-        //     console.log(this.products);
-        //     // clg(this.products);
-
-        //     // sort products by distance
-        //     this.products.sort((a, b) => {
-        //         return a.distance - b.distance;
-        //     });
-
-        //     this.displayProducts = this.products;
-
-        //     // set isLoading to false once products have loaded
-        //     this.isLoading = false;
-            
-        // })
-        // .catch((error) => {
-        //     console.log(error);
-        // });
 
         // retrieve cart count from the backend
         axios

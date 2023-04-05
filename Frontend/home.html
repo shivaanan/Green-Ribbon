@@ -24,7 +24,7 @@
     </script> -->
 </head>
 
-<body id="homePage" style="background-color: #F7F7F7;">
+<body id="homePage">
     <!-- de2f52 -->
     <!-- nav bar -->
     <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #368373">
@@ -94,21 +94,14 @@
     <!-- Product Cards -->
     <div id="products" class="mt-0 cards_landscape_wrap-2">
 
-        <div v-if="isLoading">
-            <div class="mt-5">
-                <i class="fa fa-spinner fa-spin" style="font-size:48px;color:gray"></i>
-                <h3>loading products...</h3>
-            </div>
-        </div>
         <div class="container pt-0 px-auto">
 
             <div
                 class="row row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-sm-2 row-cols-1 justify-content-center justify-content-sm-start justify-content-md-start justify-content-lg-start justify-content-xl-start  align-items-start ">
 
-
                 <!--dynamically retrieved events from db-->
                 <!--template for a product-->
-                <div class="col-8" align="center" v-for="product in displayProducts">
+                <div class="col-8" align="center" v-for="product in products">
 
                     <!-- start of card-->
                     <div class="card" style="background-color: #f5ece4;" :id="`productCard${product.productID}`">
@@ -124,11 +117,10 @@
                                 <p class="card-text text-wrap">
                                     Date of Post: {{ product.dateOfPost }}
                                     <br>
-                                    Price per Unit: ${{ product.price }}
+                                    Price per Unit: {{ product.price }}
                                     <br>
                                     Quantity: {{ product.quantity }}
                                     <br>
-                                    Distance from you: {{ product.distance }} km 
 
                                 </p>
                             </div>

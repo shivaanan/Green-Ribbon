@@ -1,7 +1,10 @@
+import firebase 
 from flask import Flask, request, jsonify 
 from flask_cors import CORS 
 from invokes import invoke_http
 import pika 
+import os 
+import json
 import requests
 import amqp_setup
 from os import environ 
@@ -117,19 +120,9 @@ def get_distance():
                 amqpmessage = "Error calculating distance"
                 amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="location.error", body=amqpmessage,properties=pika.BasicProperties(delivery_mode=2))
 
-        # return jsonify(distances)
-        return jsonify(
-            {
-                "code": 200,
-                "message": "Distance calculated successfully",
-                "data": {
-                    "distances": distances
-                }
-            }
-        ), 200
-    
+        return jsonify(distances)
     except :
-        return jsonify(
+         return jsonify(
             {
                 "code": 400,
                 "message": "Failed to calculate distance"
