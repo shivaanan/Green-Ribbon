@@ -147,7 +147,7 @@ services:
     build:
       context: ./Complex_MS/LoginAccount
       dockerfile: LoginAccount.Dockerfile
-    image: mrtaooo/loginaccount:1.0
+    image: m4rtinliu/loginaccount:v1
     # networks:
     #   - G6T4-net
     container_name: loginaccount
