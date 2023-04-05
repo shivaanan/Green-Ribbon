@@ -49,7 +49,7 @@ def getAllProducts():
 def add_to_cart():  
     data = request.get_json()
     buyerID = data["userId"]
-    inputQuantity = data["qtyInput"]
+    inputQuantity = int(data["qtyInput"])
     productID = data["productID"]
     product = data['product']
 
