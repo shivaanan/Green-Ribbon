@@ -52,38 +52,48 @@ def send_payment_notification(data):
     # # Extract email address from data (assuming it's included)
     # email = data.get('email', '')
 
-    print("Test data (START)")
-    print(data)
-    print("Test data (END)")
+    # print("Test data (START)")
+    # print(data)
+    # print("Test data (END)")
     # code = data['code']
-    message = data['message']
-    paymentStatus = message['paymentStatus']
+    try:
+        message = data['message']
+        paymentStatus = message['paymentStatus']
 
-    buyerEmail = data['buyerEmail']
-    seller_Emails = data['sellerEmails']
+        buyerEmail = data['buyerEmail']
+        seller_Emails = data['sellerEmails']
 
-    if paymentStatus == 'Payment_Successful':
-        subjectBuyer = "Purchase Successful"
-        messageBuyer = f"You have purchased {message['purchaseSummary']['checkoutDescription']}. Total amount is ${message['purchaseSummary']['totalAmount']}USD"
+        if paymentStatus == 'Payment_Successful':
+            subjectBuyer = "Purchase Successful"
+            messageBuyer = f"You have purchased {message['purchaseSummary']['checkoutDescription']}. Total amount is ${message['purchaseSummary']['totalAmount']}USD"
 
-        subjectSeller = "Purchase Successful"
-        messageSeller = f"We are excited to inform you that your item has been successfully sold on our platform! Congratulations on making a sale, and we appreciate your trust in using our services."
+            subjectSeller = "Purchase Successful"
+            messageSeller = f"We are excited to inform you that your item has been successfully sold on our platform! Congratulations on making a sale, and we appreciate your trust in using our services."
 
-    else:
-        return {"error": "Invalid status code"}, 400
+        else:
+            return {"error": "Invalid status code"}, 400
 
-    # Send email using SendGrid
-    send_email(buyerEmail, subjectBuyer, messageBuyer)
+        # Send email using SendGrid
+        send_email(buyerEmail, subjectBuyer, messageBuyer)
 
-    for eachSellerEmail in seller_Emails:
-        send_email(eachSellerEmail, subjectSeller, messageSeller)
+        for eachSellerEmail in seller_Emails:
+            send_email(eachSellerEmail, subjectSeller, messageSeller)
 
-    return {"message": "Email sent"}
+        return {
+            "code": 201,
+            "message": "Email sent"
+        }
+    
+    except:
+        return {
+            "code": 400,
+            "message": "Email fail to send"
+        }
 
 def refundNotification(channel, method, properties, body): # required signature for the callback; no return
-    print("TEST")
-    print(body)
-    print("TEST(END)")
+    # print("TEST")
+    # print(body)
+    # print("TEST(END)")
     print("\nReceived an order log by " + __file__)
     try:
         processRefundLog(json.loads(body))
@@ -105,33 +115,43 @@ def send_refund_notification(data):
     # # Extract email address from data (assuming it's included)
     # email = data.get('email', '')
 
-    print("Test data (START)")
-    print(data)
-    print("Test data (END)")
+    # print("Test data (START)")
+    # print(data)
+    # print("Test data (END)")
 
     # code = data['code']
-    refundStatus = data['message']['code']
+    try:
+        refundStatus = data['message']['code']
 
-    buyerEmail=data['buyerEmail']
-    sellerEmail=data['sellerEmail']
+        buyerEmail=data['buyerEmail']
+        sellerEmail=data['sellerEmail']
 
-    if refundStatus == 201:
-        orderID = data['message']['description'][0]['orderID']
-        productID = data['message']['description'][0]['productID']
+        if refundStatus == 201:
+            orderID = data['message']['description'][0]['orderID']
+            productID = data['message']['description'][0]['productID']
 
-        subjectBuyer = "Refund Successful"
-        messageBuyer = f"Your purchase of Product {productID} from Order {orderID} has been successfully refunded."
+            subjectBuyer = "Refund Successful"
+            messageBuyer = f"Your purchase of Product {productID} from Order {orderID} has been successfully refunded."
 
-        subjectSeller = "Refund Successful"
-        messageSeller = f"We would like to inform you that you have successfully refunded Product {productID} from Order {orderID} to the Buyer."
+            subjectSeller = "Refund Successful"
+            messageSeller = f"We would like to inform you that you have successfully refunded Product {productID} from Order {orderID} to the Buyer."
 
-    else:
-        return {"error": "Invalid status code"}, 400
+        else:
+            return {"error": "Invalid status code"}, 400
 
-    # Send email using SendGrid
-    send_email(buyerEmail, subjectBuyer, messageBuyer)
-    send_email(sellerEmail, subjectSeller, messageSeller)
-    return {"message": "Email sent"}
+        # Send email using SendGrid
+        send_email(buyerEmail, subjectBuyer, messageBuyer)
+        send_email(sellerEmail, subjectSeller, messageSeller)
+        return {
+            "code": 201,
+            "message": "Email sent"
+        }, 201
+    
+    except:
+        return {
+            "code": 400,
+            "message": "Email fail to send"
+        }
 
 def send_email(to_email, subject, content):
     message = Mail(
@@ -145,11 +165,11 @@ def send_email(to_email, subject, content):
         sg = SendGridAPIClient(SENDGRID_API_KEY)
         response = sg.send(message)
 
-        print("TEST (START)")
-        print(sg)
-        print("BREAK")
-        print(response)
-        print("TEST (END)")
+        # print("TEST (START)")
+        # print(sg)
+        # print("BREAK")
+        # print(response)
+        # print("TEST (END)")
 
         print(response.status_code)
         print(response.body)
