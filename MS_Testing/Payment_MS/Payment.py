@@ -37,7 +37,6 @@ def payment():
 
     for eachItem in shoppingCart:
         item_quantity = eachItem['inputQuantity']
-        item_price = eachItem['price']
     # if product_id not in PRODUCTS:
     #     return jsonify({'error': 'Invalid product ID'}), 400
 
@@ -45,7 +44,7 @@ def payment():
 
     # Calculate the total amount
         # Stripe expects the amount in cents
-        amount = int(item_price * item_quantity * 100 * 1.08)
+        amount = int(eachItem['price']) * item_quantity * 100
         total_amount += amount
 
     checkout_amount = total_amount/100 # in dollars

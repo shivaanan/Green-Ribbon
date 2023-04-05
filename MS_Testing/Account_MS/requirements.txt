@@ -2,4 +2,3 @@ Flask==2.2.2
 Flask-Cors==3.0.10
 firebase==4.0.1
 python-dotenv==1.0.0
-firebase-rest-api==1.10.0

@@ -22,19 +22,13 @@ monitorBindingKey='#'
 def receiveOrderLog():
     amqp_setup.check_setup()
         
-    paymentQueue = 'Payment'
-    amqp_setup.channel.basic_consume(queue=paymentQueue, on_message_callback=paymentNotification, auto_ack=True)
-
-    returnQueue = 'Return_Item'
-    amqp_setup.channel.basic_consume(queue=returnQueue, on_message_callback=refundNotification, auto_ack=True)
-
+    queue_name = 'Payment'
+    
+    amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     amqp_setup.channel.start_consuming() # an implicit loop waiting to receive messages; 
 
-def paymentNotification(channel, method, properties, body): # required signature for the callback; no return
+def callback(channel, method, properties, body): # required signature for the callback; no return
     print("\nReceived an order log by " + __file__)
-    print("FUCK")
-    print(body)
-    print("FUCK")
     try:
         processOrderLog(json.loads(body))
     except json.JSONDecodeError as e:
@@ -44,10 +38,10 @@ def paymentNotification(channel, method, properties, body): # required signature
 def processOrderLog(order):
     print("Recording an order log:")
     print(order)
-    send_payment_notification(order) # Send payment status to users 
+    send_notification(order) # Send payment status to users 
     
 
-def send_payment_notification(data):
+def send_notification(data):
 
     # code = data.get('code', 0)
     # message = data.get('message', '')
@@ -60,46 +54,6 @@ def send_payment_notification(data):
     print("Test data (END)")
 
     # code = data['code']
-    paymentStatus = data['paymentStatus']
-    email="lintao.main@gmail.com"
-
-    if paymentStatus == 'Payment_Successful':
-        subject = "Purchase Successful"
-        message = f"You have purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
-    elif paymentStatus == 'Payment_Unsuccessful':
-        subject = "Purchase Unsuccessful"
-        message = "Purchase Unsuccessful! Invalid card details!"
-    else:
-        return {"error": "Invalid status code"}, 400
-
-    # Send email using SendGrid
-    send_email(email, subject, message)
-
-    return {"message": "Email sent"}
-
-def refundNotification(channel, method, properties, body):
-    print("\nReceived an order log by " + __file__)
-    print("FUCK")
-    print(body)
-    print("FUCK")
-    try:
-        processOrderLog(json.loads(body))
-    except json.JSONDecodeError as e:
-        print(f"Failed to parse JSON: {e}")
-    print() # print a new line feed
-
-def processReturnLog(order):
-    print("Recording an order log:")
-    print(order)
-    send_refund_notification(order) # Send payment status to users 
-    
-
-def send_refund_notification(data):
-
-    print("Test data (START)")
-    print(data)
-    print("Test data (END)")
-
     paymentStatus = data['paymentStatus']
     email="lintao.main@gmail.com"
 

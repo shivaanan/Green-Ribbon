@@ -1,15 +1,13 @@
 import pika
 from os import environ ###
 
-hostname = environ.get('rabbit_host') or 'esd-rabbit' ###
+hostname = environ.get('rabbit_host') or 'localhost' ###
 port = environ.get('rabbit_port') or 5672 ###
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(
         host=hostname, port=port,
         heartbeat=3600, blocked_connection_timeout=3600, # these parameters to prolong the expiration time (in seconds) of the connection
-        # virtual_host='/',
-        # credentials=pika.PlainCredentials('guest', 'guest')
 ))
 
 channel = connection.channel()
@@ -35,12 +33,6 @@ queue_name = 'Return_Item' #?##
 channel.queue_declare(queue=queue_name, durable=True)
 routing_key = 'return_item.#'
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) #?##
-
-############   Payment queue   #############
-queue_name = 'Payment' #?##
-channel.queue_declare(queue=queue_name, durable=True) 
-routing_key = '#' #?##
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) 
 
 
 """

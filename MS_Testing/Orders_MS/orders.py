@@ -1,5 +1,7 @@
+import os
 from flask import Flask, request, jsonify
 import datetime
+import json
 
 from flask import Flask, render_template, request, jsonify
 from pymongo import MongoClient
@@ -104,17 +106,17 @@ def getOrderByID(orderID, productID):
 
 # Make an Order 
 # Use Case: in Buy Item Complex MS, edit item in ListingsMS and add it to Order
-@app.route('/add_order', methods=['POST'])
-def add_order():
+@app.route('/add_order/<userID>', methods=['POST'])
+def add_order(userID):
     try:
         # Get the next order ID from the database
         orderID =  get_next_sequence_value("order_id")
         
         # Get the order details from the request payload
         order_data = request.get_json() 
-        cart = order_data["cart_list"] # If theres more than one item passed in
-        buyerID = order_data["buyerID"]
+        cart = order_data["cart"] # If theres more than one item passed in
 
+        buyerID = userID
         current_date = datetime.date.today()
         formatted_date = current_date.strftime("%d-%m-%Y")
         dateOfOrder = formatted_date 
