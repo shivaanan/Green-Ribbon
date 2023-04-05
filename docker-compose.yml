@@ -142,6 +142,7 @@ services:
       - cart
       - rabbitmq
       - location
+      - orders
     ports:
       - "5200:5200"
     environment:
@@ -149,7 +150,7 @@ services:
       account_URL: http://account:5001
       listing_URL: http://listing:5002
       cart_URL: http://cart:5003
-      order_URL: http://order:5004
+      order_URL: http://orders:5004
       payment_URL: http://payment:5005
       rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
@@ -180,31 +181,31 @@ services:
       rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
       
-  # ###################################
-  # # ReturnItem: The ReturnItem COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
-  # ###################################  
-  # returnitem:
-  #   build:
-  #     context: ./Complex_MS/ReturnItem
-  #     dockerfile: ReturnItem.Dockerfile
-  #   image: beatbeat04/returnitem:1.0
-  #   networks:
-  #     - G6T4-net
-  #   container_name: returnitem
-  #   restart: always
-  #   depends_on:
-  #     - orders
-  #     - payment
-  #     - rabbitmq
-  #     - listing
-  #   ports:
-  #     - "5300:5300"
-  #   environment:
-  #     # location_URL: http://location:8080
-  #     listing_URL: http://listing:5002
-  #     # cart_URL: http://cart:5003
-  #     order_URL: http://order:5004
-  #     payment_URL: http://payment:5005
-  #     rabbit_host: rabbitmq
-  #     rabbit_port: 5672
+  ###################################
+  # ReturnItem: The ReturnItem COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
+  ###################################  
+  returnitem:
+    build:
+      context: ./Complex_MS/ReturnItem
+      dockerfile: ReturnItem.Dockerfile
+    image: beatbeat04/returnitem:1.0
+    networks:
+      - G6T4-net
+    container_name: returnitem
+    restart: always
+    depends_on:
+      - orders
+      - payment
+      - rabbitmq
+      - listing
+    ports:
+      - "5300:5300"
+    environment:
+      # location_URL: http://location:8080
+      listing_URL: http://listing:5002
+      # cart_URL: http://cart:5003
+      order_URL: http://orders:5004
+      payment_URL: http://payment:5005
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
 
