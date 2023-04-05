@@ -105,7 +105,7 @@
         <div class="d-flex flex-wrap mt-4">
           <div v-for="product in products">
             <!-- Only display user's products -->
-            <span v-if="product.sellerID==0"> 
+            <span v-if="product.sellerID==userId"> 
               <div class="card mx-2 mb-3 p-2" style="background-color: #f5ece4; width: 15rem;" :id="`productCard${product.productID}`">
                 <img class="card-img-top" style="height:170px;" :src="product.imgURL">
                 <div class="card-body">
@@ -139,13 +139,14 @@
 
               <div class = "orders-list row gx-0 gy-3">
                 <!-- dynamic buy order history -->
-                <div v-for="(buyOrder, index) in buyHistory" :key="index">
-                  <div class = "col-md-6 col-lg-4 col-xl-3 p-2 buy">
-                    <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
+              
+                <div v-for="buyOrder in buyHistory">
+                  <div class = "col-md-6 col-lg-4 col-xl-3 m-4 buy">
+                    <div class="card bg-light" style="max-width: 15rem;">
                       <div class="card-header">Order: {{buyOrder.orderID}} [{{buyOrder.status}}]</div>
                       <img style="height:170px;" :src="buyOrder.imgURL">
                       <div class="card-body">
-                        <h5 class="card-title">{{buyOrder.itemName}}, {{quantity}}</h5>
+                        <h5 class="card-title">{{buyOrder.itemName}}</h5>
                         <p class="card-text">
                           Quantity: {{buyOrder.quantity}}
                           <br>
@@ -157,71 +158,34 @@
                     </div>
                   </div>
                 </div>
+              </div>
 
                 <!-- dynamic sell order history -->
-                <div v-for="(sellOrder, index) in sellHistory" :key="index">
-                  <div class = "col-md-6 col-lg-4 col-xl-3 p-2 sell">
-                    <div class="card text-white bg-primary mb-3" style="max-width: 15rem;">
+                <div v-for="sellOrder in sellHistory">
+                  <div class = "col-md-6 col-lg-4 col-xl-3 m-2 mx-auto sell">
+                    <div class="card bg-light" style="max-width: 15rem;">
                       <div class="card-header">Order: {{sellOrder.orderID}} [{{sellOrder.status}}]</div>
                       <img style="height:170px;" :src="sellOrder.imgURL">
                       <div class="card-body">
-                        <h5 class="card-title">{{sellOrder.itemName}}, {{quantity}}</h5>
+                        <h5 class="card-title">{{sellOrder.itemName}}</h5>
                         <p class="card-text">
                           Quantity: {{sellOrder.quantity}}
                           <br>
                           Order date: {{sellOrder.dateOfOrder}}
                         </p>
-                        <div v-if="sellOrder.status=='Refund Requested'">
+                        <div v-if="sellOrder.status=='Processing Refund'">
                           <!-- Button trigger modal -->
-                          <button :id="'approve'+sellOrder.orderID+sellOrder.itemName" 
+                          <button :id="'approve'+sellOrder.orderID+sellOrder.productID" 
                             @click="approveRefund(sellOrder)"
                             class="btn btn-outline-success btn-sm mb-2 mx-4" 
                             data-bs-toggle="modal" data-bs-target="#allowRefund">Allow Refund</button>
-                          <button :id="'reject'+sellOrder.orderID+sellOrder.itemName" 
+                          <button :id="'reject'+sellOrder.orderID+sellOrder.productID" 
                             @click="rejectRefund(sellOrder)"
                             class="btn btn-outline-danger btn-sm mb-2 mx-4">Reject Refund</button>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
-                <!-- Sample buy card -->
-                <div class = "col-md-6 col-lg-4 col-xl-3 buy">
-                  <div class="card bg-light" style="max-width: 15rem;">
-                      <div class="card-header">Order: 100 [Completed]</div>
-                      <img style="height:170px;" src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?ixlib=rb-\u2026">
-                      <div class="card-body">
-                        <h5 class="card-title">Chair</h5>
-                        <p class="card-text">
-                          Quantity: 3 
-                          <br>
-                          Order date: 01/01/2001
-                        </p>
-                      </div> 
-                      <a @click="returnItem(buyOrder)" 
-                      class="btn btn-outline-secondary mx-4">Request Refund</a>
-                  </div>
-                </div>
-
-                <!-- Sample sell card -->
-                <div class = "col-md-6 col-lg-4 col-xl-3 sell">
-                    <div class="card bg-light" style="max-width: 15rem;">
-                      <div class="card-header">Order: 200 [Refunded]</div>
-                      <img style="height:170px;" src="https://plus.unsplash.com/premium_photo-1670958553950-fcb8b675d662?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVuY2lsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60">
-                        <div class="card-body">
-                          <h5 class="card-title">Pencil</h5>
-                          <p class="card-text">
-                            Quantity: 5 
-                            <br>
-                            Order date: 01/01/2001
-                          </p>                                
-                        </div>
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-outline-success btn-sm mb-2 mx-4" 
-                        data-bs-toggle="modal" data-bs-target="#allowRefund">Allow Refund</button>
-                        <button type="button" class="btn btn-outline-danger btn-sm mb-2 mx-4">Reject Refund</button>
-                    </div>
                 </div>
                     
               </div>
@@ -284,7 +248,7 @@
               </div>
           </div>
           <div class="modal-footer">
-            <button @click='sendPayment' type="submit" class="btn btn-success" id="refund-button">Refund</button>
+            <button type="button" @click="sendPayment()" class="btn btn-success" id="refund-button">Refund</button>
           </div>
         </div>
       </div>

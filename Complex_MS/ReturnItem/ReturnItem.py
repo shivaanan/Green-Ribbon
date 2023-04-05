@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 # URLS used
-payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
+payment_URL = environ.get('payment_URL') or "http://localhost:5005"
 orders_URL = environ.get('orders_URL') or "http://localhost:5004"
 
 #### Endpoints Start ####
@@ -22,8 +22,9 @@ def return_item():
     try:
         data = request.get_json()
         orderID = data['orderID']
+        productID = data['productID']
         data['status'] = 'Processing Refund'
-        url = f"{orders_URL}/orders/{orderID}"
+        url = f"{orders_URL}/orders/{orderID}/{productID}"
         return_item_result = requests.put(url, json=data)
         checkReturn = return_item_result.json()
         code = checkReturn["code"]
@@ -71,12 +72,19 @@ def refund_decision():
     try:
         data = request.get_json()
         orderID = data['orderID']
+        productID = data['productID']
         decision = data['decision'] # either "accept" or "reject"
 
+        print("TEST data(START) ")
+        print(data)
+        print("TEST data(END) ")
         # Get order data from the external API endpoint
-        url = f"{orders_URL}/orders/{orderID}"
+        url = f"{orders_URL}/orders/{orderID}/{productID}"
         order_result = requests.get(url)
         order_result = order_result.json()
+        print("TEST order(START) ")
+        print(order_result)
+        print("TEST order(START) ")
         code = order_result["code"]
         order_result = order_result["order"]
 
@@ -109,6 +117,7 @@ def refund_decision():
                 order_result['status'] = 'Refunded'
 
                 # Send PUT request to update order status
+                
                 return_result = requests.put(url, json=order_result)
                 return_result = return_result.json()
                 
@@ -147,7 +156,8 @@ def refund_decision():
 
 # Helper function to process the refund via Stripe wrapper
 def processRefund(products):
-    refund_result = invoke_http(payment_URL, method='POST', json=products)
+    PAYMENT_URL = payment_URL + "/refund"
+    refund_result = invoke_http(PAYMENT_URL, method='POST', json=products)
 
     ## Publish to AMQP
     code = refund_result["code"]

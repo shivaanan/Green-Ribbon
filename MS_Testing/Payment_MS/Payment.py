@@ -19,8 +19,6 @@ def payment():
     shoppingCart = data['dataObj']
     card_details = data['cardDetails']
     cardHolderName = data['cardName']
-    buyerID = data['buyerID']
-    sellerIDs = data['sellerIDs']
     # print("print card (START)")
     # print(card)
     # print("print card (END)")
