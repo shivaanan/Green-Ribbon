@@ -1,0 +1,74 @@
+version: "3.8"
+
+networks:
+  G6T4-net:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
+
+services:
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    networks:
+      - G6T4-net
+    hostname: esd-rabbit
+    container_name: esd-rabbit
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  ###################################
+  # Orders: The Orders SIMPLE MICROSERVICE
+  ###################################  
+  orders:
+    build:
+      context: ../../MS_Testing/Orders_MS
+      dockerfile: Dockerfile
+    image: beatbeat04/orders:1.0
+    networks:
+      - G6T4-net
+    container_name: orders
+    restart: always
+    ports:
+      - "5004:5004"
+    environment:
+      PYTHONUNBUFFERED: 1
+
+
+###################################################################### BREAK ######################################################################
+
+  ###################################
+  # ReturnItem: The ReturnItem COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
+  ###################################  
+  returnitem:
+    build:
+      context: ../../Complex_MS/ReturnItem
+      dockerfile: Dockerfile
+    image: beatbeat04/returnitem:1.0
+    networks:
+      - G6T4-net
+    container_name: returnitem
+    restart: always
+    depends_on:
+      - rabbitmq
+      - orders
+    ports:
+      - "5300:5300"
+    environment:
+      orders_URL: http://orders:5004
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+
+
+
