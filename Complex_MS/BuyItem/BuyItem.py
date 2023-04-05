@@ -289,15 +289,9 @@ def get_cart(userId):
             'message': 'Unable to retrieve all cart items'
         }), 400
 
+
 # # adding to order function
-# @app.route('/add_to_orders', methods = ['POST'])
-
-
 def add_to_orders(paymentStatus, buyerID):
-    # paymentResult, paymentStatus, buyerID = buy_item()
-    # paymentResult = data['paymentResult']
-    # paymentStatus = data['paymentStatus']
-    # buyerID = data['buyerID']
 
     print("in add to orders")
     print(paymentStatus)
@@ -341,9 +335,6 @@ def add_to_orders(paymentStatus, buyerID):
 # # updating the listings automatically upon adding to orders
 # @app.route('/update_listing', methods = ['PUT'])
 def update_listing(allCartItems, addOrdersStatus):
-    # result = add_to_orders()
-    # addOrdersStatus = result["code"]
-    # allCartItems = result["data"]["cart-list"]
     print("in update listing")
     print(addOrdersStatus)
     print(allCartItems)
@@ -374,27 +365,10 @@ def update_listing(allCartItems, addOrdersStatus):
     return {
             "code": 200,
             "message": "Quantity in listing updated successfully"
-            # "data": {
-            #     "cart_list": allCartItems
-            # }
         }
-
-    # else:
-
-    #     return {
-    #             "code": 400,
-    #             "message": "Quantity in listing was not updated successfully"
-    #         }
-
-
-# # delete from cart once listings have been updated
-# @app.route('/delete_from_cart', methods = ['DELETE'])
 
 
 def delete_from_cart(allCartItems, updateListingStatus):
-    # # result = update_listing
-    # updateListingStatus = result["code"]
-    # allCartItems = result["data"]["cart-list"]
 
     if updateListingStatus == 200:
         buyerID = allCartItems[0]["buyerID"]
@@ -414,8 +388,6 @@ def delete_from_cart(allCartItems, updateListingStatus):
         
 
 # deleting 1 item from cart on UI
-
-
 @app.route('/delete_cart_item/<userId>/<int:productID>', methods=['DELETE'])
 def delete_cart_item(userId, productID):
 
