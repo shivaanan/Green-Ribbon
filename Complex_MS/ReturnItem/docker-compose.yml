@@ -67,6 +67,8 @@ services:
     environment:
       orders_URL: http://orders:5004
       rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
 
 
 
