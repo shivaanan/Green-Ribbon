@@ -113,12 +113,13 @@ services:
     ports:
       - "5200:5200"
     environment:
-      # - location_URL: http://location:8080
+      # location_URL: http://location:8080
       listing_URL: http://listing:5002
       cart_URL: http://cart:5003
-      # - order_URL: http://order:5004
+      # order_URL: http://order:5004
       payment_URL: http://payment:5005
       rabbit_host: rabbitmq
+      rabbit_port: 5672
 
   ###################################
   # LoginAccount: The LoginAccount COMPLEX MICROSERVICE (NEED ADD ENVIRONMENT)
@@ -127,15 +128,9 @@ services:
     build:
       context: ./Complex_MS/LoginAccount
       dockerfile: LoginAccount.Dockerfile
-<<<<<<< HEAD
     image: m4rtinliu/loginaccount:v1
     # networks:
     #   - G6T4-net
-=======
-    image: mrtaooo/loginaccount:1.0
-    networks:
-      - G6T4-net
->>>>>>> 1868258493d5d131027843f27c20589b4c6cdd65
     container_name: loginaccount
     restart: always
     depends_on:
@@ -146,7 +141,10 @@ services:
     ports:
       - "5100:5100"
     environment:
-      - account_URL=http://account:5001
-      # - location_URL: http://location:8080
-      - listing_URL=http://listing:5002
+      account_URL: http://account:5001
+      # location_URL: http://location:8080
+      listing_URL: http://listing:5002
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      
 
