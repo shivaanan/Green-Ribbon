@@ -16,6 +16,10 @@
 
 <li> Goh Chee Kiat 01385960 | ckgoh.2021@scis.smu.edu.sg </li>
 
+<li> Vighnesh Ramasamy 01394515 | ramasamyv.2021@scis.smu.edu.sg </li>
+
+<li> Liu Ze Wei Martin 01398322 | martin.liu.2021@scis.smu.edu.sg </li>
+
 </ol>
 
 ## Project Overview 🎯 ##
