@@ -64,7 +64,7 @@ services:
     build:
       context: ./MS_Testing/Cart_MS
       dockerfile: Cart.Dockerfile
-    image: mrtaooo/cart:1.0
+    image: m4rtinliu/cart:v1
     networks:
       - G6T4-net
     container_name: cart
@@ -81,7 +81,7 @@ services:
     build:
       context: ./MS_Testing/Payment_MS
       dockerfile: Payment.Dockerfile
-    image: mrtaooo/payment:1.0
+    image: m4rtinliu/payment:v1
     networks:
       - G6T4-net
     container_name: payment
@@ -114,7 +114,7 @@ services:
     build:
       context: ./Complex_MS/BuyItem
       dockerfile: BuyItem.Dockerfile
-    image: mrtaooo/buyitem:1.0
+    image: m4rtinliu/buyitem:v1
     networks:
       - G6T4-net
     container_name: buyitem
@@ -131,7 +131,7 @@ services:
       location_URL: http://location:8080
       listing_URL: http://listing:5002
       cart_URL: http://cart:5003
-      # order_URL: http://order:5004
+      order_URL: http://order:5004
       payment_URL: http://payment:5005
       rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
