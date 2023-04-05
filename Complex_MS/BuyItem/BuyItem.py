@@ -16,7 +16,7 @@ app = Flask(__name__)
 CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5002"
-payment_URL = environ.get('payment_URL') or "http://localhost:5005"
+payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
 order_URL = environ.get('order_URL') or "http://127.0.0.1:5004"
 rabbitMQhostname = environ.get('rabbit_host') or "localhost"
@@ -72,7 +72,8 @@ def buy_item():
                 return jsonify({
                     'code': 400,
                     'error': f"Checkout error: {productName} is currently unavailable due to not enough inventory quantity",
-                }), 400
+                }),
+                400
 
         combinedData = {"buyerID": userId, "sellerIDs": manySellerID, "dataObj": shoppingCart,
                         "cardDetails": card_details, "cardName": cardHolderName}
@@ -84,29 +85,6 @@ def buy_item():
         print(processOrderResult)
         print("TEST processOrderResult (END)")
 
-
-        if processOrderResult['code'] == 201:
-            # print(processOrderResult['code'])
-            # print(type(processOrderResult['code']))
-            # add_to_orders_DataObj = {"buyerID":userId, "paymentStatus":201}
-            add_to_orders_result = add_to_orders(processOrderResult['code'], userId)
-
-            error_code = add_to_orders_result["code"]
-            print(error_code)
-            print (add_to_orders_result)
-            print (add_to_orders_result["code"])
-            print (type(add_to_orders_result))
-            if error_code == 200:
-                print("in error code 200   ")
-                update_listing_result = update_listing(shoppingCart, error_code)
-
-                if update_listing_result['code'] == 200:
-                    delete_cart_result = delete_from_cart(shoppingCart, add_to_orders_result["code"])
-
-
-        # if processOrderResult['code'] == 201:
-        #     add_to_orders_DataObj = {"buyerID":userId, "paymentResult":jsonify(processOrderResult), "paymentStatus":201}
-        #     add_to_orders(add_to_orders_DataObj)
         return jsonify(processOrderResult), processOrderResult["code"]
 
     except Exception as e:
@@ -125,8 +103,7 @@ def buy_item():
 
 # ======================== HELPER FUNCTION (START) ========================
 def processOrder(products):
-    PAYMENT_URL = payment_URL + "/payment"
-    payment_result = invoke_http(PAYMENT_URL, method='POST', json=products)
+    payment_result = invoke_http(payment_URL, method='POST', json=products)
 
     # print("TEST payment_result (START)")
     # print(payment_result)
@@ -145,7 +122,7 @@ def processOrder(products):
     amqp_setup.check_setup()
 
     if code not in range(200, 300):
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error",
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error",
                                          body=message, properties=pika.BasicProperties(delivery_mode=2))
 
         print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
@@ -158,7 +135,7 @@ def processOrder(products):
         }
 
     else:
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info",
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info",
                                          body=message)
     # ========================= AMQP (END) =========================
 
@@ -256,76 +233,56 @@ def get_cart(userId):
 # @app.route('/add_to_orders', methods = ['POST'])
 
 
-def add_to_orders(paymentStatus, buyerID):
-    # paymentResult, paymentStatus, buyerID = buy_item()
-    # paymentResult = data['paymentResult']
-    # paymentStatus = data['paymentStatus']
-    # buyerID = data['buyerID']
+def add_to_orders():
+    paymentResult, paymentStatus, buyerID = buy_item()
 
-    print("in add to orders")
-    print(paymentStatus)
-    print(buyerID)
-    if paymentStatus == 201:
+    if paymentStatus == 200:
         getAllItemsURL = cart_URL + "/get_cart"
-
-        data = {
-            "buyerID": buyerID
-        }
-        cartResult = invoke_http(getAllItemsURL, method='GET', json=data)
+        cartResult = invoke_http(getAllItemsURL, method='GET', json=buyerID)
         allCartItems = cartResult["data"]["cart_list"]
-        # buyerID = allCartItems[0]["buyerID"]
+        buyerID = allCartItems[0]["buyerID"]
 
-        addingOrderURL = order_URL + "/add_order"
-
-        data = {
-            "cart_list": allCartItems,
-            "buyerID": buyerID,
-        }
+        addingOrderURL = order_URL + "/add_order/" + str(buyerID)
         addingOrderResult = invoke_http(
-            addingOrderURL, method='POST', json=data)
+            addingOrderURL, method='POST', json=allCartItems)
 
-         
-        return {
+        return jsonify(
+            {
                 "code": 200,
-                "message": "Order added successfully"
-                # "data": {
-                #     "cart_list": allCartItems
-                # }
+                "message": "Order added successfully",
+                "data": {
+                    "cart_list": allCartItems
                 }
+            }
+        ), 200
 
     else:
-        return {
+        return jsonify(
+            {
                 "code": 400,
                 "message": "Order was not added successfully"
             }
-      
+        ), 400
 
 
 # # updating the listings automatically upon adding to orders
 # @app.route('/update_listing', methods = ['PUT'])
-def update_listing(allCartItems, addOrdersStatus):
-    # result = add_to_orders()
-    # addOrdersStatus = result["code"]
-    # allCartItems = result["data"]["cart-list"]
-    print("in update listing")
-    print(addOrdersStatus)
-    print(allCartItems)
+def update_listing():
+    result = add_to_orders()
+    addOrdersStatus = result["code"]
+    allCartItems = result["data"]["cart-list"]
+
     if addOrdersStatus == 200:
         for item in allCartItems:
             productID = item["productID"]
             soldQuantity = item["inputQuantity"]
-
             updateListingURL = listing_URL + "/update_sold_product_qty"
-
             updateListingPayload = {
-                "productID": productID,
-                "soldQuantity": soldQuantity
-                }
-            
+                "productID": productID, "soldQuantity": soldQuantity}
             updateListingResult = invoke_http(
                 updateListingURL, method="PUT", json=updateListingPayload)
 
-            if updateListingResult["code"] == 200:
+            if updateListingResult["Code"] == 200:
                 updatedItem = updateListingResult["data"]["product"]
                 if updatedItem["quantity"] <= 0:
                     deleteListingURL = listing_URL + \
@@ -333,51 +290,55 @@ def update_listing(allCartItems, addOrdersStatus):
                     deleteListingResult = invoke_http(
                         deleteListingURL, method="DELETE")
 
-         
-    return {
-            "code": 200,
-            "message": "Quantity in listing updated successfully"
-            # "data": {
-            #     "cart_list": allCartItems
-            # }
-        }
+        return jsonify(
+            {
+                "code": 200,
+                "message": "Order added successfully",
+                "data": {
+                    "cart_list": allCartItems
+                }
+            }
+        ), 200
 
-    # else:
-         
-    #     return {
-    #             "code": 400,
-    #             "message": "Quantity in listing was not updated successfully"
-    #         }
-       
+    else:
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Order was not added successfully"
+            }
+        ), 400
 
 # # delete from cart once listings have been updated
 # @app.route('/delete_from_cart', methods = ['DELETE'])
 
 
-def delete_from_cart(allCartItems, updateListingStatus):
-    # # result = update_listing
-    # updateListingStatus = result["code"]
-    # allCartItems = result["data"]["cart-list"]
+def delete_from_cart():
+    result = update_listing()
+    updateListingStatus = result["code"]
+    allCartItems = result["data"]["cart-list"]
 
     if updateListingStatus == 200:
         buyerID = allCartItems[0]["buyerID"]
         deleteFromCartURL = cart_URL + "/delete_from_cart/" + buyerID
         deleteFromCartResult = invoke_http(deleteFromCartURL, method="DELETE")
 
-         
-        return {
+        return jsonify(
+            {
                 "code": 200,
-                "message": "Cart cleared successfully",
-                
+                "message": "Order added successfully",
+                "data": {
+                    "cart_list": allCartItems
+                }
             }
-       
+        ), 200
 
     else:
-        return {
+        return jsonify(
+            {
                 "code": 400,
-                "message": "Cart was not cleared successfully"
+                "message": "Order was not added successfully"
             }
-        
+        ), 400
 
 # deleting 1 item from cart on UI
 
