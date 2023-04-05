@@ -186,6 +186,9 @@ def edit_product():
         return jsonify({
                 "code": 200,
                 "message": "Updated product quantity",
+                "data": {
+                    "product": getProductByID_helper_function(productID)
+                }
             }), 200
 
     except:
@@ -195,10 +198,28 @@ def edit_product():
                 "message": "Error updating product quantity",
             }
         ), 400
+    
+
+
+# get product by id helper function
+def getProductByID_helper_function(productID):
+    product = collection.find_one({'productID': productID})
+    if product:
+        product_dict = {
+            'sellerID': product['sellerID'],
+            'productID': product["productID"],
+            'itemName': product['itemName'],
+            'quantity': product['quantity'],
+            'price': product['price'],
+            'dateOfPost': product['dateOfPost'],
+            'address': product['address'],
+            'imgURL': product["imgURL"]
+        }
+        return product_dict
+    
+
 
 # removing sold OR no quantity products
-
-
 @app.route('/remove_product/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     try:
