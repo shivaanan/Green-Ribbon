@@ -15,7 +15,7 @@ services:
     image: rabbitmq:3-management
     networks:
       - G6T4-net
-    hostname: esd-rabbit
+    hostname: is213-esd-project-rabbitmq-1
     restart: always
     ports:
       - "5672:5672"
@@ -91,7 +91,7 @@ services:
     environment:
       PYTHONUNBUFFERED: 1
 
-    ###################################
+  ###################################
   # Location: The Location SIMPLE MICROSERVICE
   ###################################  
   location:
@@ -124,6 +124,7 @@ services:
       - payment
       - cart
       - rabbitmq
+      - location
     ports:
       - "5200:5200"
     environment:
@@ -132,7 +133,7 @@ services:
       cart_URL: http://cart:5003
       # order_URL: http://order:5004
       payment_URL: http://payment:5005
-      rabbit_host: rabbitmq
+      rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
 
   ###################################
@@ -143,22 +144,22 @@ services:
       context: ./Complex_MS/LoginAccount
       dockerfile: LoginAccount.Dockerfile
     image: m4rtinliu/loginaccount:v1
-    # networks:
-    #   - G6T4-net
+    networks:
+      - G6T4-net
     container_name: loginaccount
     restart: always
     depends_on:
       - account
       - listing
       - rabbitmq
-      # - Location
+      - location
     ports:
       - "5100:5100"
     environment:
       account_URL: http://account:5001
-      # location_URL: http://location:8080
+      location_URL: http://location:8080
       listing_URL: http://listing:5002
-      rabbit_host: rabbitmq
+      rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
       
 
