@@ -75,7 +75,7 @@ services:
       PYTHONUNBUFFERED: 1
 
   ###################################
-  # Payment: The Payment SIMPLE MICROSERVICE
+  # Payment: The Payment Atomic Service (Stripe Wrapper)
   ###################################  
   payment:
     build:
@@ -121,6 +121,25 @@ services:
       - "5004:5004"
     environment:
       PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Notification: The Notification Atomic Service (Twilio SendGrid Wrapper)
+  ###################################  
+  notification:
+    build:
+      context: ./MS_Testing/Notification_MS
+      dockerfile: Notification.Dockerfile
+    image: mrtaooo/notification:1.0
+    networks:
+      - G6T4-net
+    depends_on:
+      - rabbitmq
+    container_name: notification
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+      rabbit_host: rabbit_host
+      rabbit_port: 5672
 
 ###################################################################### BREAK ######################################################################
 
