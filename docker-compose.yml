@@ -96,12 +96,12 @@ services:
       PYTHONUNBUFFERED: 1
 
   ###################################
-  # Payment: The Payment SIMPLE MICROSERVICE
+  # Location: The Location SIMPLE MICROSERVICE
   ###################################  
   location:
     build:
       dockerfile: Dockerfile
-    image: m4rtinliu/location:v1 
+    image: ckgoh2021/location:v1 
     # networks:
     #   - G6T4-net
     container_name: location 
