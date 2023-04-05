@@ -180,8 +180,7 @@ def edit_product():
         productID = data["productID"]
         soldQuantity = data['soldQuantity']
 
-        collection.update_one({"productID": productID}, {
-                              "$inc": {"quantity": -soldQuantity}})
+        collection.update_one({"productID": productID}, {"$inc": {"quantity": -soldQuantity}})
 
         return jsonify(
             {

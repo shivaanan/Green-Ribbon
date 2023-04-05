@@ -16,7 +16,11 @@ services:
     # networks:
     #   - G6T4-net
     hostname: esd-rabbit
+    container_name: esd-rabbit
     restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -90,6 +94,21 @@ services:
       - "5005:5005"
     environment:
       PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Location: The Location SIMPLE MICROSERVICE
+  ###################################  
+  location:
+    build:
+      dockerfile: Dockerfile
+    image: ckgoh2021/location:v1 
+    # networks:
+    #   - G6T4-net
+    container_name: location 
+    restart: always
+    ports:
+      - "8080:8080"
+       
 
 ###################################################################### BREAK ######################################################################
 

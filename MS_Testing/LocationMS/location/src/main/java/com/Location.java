@@ -1,4 +1,4 @@
-package com.esd.project.location;
+package com;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

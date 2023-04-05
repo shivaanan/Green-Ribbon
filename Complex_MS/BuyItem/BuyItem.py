@@ -16,7 +16,7 @@ app = Flask(__name__)
 CORS(app)
 
 listing_URL = environ.get('listing_URL') or "http://localhost:5002"
-payment_URL = environ.get('payment_URL') or "http://localhost:5005/payment"
+payment_URL = environ.get('payment_URL') or "http://localhost:5005"
 cart_URL = environ.get('cart_URL') or "http://127.0.0.1:5003"
 order_URL = environ.get('order_URL') or "http://127.0.0.1:5004"
 rabbitMQhostname = environ.get('rabbit_host') or "localhost"
@@ -125,7 +125,8 @@ def buy_item():
 
 # ======================== HELPER FUNCTION (START) ========================
 def processOrder(products):
-    payment_result = invoke_http(payment_URL, method='POST', json=products)
+    PAYMENT_URL = payment_URL + "/payment"
+    payment_result = invoke_http(PAYMENT_URL, method='POST', json=products)
 
     # print("TEST payment_result (START)")
     # print(payment_result)
