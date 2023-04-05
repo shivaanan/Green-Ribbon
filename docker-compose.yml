@@ -95,6 +95,21 @@ services:
     environment:
       PYTHONUNBUFFERED: 1
 
+  ###################################
+  # Payment: The Payment SIMPLE MICROSERVICE
+  ###################################  
+  location:
+    build:
+      dockerfile: Dockerfile
+    image: m4rtinliu/location:v1 
+    # networks:
+    #   - G6T4-net
+    container_name: location 
+    restart: always
+    ports:
+      - "8080:8080"
+       
+
 ###################################################################### BREAK ######################################################################
 
   ###################################
