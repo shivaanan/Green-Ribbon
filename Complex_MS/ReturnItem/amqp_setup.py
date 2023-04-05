@@ -1,13 +1,15 @@
 import pika
 from os import environ ###
 
-hostname = environ.get('rabbit_host') or 'localhost' ###
+hostname = environ.get('rabbit_host') or 'esd-rabbit' ###
 port = environ.get('rabbit_port') or 5672 ###
 
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(
         host=hostname, port=port,
         heartbeat=3600, blocked_connection_timeout=3600, # these parameters to prolong the expiration time (in seconds) of the connection
+        # virtual_host='/',
+        # credentials=pika.PlainCredentials('guest', 'guest')
 ))
 
 channel = connection.channel()
