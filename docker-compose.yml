@@ -30,7 +30,7 @@ services:
     build:
       context: ./MS_Testing/Account_MS
       dockerfile: Account.Dockerfile
-    image: mrtaooo/account:1.0
+    image: m4rtinliu/account:v1
     networks:
       - G6T4-net
     container_name: account
@@ -47,7 +47,7 @@ services:
     build:
       context: ./MS_Testing/Listing_MS
       dockerfile: Listing.Dockerfile
-    image: mrtaooo/listing:1.0
+    image: m4rtinliu/listing:v1
     networks:
       - G6T4-net
     container_name: listing
@@ -91,6 +91,20 @@ services:
     environment:
       PYTHONUNBUFFERED: 1
 
+    ###################################
+  # Location: The Location SIMPLE MICROSERVICE
+  ###################################  
+  location:
+    build:
+      dockerfile: Dockerfile
+    image: ckgoh2021/location:v1 
+    # networks:
+    #   - G6T4-net
+    container_name: location 
+    restart: always
+    ports:
+      - "8080:8080"
+
 ###################################################################### BREAK ######################################################################
 
   ###################################
@@ -113,7 +127,7 @@ services:
     ports:
       - "5200:5200"
     environment:
-      # location_URL: http://location:8080
+      location_URL: http://location:8080
       listing_URL: http://listing:5002
       cart_URL: http://cart:5003
       # order_URL: http://order:5004
