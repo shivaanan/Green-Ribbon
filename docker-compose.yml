@@ -34,7 +34,7 @@ services:
     build:
       context: ./MS_Testing/Account_MS
       dockerfile: Account.Dockerfile
-    image: mrtaooo/account:1.0
+    image: m4rtinliu/account:v1
     # networks:
     #   - G6T4-net
     container_name: account
