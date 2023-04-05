@@ -172,7 +172,7 @@ def update_order_status(orderID, productID):
         result = collection.update_one({"orderID": orderID, "productID":productID}, {"$set": {"status": newStatus}})
 
         if result.modified_count == 1:
-            return jsonify({'code':200, 'message': f"Order {orderID}, Product {productID} updated successfully"})
+            return jsonify({'code':200, 'message': f"Order {orderID}, Product {productID} updated successfully","orderID":orderID,"productID":productID})
         else:
             return jsonify({'code':404, 'message': f"No order with ID {orderID} and Product {productID} found"}), 404
     except Exception as e:

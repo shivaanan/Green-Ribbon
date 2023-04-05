@@ -84,9 +84,6 @@ def refund_decision():
         url = f"{orders_URL}/orders/{orderID}/{productID}"
         order_result = requests.get(url)
         order_result = order_result.json()
-        print("TEST order(START) ")
-        print(order_result)
-        print("TEST order(START) ")
         code = order_result["code"]
         order_result = order_result["order"]
 
@@ -165,6 +162,9 @@ def processRefund(products):
     code = refund_result["code"]
     message = json.dumps(refund_result)
     print(code)
+    print("TEST message (TEST)")
+    print(message)
+    print("TEST message (END)")
     amqp_setup.check_setup()
 
     if code not in range(200,300):

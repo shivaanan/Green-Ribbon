@@ -122,7 +122,7 @@ def processOrder(products):
     amqp_setup.check_setup()
 
     if code not in range(200, 300):
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error",
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.error",
                                          body=message, properties=pika.BasicProperties(delivery_mode=2))
 
         print("\nOrder status ({:d}) published to the RabbitMQ Exchange:".format(
@@ -135,7 +135,7 @@ def processOrder(products):
         }
 
     else:
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.info",
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="payment.info",
                                          body=message)
     # ========================= AMQP (END) =========================
 

@@ -22,12 +22,16 @@ monitorBindingKey='#'
 def receiveOrderLog():
     amqp_setup.check_setup()
         
-    queue_name = 'Payment'
+    paymentQueue = 'Payment'
     
-    amqp_setup.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    amqp_setup.channel.basic_consume(queue=paymentQueue, on_message_callback=paymentNotification, auto_ack=True)
+
+    returnQueue = 'Return_Item'
+    
+    amqp_setup.channel.basic_consume(queue=returnQueue, on_message_callback=refundNotification, auto_ack=True)
     amqp_setup.channel.start_consuming() # an implicit loop waiting to receive messages; 
 
-def callback(channel, method, properties, body): # required signature for the callback; no return
+def paymentNotification(channel, method, properties, body): # required signature for the callback; no return
     print("\nReceived an order log by " + __file__)
     try:
         processOrderLog(json.loads(body))
@@ -38,10 +42,10 @@ def callback(channel, method, properties, body): # required signature for the ca
 def processOrderLog(order):
     print("Recording an order log:")
     print(order)
-    send_notification(order) # Send payment status to users 
+    send_payment_notification(order) # Send payment status to users 
     
 
-def send_notification(data):
+def send_payment_notification(data):
 
     # code = data.get('code', 0)
     # message = data.get('message', '')
@@ -55,19 +59,75 @@ def send_notification(data):
 
     # code = data['code']
     paymentStatus = data['paymentStatus']
-    email="lintao.main@gmail.com"
+    buyerEmail="lintao.main@gmail.com"
+    sellerEmail="lintao.contact@gmail.com"
 
     if paymentStatus == 'Payment_Successful':
-        subject = "Purchase Successful"
-        message = f"You have purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
-    elif paymentStatus == 'Payment_Unsuccessful':
-        subject = "Purchase Unsuccessful"
-        message = "Purchase Unsuccessful! Invalid card details!"
+        subjectBuyer = "Purchase Successful"
+        messageBuyer = f"You have purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
+
+        subjectSeller = "Purchase Successful"
+        messageSeller = f"Your items have been purchased {data['purchaseSummary']['checkoutDescription']}. Total amount is ${data['purchaseSummary']['totalAmount']}USD"
+
     else:
         return {"error": "Invalid status code"}, 400
 
     # Send email using SendGrid
-    send_email(email, subject, message)
+    send_email(buyerEmail, subjectBuyer, messageBuyer)
+    send_email(sellerEmail, subjectSeller, messageSeller)
+
+    return {"message": "Email sent"}
+
+def refundNotification(channel, method, properties, body): # required signature for the callback; no return
+    print("TEST")
+    print(body)
+    print("TEST(END)")
+    print("\nReceived an order log by " + __file__)
+    try:
+        processRefundLog(json.loads(body))
+    except json.JSONDecodeError as e:
+        print(f"Failed to parse JSON: {e}")
+    print() # print a new line feed
+
+def processRefundLog(order):
+    print("Recording an order log:")
+    print(order)
+    send_refund_notification(order) # Send payment status to users 
+    
+
+def send_refund_notification(data):
+
+    # code = data.get('code', 0)
+    # message = data.get('message', '')
+
+    # # Extract email address from data (assuming it's included)
+    # email = data.get('email', '')
+
+    print("Test data (START)")
+    print(data)
+    print("Test data (END)")
+
+    # code = data['code']
+    refundStatus = data['code']
+    buyerEmail="lintao.main@gmail.com"
+    sellerEmail="lintao.contact@gmail.com"
+
+    if refundStatus == 200:
+        orderID = data['orderID']
+        productID = data['productID']
+
+        subjectBuyer = "Refund Successful"
+        messageBuyer = f"Your purchase of Product {productID} from Order {orderID} has been successfully refunded."
+
+        subjectSeller = "Refund Successful"
+        messageSeller = f"You have successfully refunded Product {productID} from Order {orderID}."
+
+    else:
+        return {"error": "Invalid status code"}, 400
+
+    # Send email using SendGrid
+    send_email(buyerEmail, subjectBuyer, messageBuyer)
+    send_email(sellerEmail, subjectSeller, messageSeller)
 
     return {"message": "Email sent"}
 
