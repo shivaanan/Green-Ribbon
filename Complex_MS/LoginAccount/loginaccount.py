@@ -1,4 +1,4 @@
-import firebase 
+# import firebase 
 from flask import Flask, request, jsonify 
 from flask_cors import CORS 
 from invokes import invoke_http
