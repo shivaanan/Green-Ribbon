@@ -120,7 +120,14 @@ def get_distance():
                 amqpmessage = "Error calculating distance"
                 amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="location.error", body=amqpmessage,properties=pika.BasicProperties(delivery_mode=2))
 
-        return jsonify(distances)
+        return jsonify({
+            "code": 200,
+            "data": {
+                "distances": distances
+            },
+            "message": "Distance calculated successfully"
+        })
+    
     except :
          return jsonify(
             {
