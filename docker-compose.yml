@@ -134,7 +134,7 @@ services:
       - G6T4-net
     depends_on:
       - rabbitmq
-    container_name: notifications
+    container_name: notification
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
@@ -154,7 +154,7 @@ services:
       - G6T4-net
     depends_on:
       - rabbitmq
-    container_name: notification
+    container_name: activitylog
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
@@ -173,7 +173,7 @@ services:
       - G6T4-net
     depends_on:
       - rabbitmq
-    container_name: notification
+    container_name: errorlog
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
