@@ -26,9 +26,13 @@ def return_item():
         data = request.get_json()
         orderID = data['orderID']
         productID = data['productID']
-        data['status'] = 'Processing Refund'
+        # data['status'] = 'Processing Refund'
+
+        new_data = {
+            "status": 'Processing Refund'
+        }
         url = f"{orders_URL}/orders/{orderID}/{productID}"
-        return_item_result = requests.put(url, json=data)
+        return_item_result = requests.put(url, json=new_data, methods="PUT")
         checkReturn = return_item_result.json()
         code = checkReturn["code"]
         message = checkReturn["message"]
@@ -218,4 +222,4 @@ def processRefund(products):
     }
 
 if __name__ == '__main__':
-    app.run(port=5300, debug=True)
+    app.run(port=5300, debug=True,  host='0.0.0.0')

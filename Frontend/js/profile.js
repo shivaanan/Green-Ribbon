@@ -28,6 +28,7 @@ const profilePage = Vue.createApp({
             sellHistory: [],
             tempObj: [],
             userId: sessionStorage.getItem("userId"),
+            userName: '',
         };
     }, // data
 
@@ -44,7 +45,7 @@ const profilePage = Vue.createApp({
                 this.products = response.data["data"]["products"];
 
                 this.products.sort((a, b) => {
-                    return new Date(a.dateOfPost) - new Date(b.dateOfPost); // sort ascending
+                    return new Date(b.dateOfPost) - new Date(a.dateOfPost); // sort ascending
                   })
             })
             .catch((error) => {
@@ -54,8 +55,6 @@ const profilePage = Vue.createApp({
         axios
             .get("http://127.0.0.1:5004/purchased/"+ userId)
             .then((response) => {
-                console.log("purchased loaded");
-                console.log(response.data[0]);
                 this.buyHistory = response.data;
                 this.buyHistory.sort((a, b) => {
                     return new Date(b.order_date) - new Date(a.order_date); // sort ascending
@@ -68,8 +67,6 @@ const profilePage = Vue.createApp({
         axios
             .get("http://127.0.0.1:5004/sold/"+ userId)
             .then((response) => {
-                console.log("sold loaded");
-                console.log(response.data[0]);
                 this.sellHistory = response.data;
                 this.sellHistory.sort((a, b) => {
                     return new Date(b.order_date) - new Date(a.order_date); // sort ascending
@@ -79,7 +76,15 @@ const profilePage = Vue.createApp({
             .catch((error) => {
                 console.log(error);
             });
-        
+        //retrieve user name
+        axios
+            .get("http://127.0.0.1:5001/retrieve_name/"+ userId)
+            .then((response) => {
+                this.userName = response.data["data"]["name"];
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     },
 
     computed: {
