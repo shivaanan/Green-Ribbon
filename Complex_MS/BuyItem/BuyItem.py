@@ -31,12 +31,12 @@ def buy_item():
     card_details = data['cardDetails']
     cardHolderName = data['cardName']
     try:
-        cartQuery = {
-            "buyerID": userId
-        }
+        # cartQuery = {
+        #     "buyerID": userId
+        # }
         # invoke cartMS to get the cart
         getCartResponse = invoke_http(
-            cart_URL + "/get_cart", method='GET', json=cartQuery)
+            cart_URL + "/get_cart/" + userId, method='GET')
         # print("TEST getCartResponse (START)")
         # print(getCartResponse)
         # print("TEST getCartResponse (END)")
@@ -267,12 +267,11 @@ def add_to_cart():
 def get_cart(userId):
 
     try:
-        data = {
-            "buyerID": userId
-        }
+        
         # invoke cartMS to get the cart
-        result = invoke_http(cart_URL + "/get_cart", method='GET', json=data)
-
+        result = invoke_http(cart_URL + "/get_cart/" + userId, method='GET')
+        print("printing result")
+        print(result)
         cart_list = result["data"]["cart_list"]
 
         return jsonify({
@@ -281,7 +280,7 @@ def get_cart(userId):
             'data': {
                 'cart_list': cart_list
             }
-        })
+        }), 200
 
     except:
         return jsonify({
@@ -297,12 +296,10 @@ def add_to_orders(paymentStatus, buyerID):
     print(paymentStatus)
     print(buyerID)
     if paymentStatus == 201:
-        getAllItemsURL = cart_URL + "/get_cart"
+        getAllItemsURL = cart_URL + "/get_cart/" + buyerID
 
-        data = {
-            "buyerID": buyerID
-        }
-        cartResult = invoke_http(getAllItemsURL, method='GET', json=data)
+        
+        cartResult = invoke_http(getAllItemsURL, method='GET')
         allCartItems = cartResult["data"]["cart_list"]
         # buyerID = allCartItems[0]["buyerID"]
 
@@ -356,10 +353,8 @@ def update_listing(allCartItems, addOrdersStatus):
             if updateListingResult["code"] == 200:
                 updatedItem = updateListingResult["data"]["product"]
                 if updatedItem["quantity"] <= 0:
-                    deleteListingURL = listing_URL + \
-                        "/remove_product/" + str(productID)
-                    deleteListingResult = invoke_http(
-                        deleteListingURL, method="DELETE")
+                    deleteListingURL = listing_URL + "/remove_product/" + str(productID) 
+                    deleteListingResult = invoke_http(deleteListingURL, method="DELETE")
 
 
     return {
@@ -407,4 +402,4 @@ def delete_cart_item(userId, productID):
 
 
 if __name__ == '__main__':
-    app.run(port=5200, debug=True)
+    app.run(port=5200, debug=True, host='0.0.0.0')

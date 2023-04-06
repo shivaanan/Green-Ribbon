@@ -85,8 +85,8 @@ def get_distance():
         for listing in result["data"]["products"]: 
             destaddresses[listing["productID"]] = listing["address"]
         print(destaddresses)
-
-        locresponse = invoke_http(locationMSURL + "/location", method='POST')
+        print(locationMSURL + "/location")
+        locresponse = invoke_http(locationMSURL + "/location", method='GET')
         print(locresponse)
         if locresponse == []: 
             amqpmessage = "Error getting user location"
