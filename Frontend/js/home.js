@@ -122,11 +122,17 @@ const homePage = Vue.createApp({
             </div>`;
 
             // Make an axios post request to the buyItem microservice
-            axios.post('http://127.0.0.1:5200/add_to_cart', {
+            axios.post('http://127.0.0.1:5200/add_to_cart',
+            {
                 "userId": userId,
                 "productID": productID,
                 "qtyInput": qtyInput
-            })
+            }
+            // , {
+            //     headers: {
+            //         "Content-type": "application/json"
+            //     }}
+            )
             .then(response => {
                 console.log(response.data);
                 // Handle the response as needed
