@@ -221,8 +221,8 @@ services:
       - "5300:5300"
     environment:
       # location_URL: http://location:8080
-      listing_URL: http://listing:5002
-      # cart_URL: http://cart:5003
+      # listing_URL: http://listing:5002
+      cart_URL: http://cart:5003
       order_URL: http://orders:5004
       payment_URL: http://payment:5005
       rabbit_host: is213-esd-project-rabbitmq-1
