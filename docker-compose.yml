@@ -98,8 +98,8 @@ services:
     build:
       dockerfile: Dockerfile
     image: ckgoh2021/location:v1 
-    # networks:
-    #   - G6T4-net
+    networks:
+      - G6T4-net
     container_name: location 
     restart: always
     ports:
@@ -138,7 +138,7 @@ services:
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
-      rabbit_host: is213-esd-project-rabbitmq-1
+      rabbit_host: rabbitmq
       rabbit_port: 5672
 
 
@@ -158,7 +158,7 @@ services:
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
-      rabbit_host: is213-esd-project-rabbitmq-1
+      rabbit_host: rabbitmq
       rabbit_port: 5672
 
   ###################################
@@ -177,7 +177,7 @@ services:
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
-      rabbit_host: is213-esd-project-rabbitmq-1
+      rabbit_host: rabbitmq
       rabbit_port: 5672
 
 ###################################################################### BREAK ######################################################################
@@ -209,7 +209,8 @@ services:
       cart_URL: http://cart:5003
       order_URL: http://orders:5004
       payment_URL: http://payment:5005
-      rabbit_host: is213-esd-project-rabbitmq-1
+      PYTHONUNBUFFERED: 1
+      rabbit_host: rabbitmq
       rabbit_port: 5672
 
   ###################################
@@ -219,7 +220,7 @@ services:
     build:
       context: ./Complex_MS/LoginAccount
       dockerfile: LoginAccount.Dockerfile
-    image: m4rtinliu/loginaccount:v1
+    # image: m4rtinliu/loginaccount:v1
     networks:
       - G6T4-net
     container_name: loginaccount
@@ -235,7 +236,8 @@ services:
       account_URL: http://account:5001
       location_URL: http://location:8080
       listing_URL: http://listing:5002
-      rabbit_host: is213-esd-project-rabbitmq-1
+      PYTHONUNBUFFERED: 1
+      rabbit_host: rabbitmq
       rabbit_port: 5672
       
   ###################################
@@ -261,6 +263,6 @@ services:
       account_URL: http://account:5001
       order_URL: http://orders:5004
       payment_URL: http://payment:5005
-      rabbit_host: is213-esd-project-rabbitmq-1
+      PYTHONUNBUFFERED: 1
+      rabbit_host: rabbitmq
       rabbit_port: 5672
-
