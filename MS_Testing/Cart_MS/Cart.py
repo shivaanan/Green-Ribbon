@@ -13,11 +13,11 @@ db = client['CartDB']
 collection = db['Cart']
 
 # Get All Cart Items of particular user
-@app.route('/get_cart', methods=['GET'])
-def getAllProducts():
+@app.route('/get_cart/<userId>', methods=['GET'])
+def getAllProducts(userId):
 
-    data = request.get_json()
-    buyerID = data["buyerID"]
+    # data = request.get()
+    buyerID = userId
     
     try:
         cart_items = collection.find({"buyerID": buyerID})
@@ -36,7 +36,7 @@ def getAllProducts():
                 'data' : {
                     'cart_list': cart_list
                 }
-            }), 200    
+            }), 200 
         
     except:
         return jsonify({
