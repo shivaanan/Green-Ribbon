@@ -138,12 +138,12 @@ services:
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
-      rabbit_host: rabbit_host
+      rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
 
 
   ###################################
-  # Notification: The Notification Atomic Service (Twilio SendGrid Wrapper)
+  # Activity Log: The Activity Log Atomic Service (Twilio SendGrid Wrapper)
   ###################################  
   activitylog:
     build:
@@ -158,11 +158,11 @@ services:
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
-      rabbit_host: rabbit_host
+      rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
 
   ###################################
-  # Notification: The Notification Atomic Service (Twilio SendGrid Wrapper)
+  # Error Log: The Error Log Atomic Service (Twilio SendGrid Wrapper)
   ###################################  
   errorlog:
     build:
@@ -177,7 +177,7 @@ services:
     restart: always
     environment:
       PYTHONUNBUFFERED: 1
-      rabbit_host: rabbit_host
+      rabbit_host: is213-esd-project-rabbitmq-1
       rabbit_port: 5672
 
 ###################################################################### BREAK ######################################################################
