@@ -141,12 +141,13 @@ services:
       - payment
       - cart
       - rabbitmq
-      - location
+      # - location
       - orders
+      - account
     ports:
       - "5200:5200"
     environment:
-      location_URL: http://location:8080
+      # location_URL: http://location:8080
       account_URL: http://account:5001
       listing_URL: http://listing:5002
       cart_URL: http://cart:5003
