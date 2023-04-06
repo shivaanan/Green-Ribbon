@@ -112,7 +112,7 @@ services:
     build:
       context: ./MS_Testing/Orders_MS
       dockerfile: Orders.Dockerfile
-    image: beatbeat04/orders:1.0
+    image: m4rtinliu/orders:v1
     networks:
       - G6T4-net
     container_name: orders
@@ -129,7 +129,46 @@ services:
     build:
       context: ./MS_Testing/Notification_MS
       dockerfile: Notification.Dockerfile
-    image: mrtaooo/notification:1.0
+    image: m4rtinliu/notification:v1
+    networks:
+      - G6T4-net
+    depends_on:
+      - rabbitmq
+    container_name: notification
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+      rabbit_host: rabbit_host
+      rabbit_port: 5672
+
+
+  ###################################
+  # Notification: The Notification Atomic Service (Twilio SendGrid Wrapper)
+  ###################################  
+  activitylog:
+    build:
+      context: ./MS_Testing/ActivityLog_MS
+      dockerfile: activity_log.Dockerfile
+    image: m4rtinliu/activitylog:v1
+    networks:
+      - G6T4-net
+    depends_on:
+      - rabbitmq
+    container_name: notification
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+      rabbit_host: rabbit_host
+      rabbit_port: 5672
+
+  ###################################
+  # Notification: The Notification Atomic Service (Twilio SendGrid Wrapper)
+  ###################################  
+  errorlog:
+    build:
+      context: ./MS_Testing/ErrorLog_MS
+      dockerfile: error.Dockerfile
+    image: m4rtinliu/errorlog:v1
     networks:
       - G6T4-net
     depends_on:
@@ -156,16 +195,15 @@ services:
     container_name: buyitem
     restart: always
     depends_on:
+      - account
       - listing
       - payment
       - cart
       - rabbitmq
-      - location
       - orders
     ports:
       - "5200:5200"
     environment:
-      location_URL: http://location:8080
       account_URL: http://account:5001
       listing_URL: http://listing:5002
       cart_URL: http://cart:5003
@@ -213,16 +251,14 @@ services:
     container_name: returnitem
     restart: always
     depends_on:
+      - account
       - orders
       - payment
       - rabbitmq
-      - listing
     ports:
       - "5300:5300"
     environment:
-      # location_URL: http://location:8080
-      # listing_URL: http://listing:5002
-      cart_URL: http://cart:5003
+      account_URL: http://account:5001
       order_URL: http://orders:5004
       payment_URL: http://payment:5005
       rabbit_host: is213-esd-project-rabbitmq-1
