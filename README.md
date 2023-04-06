@@ -25,8 +25,20 @@
 <li> Vighnesh Ramasamy 01394515 | ramasamyv.2021@scis.smu.edu.sg </li>
 
 </ol>
-
-## Project Overview 🎯 ##
+<!-- 
+## Project Overview 🎯 ## -->
 
 
 ## How to Install and Run Our Application (for Users) 🤓 ##
+1. Clone Repository
+2. cd into root folder: IS213-ESD-PROJECT
+3. Launch Docker desktop app
+4. Run docker-compose up in terminal
+5. Launch wamp
+6. Launch login.html
+7. User credentials (buyer):
+    - username: lintao.main@gmail.com
+    - password: 123456
+8. User credentials (seller):
+    - username: esdg6t4@gmail.com
+    - password: 123456

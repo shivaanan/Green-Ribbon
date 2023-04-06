@@ -110,6 +110,7 @@ const profilePage = Vue.createApp({
             let orderID = buyOrder.orderID;
             let productID = buyOrder.productID;
             console.log(orderID);
+            console.log(productID)
             // Make an axios post request to the ReturnItem microservice
             axios.post('http://127.0.0.1:5300/return_item', {
                 "orderID": orderID,

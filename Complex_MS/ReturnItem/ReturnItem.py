@@ -32,7 +32,7 @@ def return_item():
             "status": 'Processing Refund'
         }
         url = f"{orders_URL}/orders/{orderID}/{productID}"
-        return_item_result = requests.put(url, json=new_data, methods="PUT")
+        return_item_result = invoke_http(url, methods="PUT", json=new_data)
         checkReturn = return_item_result.json()
         code = checkReturn["code"]
         message = checkReturn["message"]
@@ -87,7 +87,7 @@ def refund_decision():
         print("TEST data(END) ")
         # Get order data from the external API endpoint
         url = f"{orders_URL}/orders/{orderID}/{productID}"
-        order_result = requests.get(url)
+        order_result = invoke_http(url)
         order_result = order_result.json()
         code = order_result["code"]
         order_result = order_result["order"]
